@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="London Fire Protection — Certified fire safety services for commercial, residential, and rental properties in London, Ontario. Extinguisher sales, fire safety plans, emergency lighting, and alarm installation.">
+  <title>London Fire Protection — Fire Safety Services, London Ontario</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* ─── CSS VARIABLES ─────────────────────────────────────── */
+    :root {
+      --color-primary:    #E55A2B;
+      --color-primary-dim: rgba(229, 90, 43, 0.15);
+      --color-primary-glow: rgba(229, 90, 43, 0.35);
+      --color-accent:     #B8860B;
+      --color-accent-dim: rgba(184, 134, 11, 0.15);
+      --color-bg:         #1A1A1A;
+      --color-bg-deep:    #111111;
+      --color-surface:    #2E2E2E;
+      --color-surface-raised: #363636;
+      --color-text-light: #F5F5F5;
+      --color-text-muted: #888888;
+      --color-border:     #3a3a3a;
+      --color-border-subtle: #2a2a2a;
+
+      --font-heading: 'Oswald', sans-serif;
+      --font-body:    'Inter', sans-serif;
+
+      --space-xs:    4px;
+      --space-sm:    8px;
+      --space-md:    16px;
+      --space-lg:    24px;
+      --space-xl:    40px;
+      --space-2xl:   64px;
+      --space-3xl:   96px;
+
+      --max-width:   1140px;
+      --radius-btn:  6px;
+      --radius-card: 10px;
+      --col-gap:     24px;
+    }
+
+    /* ─── RESET ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text-light);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+    /* ─── TYPOGRAPHY ─────────────────────────────────────────── */
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    h1 { font-size: clamp(36px, 6vw, 56px); }
+    h2 { font-size: clamp(26px, 4vw, 36px); }
+    h3 { font-size: clamp(18px, 2.5vw, 22px); }
+
+    /* ─── LAYOUT HELPERS ─────────────────────────────────────── */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--space-md);
+    }
+    @media (min-width: 768px) { .container { padding: 0 var(--space-lg); } }
+    @media (min-width: 1024px) { .container { padding: 0 var(--space-xl); } }
+
+    .section {
+      padding: var(--space-xl) 0;
+    }
+    @media (min-width: 768px) { .section { padding: 80px 0; } }
+    @media (min-width: 1024px) { .section { padding: var(--space-3xl) 0; } }
+
+    .section-label {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 2px;
+      background: var(--color-primary);
+    }
+
+    .section-heading {
+      color: var(--color-text-light);
+      margin-bottom: var(--space-md);
+    }
+
+    .section-sub {
+      color: var(--color-text-light);
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 540px;
+    }
+
+    /* ─── BUTTONS ─────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 26px;
+      border-radius: var(--radius-btn);
+      transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(229, 90, 43, 0.3), 0 1px 4px rgba(0,0,0,0.4);
+    }
+    .btn-primary:hover {
+      background: #f06a38;
+      box-shadow: 0 6px 28px rgba(229, 90, 43, 0.45), 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .btn-primary:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-text-light);
+      border: 1px solid rgba(245,245,245,0.25);
+    }
+    .btn-ghost:hover {
+      border-color: rgba(245,245,245,0.5);
+      background: rgba(245,245,245,0.05);
+    }
+    .btn-ghost:focus-visible {
+      outline: 2px solid var(--color-text-muted);
+      outline-offset: 3px;
+    }
+
+    .btn-accent {
+      background: var(--color-accent);
+      color: #fff8e1;
+      box-shadow: 0 4px 16px rgba(184, 134, 11, 0.25);
+    }
+    .btn-accent:hover {
+      background: #c9920c;
+      box-shadow: 0 6px 24px rgba(184, 134, 11, 0.4);
+    }
+    .btn-accent:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+    }
+
+    /* ─── CARDS ───────────────────────────────────────────────── */
+    .card {
+      background: var(--color-surface);
+      border: 0.5px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: var(--space-lg);
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      border-color: rgba(229, 90, 43, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(229, 90, 43, 0.12), 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* ─── BADGES ──────────────────────────────────────────────── */
+    .badge {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: var(--radius-btn);
+      display: inline-block;
+      letter-spacing: 0.5px;
+    }
+    .badge-primary { background: var(--color-primary-dim); color: var(--color-primary); border: 0.5px solid rgba(229,90,43,0.3); }
+    .badge-accent  { background: var(--color-accent-dim);  color: #D4A017;              border: 0.5px solid rgba(184,134,11,0.3); }
+    .badge-muted   { background: var(--color-primary-dim); color: var(--color-primary); border: 0.5px solid rgba(229,90,43,0.3); }
+
+    /* ─── ICON WRAPPER ────────────────────────────────────────── */
+    .icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      background: var(--color-primary-dim);
+      border: 0.5px solid rgba(229, 90, 43, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .icon-wrap svg {
+      stroke: var(--color-primary);
+      fill: rgba(229, 90, 43, 0.15);
+      width: 26px;
+      height: 26px;
+    }
+
+    /* ─── DIVIDER ─────────────────────────────────────────────── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+    }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  NAV                                                         */
+    /* ──────────────────────────────────────────────────────────── */
+    #navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(46, 46, 46, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 0.5px solid var(--color-border);
+      transition: background 0.3s ease;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: var(--space-lg);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .nav-logo img {
+      height: 60px;
+      width: auto;
+    }
+    .nav-links {
+      display: none;
+      list-style: none;
+      gap: var(--space-lg);
+      align-items: center;
+    }
+    @media (min-width: 768px) {
+      .nav-links { display: flex; }
+    }
+    .nav-links a {
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--color-primary);
+      transition: color 0.2s ease;
+      padding: 4px 0;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: var(--color-primary);
+      transition: width 0.2s ease;
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--color-text-light);
+    }
+    .nav-links a:hover::after,
+    .nav-links a.active::after {
+      width: 100%;
+    }
+    .nav-cta {
+      display: none;
+    }
+    @media (min-width: 768px) {
+      .nav-cta { display: inline-flex; }
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      height: 40px;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+      border-radius: 6px;
+      transition: background 0.2s ease;
+    }
+    .hamburger:hover { background: rgba(255,255,255,0.06); }
+    .hamburger:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    @media (min-width: 768px) { .hamburger { display: none; } }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--color-text-light);
+      border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.2s ease;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    #mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--color-bg-deep);
+      z-index: 99;
+      padding: var(--space-xl) var(--space-lg);
+      flex-direction: column;
+      gap: var(--space-md);
+      border-top: 0.5px solid var(--color-border);
+    }
+    #mobile-menu.open { display: flex; }
+    .mobile-link {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      padding: var(--space-sm) 0;
+      border-bottom: 0.5px solid var(--color-border-subtle);
+      transition: color 0.2s ease;
+    }
+    .mobile-link:hover { color: var(--color-primary); }
+    .mobile-cta { margin-top: var(--space-lg); align-self: flex-start; }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  HERO                                                        */
+    /* ──────────────────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 90%, rgba(229,90,43,0.22) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 85% 20%, rgba(184,134,11,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 100% 80% at 50% 110%, rgba(229,90,43,0.08) 0%, transparent 50%),
+        var(--color-bg-deep);
+      z-index: 0;
+    }
+    /* SVG grain overlay */
+    .hero-grain {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.35;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 180px 180px;
+      pointer-events: none;
+    }
+    /* Diagonal accent line */
+    .hero-accent-line {
+      position: absolute;
+      top: 0;
+      right: 20%;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(180deg, transparent, rgba(229,90,43,0.3) 40%, rgba(229,90,43,0.1) 70%, transparent);
+      z-index: 1;
+      transform: rotate(8deg) translateX(50px);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: var(--space-3xl) 0 var(--space-2xl);
+    }
+    .hero-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+    }
+    .hero-headline {
+      font-family: var(--font-heading);
+      font-size: clamp(40px, 7.5vw, 72px);
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin-bottom: var(--space-lg);
+    }
+    .hero-headline span {
+      color: var(--color-primary);
+    }
+    .hero-sub {
+      font-size: clamp(15px, 2vw, 17px);
+      color: var(--color-text-light);
+      line-height: 1.75;
+      max-width: 520px;
+      margin-bottom: var(--space-xl);
+    }
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      align-items: center;
+    }
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: var(--space-xl);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-sm);
+      color: var(--color-text-muted);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: var(--font-heading);
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+    .hero-scroll-hint svg {
+      stroke: var(--color-primary);
+      width: 20px;
+      height: 20px;
+    }
+    /* Stats strip */
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xl);
+      margin-top: var(--space-2xl);
+      padding-top: var(--space-xl);
+      border-top: 0.5px solid var(--color-border);
+    }
+    .hero-stat-item {}
+    .hero-stat-num {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: 1px;
+    }
+    .hero-stat-label {
+      font-size: 12px;
+      color: var(--color-text-light);
+      letter-spacing: 0.5px;
+    }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  SERVICES                                                    */
+    /* ──────────────────────────────────────────────────────────── */
+    #services {
+      background: var(--color-bg-deep);
+      border-top: 0.5px solid var(--color-border-subtle);
+      border-bottom: 0.5px solid var(--color-border-subtle);
+    }
+    .services-header {
+      margin-bottom: var(--space-2xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+    @media (min-width: 640px) {
+      .services-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 1024px) {
+      .services-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .service-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 10px 10px 0 0;
+    }
+    .service-card:hover::before { opacity: 1; }
+    .service-card-name {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+    }
+    .service-card-desc {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+      flex: 1;
+    }
+    .service-card-link {
+      font-family: var(--font-heading);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: gap 0.2s ease, opacity 0.2s ease;
+      width: fit-content;
+    }
+    .service-card-link:hover { gap: 10px; opacity: 0.85; }
+    .service-card-link svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+    }
+    /* 5th card spans 2 cols on desktop for balance */
+    @media (min-width: 1024px) {
+      .service-card:nth-child(5) {
+        grid-column: span 1;
+      }
+      /* Center last row if odd — push into center via flex parent trick */
+    }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  ABOUT                                                       */
+    /* ──────────────────────────────────────────────────────────── */
+    #about {
+      background: var(--color-bg);
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2xl);
+      align-items: center;
+    }
+    @media (min-width: 1024px) {
+      .about-grid { grid-template-columns: 1fr 1fr; gap: var(--space-3xl); }
+    }
+    .about-copy { display: flex; flex-direction: column; gap: var(--space-lg); }
+    .about-body {
+      font-size: 15px;
+      color: var(--color-text-light);
+      line-height: 1.8;
+    }
+    .about-certifications {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+    .cert-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-surface);
+      border: 0.5px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-light);
+    }
+    .cert-badge svg {
+      stroke: var(--color-primary);
+      width: 15px;
+      height: 15px;
+    }
+    /* Visual panel */
+    .about-visual {
+      background: var(--color-surface);
+      border: 0.5px solid var(--color-border);
+      border-radius: 12px;
+      padding: var(--space-2xl) var(--space-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    .about-visual::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(229,90,43,0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .about-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+    .about-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .about-stat-num {
+      font-family: var(--font-heading);
+      font-size: clamp(32px, 5vw, 44px);
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: 1px;
+    }
+    .about-stat-label {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+    .about-stat-divider {
+      grid-column: 1 / -1;
+      height: 0.5px;
+      background: var(--color-border);
+    }
+    .about-service-area {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .about-service-area svg {
+      stroke: var(--color-primary);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  TESTIMONIALS                                                */
+    /* ──────────────────────────────────────────────────────────── */
+    #testimonials {
+      background: var(--color-bg-deep);
+      border-top: 0.5px solid var(--color-border-subtle);
+    }
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+    }
+    .testimonials-header .section-label { justify-content: center; }
+    .testimonials-header .section-sub { margin: 0 auto; text-align: center; }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+    @media (min-width: 768px) { .testimonials-grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1024px) { .testimonials-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .testimonial-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      position: relative;
+    }
+    .testimonial-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, var(--color-primary), transparent);
+      border-radius: 10px 10px 0 0;
+    }
+    .testimonial-stars {
+      display: flex;
+      gap: 3px;
+    }
+    .star {
+      color: #f59e0b;
+      font-size: 14px;
+    }
+    .testimonial-quote {
+      font-size: 14px;
+      color: var(--color-text-light);
+      line-height: 1.75;
+      font-style: italic;
+      flex: 1;
+    }
+    .testimonial-quote::before { content: '\201C'; }
+    .testimonial-quote::after  { content: '\201D'; }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 0.5px solid var(--color-border);
+    }
+    .testimonial-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-primary-dim);
+      border: 1.5px solid rgba(229,90,43,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+    .testimonial-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .testimonial-type {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  PRICING                                                     */
+    /* ──────────────────────────────────────────────────────────── */
+    #pricing {
+      background: var(--color-bg);
+    }
+    .pricing-header {
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+    }
+    .pricing-header .section-label { justify-content: center; }
+    .pricing-header .section-sub { margin: 0 auto; text-align: center; }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+      align-items: stretch;
+    }
+    @media (min-width: 768px) { .pricing-grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1024px) { .pricing-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .pricing-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      position: relative;
+    }
+    .pricing-card.featured {
+      border-color: rgba(229,90,43,0.5);
+      background: linear-gradient(160deg, rgba(229,90,43,0.06) 0%, var(--color-surface) 40%);
+    }
+    .pricing-card.featured::after {
+      content: 'Most Popular';
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-primary);
+      color: #fff;
+      font-family: var(--font-heading);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .pricing-plan-name {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+    }
+    .pricing-plan-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+    .pricing-quote-tag {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: 1px;
+    }
+    .pricing-quote-sub {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+    .pricing-divider {
+      height: 0.5px;
+      background: var(--color-border);
+    }
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .pricing-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+    .pricing-features li svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--color-primary);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .pricing-cta { margin-top: auto; }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  CONNECT / CONTACT                                           */
+    /* ──────────────────────────────────────────────────────────── */
+    #contact {
+      background: var(--color-bg-deep);
+      border-top: 0.5px solid var(--color-border-subtle);
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2xl);
+    }
+    @media (min-width: 1024px) {
+      .contact-grid { grid-template-columns: 1.1fr 0.9fr; gap: var(--space-3xl); }
+    }
+    .contact-form-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .contact-form-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+    @media (min-width: 640px) {
+      .contact-form-row { grid-template-columns: 1fr 1fr; }
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+    }
+    .form-input, .form-textarea, .form-select {
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 11px 14px;
+      background: var(--color-surface);
+      color: var(--color-text-light);
+      border: 0.5px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: rgba(229,90,43,0.5);
+      box-shadow: 0 0 0 3px rgba(229,90,43,0.1);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #555; }
+    .form-textarea { resize: vertical; min-height: 120px; }
+    .form-select { cursor: pointer; }
+    .form-select option { background: var(--color-surface); }
+
+    .contact-info-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+    }
+    .contact-info-block {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+    .contact-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+    }
+    .contact-info-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--color-primary-dim);
+      border: 0.5px solid rgba(229,90,43,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .contact-info-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--color-primary);
+    }
+    .contact-info-label {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 2px;
+    }
+    .contact-info-value {
+      font-size: 14px;
+      color: var(--color-text-light);
+      line-height: 1.5;
+    }
+    .contact-map-placeholder {
+      background: var(--color-surface);
+      border: 0.5px solid var(--color-border);
+      border-radius: var(--radius-card);
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: var(--space-sm);
+      color: var(--color-text-muted);
+      font-size: 13px;
+    }
+    .contact-map-placeholder svg {
+      stroke: var(--color-primary);
+      opacity: 0.6;
+      width: 28px;
+      height: 28px;
+    }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  FOOTER                                                      */
+    /* ──────────────────────────────────────────────────────────── */
+    #footer {
+      background: var(--color-bg-deep);
+      border-top: 0.5px solid var(--color-border);
+    }
+    .footer-inner {
+      padding: var(--space-2xl) 0 var(--space-xl);
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2xl);
+      margin-bottom: var(--space-2xl);
+    }
+    @media (min-width: 768px) {
+      .footer-top { grid-template-columns: 1.5fr 1fr 1fr; }
+    }
+    .footer-brand { display: flex; flex-direction: column; gap: var(--space-md); }
+    .footer-logo { height: 36px; width: auto; }
+    .footer-tagline {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      max-width: 280px;
+    }
+    .footer-col-title {
+      font-family: var(--font-heading);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin-bottom: var(--space-md);
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-links a {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      transition: color 0.2s ease;
+    }
+    .footer-links a:hover { color: var(--color-primary); }
+    .footer-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      padding-top: var(--space-xl);
+      border-top: 0.5px solid var(--color-border-subtle);
+      align-items: center;
+      text-align: center;
+    }
+    @media (min-width: 768px) {
+      .footer-bottom { flex-direction: row; justify-content: space-between; text-align: left; }
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .footer-legal {
+      display: flex;
+      gap: var(--space-lg);
+    }
+    .footer-legal a {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      transition: color 0.2s ease;
+    }
+    .footer-legal a:hover { color: var(--color-text-light); }
+
+    /* ──────────────────────────────────────────────────────────── */
+    /*  SCROLL ANIMATIONS                                           */
+    /* ──────────────────────────────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up-delay-1 { transition-delay: 0.1s; }
+    .fade-up-delay-2 { transition-delay: 0.2s; }
+    .fade-up-delay-3 { transition-delay: 0.3s; }
+    .fade-up-delay-4 { transition-delay: 0.4s; }
+    .fade-up-delay-5 { transition-delay: 0.5s; }
+
+    /* Ensure hero content is visible immediately */
+    #hero .hero-content * { opacity: 1; transform: none; }
+
+    /* Section heading color overrides */
+    #services .section-heading    { color: var(--color-accent); }
+    #about .section-heading       { color: var(--color-accent); }
+    #testimonials .section-heading { color: var(--color-accent); }
+    #pricing .section-heading     { color: var(--color-accent); }
+  </style>
+</head>
+<body>
+
+<!-- ─── HIDDEN SVG GRAIN FILTER ───────────────────────────────── -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <filter id="grain-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="saturate" values="0" in="noise" result="grey"/>
+      <feBlend in="SourceGraphic" in2="grey" mode="overlay" result="blended"/>
+      <feComposite in="blended" in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  NAVIGATION                                                     -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<header id="navbar" role="banner">
+  <div class="container">
+    <nav class="nav-inner" aria-label="Main navigation">
+      <a href="#hero" class="nav-logo" aria-label="London Fire Protection — Home">
+        <img src="brand_assets/LFP_logo transparent.png" alt="London Fire Protection logo" width="160" height="40">
+      </a>
+
+      <ul class="nav-links" role="list">
+        <li><a href="#hero" class="active">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <a href="#contact" class="btn btn-primary nav-cta" aria-label="Get a quote">Get a Quote</a>
+
+      <button class="hamburger" id="hamburger-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- Mobile Drawer -->
+<div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+  <a href="#hero"         class="mobile-link" onclick="closeMobileMenu()">Home</a>
+  <a href="#services"     class="mobile-link" onclick="closeMobileMenu()">Services</a>
+  <a href="#about"        class="mobile-link" onclick="closeMobileMenu()">About</a>
+  <a href="#testimonials" class="mobile-link" onclick="closeMobileMenu()">Testimonials</a>
+  <a href="#pricing"      class="mobile-link" onclick="closeMobileMenu()">Pricing</a>
+  <a href="#contact"      class="mobile-link" onclick="closeMobileMenu()">Contact</a>
+  <a href="#contact" class="btn btn-primary mobile-cta" onclick="closeMobileMenu()">Get a Quote</a>
+</div>
+
+<main>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  HERO                                                           -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<section id="hero" aria-label="Hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-grain" aria-hidden="true"></div>
+  <div class="hero-accent-line" aria-hidden="true"></div>
+
+  <div class="container" style="width:100%;">
+    <div class="hero-content">
+      <div class="hero-badge-row">
+        <span class="badge badge-primary">NFPA Certified</span>
+        <span class="badge badge-muted">Ontario Fire Code Compliant</span>
+        <span class="badge badge-muted">Insured &amp; Bonded</span>
+        <span class="badge badge-muted">London, ON</span>
+      </div>
+
+      <h1 class="hero-headline">
+        Fire Safety.<br>
+        <span>Certified.</span><br>
+        Done Right.
+      </h1>
+
+      <p class="hero-sub">
+        Professional fire protection services for commercial properties, rental buildings, and homes across London, Ontario. Inspections, safety plans, alarms, and more — fully compliant, same-day available.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">
+          Get a Quote
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="#services" class="btn btn-ghost">View Services</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat-item">
+          <div class="hero-stat-num">5+</div>
+          <div class="hero-stat-label">Fire Safety Services</div>
+        </div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-num">Same Day</div>
+          <div class="hero-stat-label">Service Available</div>
+        </div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-num">100%</div>
+          <div class="hero-stat-label">Code Compliant</div>
+        </div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-num">Local</div>
+          <div class="hero-stat-label">London &amp; Surrounding Area</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    Scroll
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  SERVICES                                                       -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<section id="services" class="section" aria-labelledby="services-heading">
+  <div class="container">
+    <div class="services-header fade-up">
+      <div class="section-label">What We Offer</div>
+      <h2 class="section-heading" id="services-heading">Fire Protection Services</h2>
+      <p class="section-sub">Complete fire safety solutions for every property type — from single-family homes to commercial and industrial sites.</p>
+    </div>
+
+    <div class="services-grid">
+
+      <!-- Service 1: Fire Extinguishers -->
+      <div class="card service-card fade-up fade-up-delay-1">
+        <div class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="8" height="13" rx="2"/><path d="M10 8V6a2 2 0 1 1 4 0v2"/><path d="M12 4v-1"/><path d="M16 10h2a1 1 0 0 1 1 1v1"/><path d="M10 13h4"/><path d="M9 21h6"/></svg>
+        </div>
+        <div>
+          <div class="service-card-name">Fire Extinguisher Sales, Maintenance &amp; Inspections</div>
+        </div>
+        <p class="service-card-desc">
+          ABC Dry Chemical, Wet Chemical (K-Class), CO₂, and Water extinguishers sold, serviced, and certified on-site. Same-day availability. Supply and service in a single visit — compliant with NFPA 10 and Ontario Fire Code.
+        </p>
+        <a href="#contact" class="service-card-link" aria-label="Get a quote for fire extinguisher service">
+          Get a Quote
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 2: Fire Safety Plans -->
+      <div class="card service-card fade-up fade-up-delay-2">
+        <div class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div>
+          <div class="service-card-name">Fire Safety Plans &amp; Annual Updates</div>
+        </div>
+        <p class="service-card-desc">
+          Custom fire safety plans for commercial, industrial, rental, and construction properties. Legally required under Ontario law — plans are custom-built for each property, with on-site walkthrough, annual revision visits, and staff training included.
+        </p>
+        <a href="#contact" class="service-card-link" aria-label="Get a quote for a fire safety plan">
+          Get a Quote
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 3: Emergency Lighting -->
+      <div class="card service-card fade-up fade-up-delay-3">
+        <div class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div>
+          <div class="service-card-name">Emergency Lighting Inspection &amp; Testing</div>
+        </div>
+        <p class="service-card-desc">
+          Exit signs and battery backup units inspected and tested to Ontario Fire Code standards. Monthly 30-second and annual 30-minute tests performed. Non-compliant lighting is a common cause of failed inspections and owner liability — stay covered.
+        </p>
+        <a href="#contact" class="service-card-link" aria-label="Get a quote for emergency lighting inspection">
+          Get a Quote
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 4: Pre-Fire Inspections -->
+      <div class="card service-card fade-up fade-up-delay-4">
+        <div class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div>
+          <div class="service-card-name">Pre-Fire Inspection Checks</div>
+        </div>
+        <p class="service-card-desc">
+          A fast, affordable pre-inspection walkthrough before the official fire inspection arrives. Covers extinguisher compliance, exit signs and emergency lighting, smoke and CO detectors, and escape routes. For landlords, commercial owners, restaurants, and newly built or renovated buildings.
+        </p>
+        <a href="#contact" class="service-card-link" aria-label="Get a quote for a pre-fire inspection check">
+          Get a Quote
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 5: Residential Alarms -->
+      <div class="card service-card fade-up fade-up-delay-5">
+        <div class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <div>
+          <div class="service-card-name">Residential Fire Alarm Sales &amp; Installation</div>
+        </div>
+        <p class="service-card-desc">
+          Smoke detectors supplied and professionally installed for homes and small commercial spaces. One visit — supply, install, and certify. Every unit is placed per Ontario Building Code requirements, not guesswork.
+        </p>
+        <a href="#contact" class="service-card-link" aria-label="Get a quote for residential fire alarm installation">
+          Get a Quote
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  ABOUT                                                          -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<section id="about" class="section" aria-labelledby="about-heading">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-copy fade-up">
+        <div>
+          <div class="section-label">About</div>
+          <h2 class="section-heading" id="about-heading">Trusted. Certified. Local.</h2>
+        </div>
+        <p class="about-body">
+          London Fire Protection provides certified fire safety services to commercial businesses, landlords, and residential homeowners across London, Ontario and the surrounding area.
+        </p>
+        <p class="about-body">
+          Every inspection, installation, and safety plan is completed to the exact standards required by the Ontario Fire Code and NFPA guidelines. No shortcuts. No guesswork.
+        </p>
+        <p class="about-body">
+          Whether it's a pre-inspection walkthrough before a licensing visit, an annual fire safety plan update, or a same-day extinguisher service call — fast, reliable, code-compliant work, every time.
+        </p>
+        <div class="about-certifications">
+          <div class="cert-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+            NFPA Certified
+          </div>
+          <div class="cert-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Ontario Fire Code Compliant
+          </div>
+          <div class="cert-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Fully Insured &amp; Bonded
+          </div>
+        </div>
+      </div>
+
+      <div class="about-visual fade-up fade-up-delay-2">
+        <div class="about-stats-grid">
+          <div class="about-stat">
+            <div class="about-stat-num">5+</div>
+            <div class="about-stat-label">Core fire safety services</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">Same Day</div>
+            <div class="about-stat-label">Service availability</div>
+          </div>
+          <div class="about-stat-divider"></div>
+          <div class="about-stat">
+            <div class="about-stat-num">100%</div>
+            <div class="about-stat-label">Code-compliant work</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">Local</div>
+            <div class="about-stat-label">London-based, community-focused</div>
+          </div>
+          <div class="about-stat-divider"></div>
+          <div class="about-service-area">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Serving London, St. Thomas, and surrounding communities
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  TESTIMONIALS                                                   -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<section id="testimonials" class="section" aria-labelledby="testimonials-heading">
+  <div class="container">
+    <div class="testimonials-header fade-up">
+      <div class="section-label">Client Feedback</div>
+      <h2 class="section-heading" id="testimonials-heading">What Clients Say</h2>
+      <p class="section-sub">Reliable, professional, and compliant — from first call to final certification.</p>
+    </div>
+
+    <div class="testimonials-grid">
+
+      <div class="card testimonial-card fade-up fade-up-delay-1">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+        </div>
+        <p class="testimonial-quote">
+          Booked a pre-inspection check before my rental property's fire safety review. Every issue was flagged and fixed before the inspector arrived. Passed without a single note. Fast, professional, and worth every penny.
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">M</div>
+          <div>
+            <div class="testimonial-name">Marcus T.</div>
+            <div class="testimonial-type">Landlord — Multi-unit Residential</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card testimonial-card fade-up fade-up-delay-2">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+        </div>
+        <p class="testimonial-quote">
+          Needed a fire safety plan and extinguisher service for the restaurant before our licensing renewal. London Fire Protection handled everything in one visit — updated the plan, serviced all extinguishers, and even ran a quick staff walkthrough. Highly recommend.
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">S</div>
+          <div>
+            <div class="testimonial-name">Sandra K.</div>
+            <div class="testimonial-type">Restaurant Owner — Downtown London</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card testimonial-card fade-up fade-up-delay-3">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+          <span class="star" aria-hidden="true">★</span>
+        </div>
+        <p class="testimonial-quote">
+          Had smoke detectors installed in our new home. The technician was on time, explained exactly where each unit needed to go per code, and had everything done in under an hour. Clean work, no mess, no fuss.
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">D</div>
+          <div>
+            <div class="testimonial-name">David &amp; Priya L.</div>
+            <div class="testimonial-type">Homeowners — London, ON</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  PRICING                                                        -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<section id="pricing" class="section" aria-labelledby="pricing-heading">
+  <div class="container">
+    <div class="pricing-header fade-up">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-heading" id="pricing-heading">Service Packages</h2>
+      <p class="section-sub">Every property is different. Pricing is tailored to scope and service type — contact for a custom quote.</p>
+    </div>
+
+    <div class="pricing-grid">
+
+      <!-- Residential -->
+      <div class="card pricing-card fade-up fade-up-delay-1">
+        <div>
+          <div class="pricing-plan-name">Residential</div>
+          <p class="pricing-plan-desc">For homeowners and small residential properties needing fire safety compliance.</p>
+        </div>
+        <div>
+          <div class="pricing-quote-tag">Contact for Quote</div>
+          <div class="pricing-quote-sub">Tailored to property size and services required</div>
+        </div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features" aria-label="Residential package includes">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Smoke &amp; CO detector supply and installation
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Fire extinguisher sales and certification
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Pre-inspection walkthrough
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Ontario Building Code compliant placement
+          </li>
+        </ul>
+        <div class="pricing-cta">
+          <a href="#contact" class="btn btn-ghost" style="width:100%;justify-content:center;" aria-label="Get a residential quote">Get a Quote</a>
+        </div>
+      </div>
+
+      <!-- Commercial (Featured) -->
+      <div class="card pricing-card featured fade-up fade-up-delay-2">
+        <div>
+          <div class="pricing-plan-name">Commercial</div>
+          <p class="pricing-plan-desc">For businesses, restaurants, offices, and small commercial properties.</p>
+        </div>
+        <div>
+          <div class="pricing-quote-tag">Contact for Quote</div>
+          <div class="pricing-quote-sub">Tailored to property size and services required</div>
+        </div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features" aria-label="Commercial package includes">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Full fire extinguisher service (all types)
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Custom fire safety plan creation
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Emergency lighting inspection &amp; testing
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Pre-fire inspection walkthrough
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Annual plan updates + staff training
+          </li>
+        </ul>
+        <div class="pricing-cta">
+          <a href="#contact" class="btn btn-primary" style="width:100%;justify-content:center;" aria-label="Get a commercial quote">Get a Quote</a>
+        </div>
+      </div>
+
+      <!-- Full Compliance Bundle -->
+      <div class="card pricing-card fade-up fade-up-delay-3">
+        <div>
+          <div class="pricing-plan-name">Full Compliance Bundle</div>
+          <p class="pricing-plan-desc">For landlords, property managers, and industrial sites requiring complete fire compliance.</p>
+        </div>
+        <div>
+          <div class="pricing-quote-tag">Contact for Quote</div>
+          <div class="pricing-quote-sub">Tailored to property size and services required</div>
+        </div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features" aria-label="Full compliance bundle includes">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Everything in Commercial
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Multi-unit property coverage
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Priority scheduling &amp; same-day availability
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Annual compliance calendar &amp; reminders
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Dedicated service contact
+          </li>
+        </ul>
+        <div class="pricing-cta">
+          <a href="#contact" class="btn btn-ghost" style="width:100%;justify-content:center;" aria-label="Get a full compliance bundle quote">Get a Quote</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  CONNECT WITH US                                               -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<section id="contact" class="section" aria-labelledby="contact-heading">
+  <div class="container">
+    <div class="contact-grid">
+
+      <!-- Form -->
+      <div class="contact-form-wrap fade-up">
+        <div>
+          <div class="section-label">Connect With Us</div>
+          <h2 class="section-heading" id="contact-heading">Contact Us</h2>
+          <p class="section-sub" style="margin-bottom: var(--space-xl); color: var(--color-accent); font-weight: 700; letter-spacing: 2px;">CONNECT WITH US</p>
+        </div>
+
+        <form id="contact-form" novalidate aria-label="Contact form">
+          <div class="contact-form-row">
+            <div class="form-group">
+              <label for="name" class="form-label">Full Name <span aria-hidden="true" style="color:var(--color-primary)">*</span></label>
+              <input type="text" id="name" name="name" class="form-input" placeholder="Jane Smith" required autocomplete="name" aria-required="true">
+            </div>
+            <div class="form-group">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input type="tel" id="phone" name="phone" class="form-input" placeholder="(519) 555-0100" autocomplete="tel">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Email Address <span aria-hidden="true" style="color:var(--color-primary)">*</span></label>
+            <input type="email" id="email" name="email" class="form-input" placeholder="jane@example.com" required autocomplete="email" aria-required="true">
+          </div>
+
+          <div class="form-group">
+            <label for="service" class="form-label">Service Required</label>
+            <select id="service" name="service" class="form-select form-input" aria-label="Select a service">
+              <option value="" disabled selected>Select a service...</option>
+              <option value="extinguisher">Fire Extinguisher Sales, Maintenance &amp; Inspections</option>
+              <option value="safety-plan">Fire Safety Plan Creation &amp; Annual Updates</option>
+              <option value="emergency-lighting">Emergency Lighting Inspection &amp; Testing</option>
+              <option value="pre-inspection">Pre-Fire Inspection Check</option>
+              <option value="alarm">Residential Fire Alarm Sales &amp; Installation</option>
+              <option value="other">Other / Multiple Services</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="message" class="form-label">Message</label>
+            <textarea id="message" name="message" class="form-textarea" placeholder="Describe the property, service needed, or any questions..." aria-label="Your message"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" aria-label="Submit quote request">
+            Send Message
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+
+          <div id="form-success" style="display:none; margin-top:var(--space-md); padding:var(--space-md); background:rgba(229,90,43,0.1); border:0.5px solid rgba(229,90,43,0.3); border-radius:var(--radius-btn); color:var(--color-text-light); font-size:14px;" role="alert">
+            Message sent — a response will follow within 1 business day.
+          </div>
+          <div id="form-error" style="display:none; margin-top:var(--space-md); padding:var(--space-md); background:rgba(220,38,38,0.1); border:0.5px solid rgba(220,38,38,0.3); border-radius:var(--radius-btn); color:#fca5a5; font-size:14px;" role="alert">
+            Please fill in your name and a valid email address.
+          </div>
+        </form>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="contact-info-wrap fade-up fade-up-delay-2">
+        <div>
+          <div class="section-label">Contact Info</div>
+          <div class="contact-info-block">
+            <div class="contact-info-item">
+              <div class="contact-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 5.91 5.91l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-label">Phone</div>
+                <a href="tel:+15195550199" class="contact-info-value" style="transition: color 0.2s ease;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color=''">
+                  (519) 555-0199
+                </a>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-label">Email</div>
+                <a href="mailto:info@londonfirepro.ca" class="contact-info-value" style="transition: color 0.2s ease;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color=''">
+                  info@londonfirepro.ca
+                </a>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-label">Address</div>
+                <div class="contact-info-value">London, ON N6A 1A1<br>Ontario, Canada</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-label">Hours</div>
+                <div class="contact-info-value">Mon – Fri: 8:00 AM – 6:00 PM<br>Same-day service available</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-map-placeholder" aria-label="Map placeholder — London, Ontario">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>London, Ontario</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  FOOTER                                                         -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<footer id="footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#hero" aria-label="London Fire Protection — Back to top">
+          <img src="brand_assets/LFP_logo transparent.png" alt="London Fire Protection logo" class="footer-logo" width="140" height="36">
+        </a>
+        <p class="footer-tagline">
+          Certified fire safety services for commercial, residential, and rental properties across London, Ontario.
+        </p>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Services</div>
+        <ul class="footer-links" role="list">
+          <li><a href="#services">Fire Extinguisher Service</a></li>
+          <li><a href="#services">Fire Safety Plans</a></li>
+          <li><a href="#services">Emergency Lighting</a></li>
+          <li><a href="#services">Pre-Fire Inspections</a></li>
+          <li><a href="#services">Alarm Installation</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links" role="list">
+          <li><a href="#about">About</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#contact">Get a Quote</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 London Fire Protection. All rights reserved. London, Ontario, Canada.</p>
+      <nav class="footer-legal" aria-label="Legal links">
+        <a href="#contact">Privacy Policy</a>
+        <a href="#contact">Terms of Service</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ─────────────────────────────────────────────────────────────── -->
+<!--  JAVASCRIPT                                                     -->
+<!-- ─────────────────────────────────────────────────────────────── -->
+<script>
+  // ── Lucide icons ──────────────────────────────────────────
+  if (window.lucide) lucide.createIcons();
+
+  // ── Mobile hamburger ──────────────────────────────────────
+  const hamburger = document.getElementById('hamburger-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  function closeMobileMenu() {
+    mobileMenu.classList.remove('open');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+      closeMobileMenu();
+      hamburger.focus();
+    }
+  });
+
+  // ── Active nav link on scroll ─────────────────────────────
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('.nav-links a');
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-40% 0px -55% 0px',
+    threshold: 0,
+  };
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + entry.target.id) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(section => sectionObserver.observe(section));
+
+  // ── Scroll-reveal animations ──────────────────────────────
+  const fadeEls = document.querySelectorAll('.fade-up');
+
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        fadeObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  fadeEls.forEach(el => fadeObserver.observe(el));
+
+  // ── Navbar scroll shadow ──────────────────────────────────
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.style.background = window.scrollY > 10
+      ? 'rgba(30, 30, 30, 0.98)'
+      : 'rgba(46, 46, 46, 0.95)';
+  }, { passive: true });
+
+  // ── Contact form validation ───────────────────────────────
+  const form    = document.getElementById('contact-form');
+  const success = document.getElementById('form-success');
+  const error   = document.getElementById('form-error');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    success.style.display = 'none';
+    error.style.display   = 'none';
+
+    const name  = form.querySelector('#name').value.trim();
+    const email = form.querySelector('#email').value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!name || !email || !emailRegex.test(email)) {
+      error.style.display = 'block';
+      error.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+
+    // Simulate submission
+    success.style.display = 'block';
+    success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    form.reset();
+  });
+</script>
+
+</body>
+</html>
