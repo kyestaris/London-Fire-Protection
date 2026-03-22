@@ -166,6 +166,20 @@
       outline-offset: 3px;
     }
 
+    .btn-secondary {
+      background: rgba(245,245,245,0.12);
+      color: var(--color-text-light);
+      border: 1px solid rgba(245,245,245,0.3);
+    }
+    .btn-secondary:hover {
+      background: rgba(245,245,245,0.2);
+      border-color: rgba(245,245,245,0.5);
+    }
+    .btn-secondary:focus-visible {
+      outline: 2px solid var(--color-text-muted);
+      outline-offset: 3px;
+    }
+
     .btn-accent {
       background: var(--color-accent);
       color: #fff8e1;
@@ -197,9 +211,9 @@
     /* ─── BADGES ──────────────────────────────────────────────── */
     .badge {
       font-family: var(--font-body);
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 500;
-      padding: 4px 12px;
+      padding: 9px 20px;
       border-radius: var(--radius-btn);
       display: inline-block;
       letter-spacing: 0.5px;
@@ -414,7 +428,7 @@
     .hero-content {
       position: relative;
       z-index: 2;
-      padding: var(--space-3xl) 0 var(--space-2xl);
+      padding: var(--space-lg) 0 var(--space-2xl);
     }
     .hero-badge-row {
       display: flex;
@@ -1195,7 +1209,7 @@
           Get a Quote
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
-        <a href="#services" class="btn btn-ghost">View Services</a>
+        <a href="#services" class="btn btn-secondary">View Services</a>
       </div>
 
       <div class="hero-stats">
