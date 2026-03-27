@@ -8,7 +8,7 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": ["LocalBusiness", "ProfessionalService"],
     "@id": "https://kyestaris.github.io/London-Fire-Protection/#business",
     "name": "London Fire Protection",
     "description": "Professional fire protection services for commercial properties, rental buildings, and homes across London, Ontario. NFPA certified, Ontario Fire Code compliant.",
@@ -16,6 +16,10 @@
     "telephone": "+1-226-926-6367",
     "email": "kyleestaris@londonfireprotection.ca",
     "image": "https://kyestaris.github.io/London-Fire-Protection/brand_assets/Dynamic_LFP_Logo_with_Flame_Element-removebg-preview.png",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kyestaris.github.io/London-Fire-Protection/brand_assets/Dynamic_LFP_Logo_with_Flame_Element-removebg-preview.png"
+    },
     "priceRange": "$$",
     "currenciesAccepted": "CAD",
     "paymentAccepted": "Cash, Credit Card, E-Transfer",
@@ -53,8 +57,7 @@
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Pre-Fire Inspection Checks" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Residential Fire Alarm Installation" } }
       ]
-    },
-    "sameAs": []
+    }
   }
   </script>
   <script type="application/ld+json">
@@ -1083,6 +1086,26 @@
     .form-textarea { resize: vertical; min-height: 120px; }
     .form-select { cursor: pointer; }
     .form-select option { background: var(--color-surface); }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #form-success.visible, #form-error.visible {
+      animation: fadeSlideUp 0.3s ease forwards;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .btn-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
 
     .contact-info-wrap {
       display: flex;
@@ -1792,13 +1815,13 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
 
-          <div id="form-success" style="display:none; margin-top:var(--space-md); padding:var(--space-md); background:rgba(229,90,43,0.1); border:0.5px solid rgba(229,90,43,0.3); border-radius:var(--radius-btn); color:var(--color-text-light); font-size:14px;" role="alert">
-            Message sent — a response will follow within 1 business day.
-          </div>
-          <div id="form-error" style="display:none; margin-top:var(--space-md); padding:var(--space-md); background:rgba(220,38,38,0.1); border:0.5px solid rgba(220,38,38,0.3); border-radius:var(--radius-btn); color:#fca5a5; font-size:14px;" role="alert">
-            Please fill in your name and a valid email address.
-          </div>
         </form>
+        <div id="form-success" style="display:none; margin-top:var(--space-md); padding:var(--space-md); background:rgba(229,90,43,0.1); border:0.5px solid rgba(229,90,43,0.3); border-radius:var(--radius-btn); color:var(--color-text-light); font-size:14px;" role="alert">
+          We've received your request and will call you within 2 hours. If you'd prefer not to call, simply reply to the confirmation email we just sent you.
+        </div>
+        <div id="form-error" style="display:none; margin-top:var(--space-md); padding:var(--space-md); background:rgba(220,38,38,0.1); border:0.5px solid rgba(220,38,38,0.3); border-radius:var(--radius-btn); color:#fca5a5; font-size:14px;" role="alert">
+          Please fill in your name and a valid email address.
+        </div>
       </div>
 
       <!-- Contact Info -->
@@ -2002,32 +2025,8 @@
       : 'rgba(46, 46, 46, 0.95)';
   }, { passive: true });
 
-  // ── Contact form validation ───────────────────────────────
-  const form    = document.getElementById('contact-form');
-  const success = document.getElementById('form-success');
-  const error   = document.getElementById('form-error');
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    success.style.display = 'none';
-    error.style.display   = 'none';
-
-    const name  = form.querySelector('#name').value.trim();
-    const email = form.querySelector('#email').value.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!name || !email || !emailRegex.test(email)) {
-      error.style.display = 'block';
-      error.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      return;
-    }
-
-    // Simulate submission
-    success.style.display = 'block';
-    success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    form.reset();
-  });
 </script>
+<script src="js/contact.js"></script>
 
 </body>
 </html>
