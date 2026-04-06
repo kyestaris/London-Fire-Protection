@@ -50,6 +50,11 @@ async function draftFollowUpEmail(lead) {
         role: 'user',
         content: `You are an assistant for London Fire Protection, a fire safety services company based in London, Ontario, Canada.
 
+This email serves as both a confirmation of their form submission AND a personalized follow-up. It must:
+- Confirm that we have received their request
+- Let them know we will contact them within 2 hours during business hours (Mon-Fri 8AM-6PM)
+- Ask the relevant service-specific questions to prepare for that call
+
 Business context:
 - Services offered: Fire Extinguisher Servicing (ABC Dry Chemical, Wet Chemical K-Class, CO2, Water — sold, serviced, and certified on-site), Fire Safety Plans (for commercial, industrial, rental properties, churches, schools, daycares, warehouses), Emergency Lighting Servicing (exit signs and battery backup units), Pre-Fire Inspection Checks (full walkthrough covering extinguishers, exit signs, emergency lighting, smoke and CO detectors, escape routes), Residential Smoke Alarm Installation (smoke and CO alarm supply and installation)
 - Service area: London, St. Thomas, Dorchester, Aylmer, Komoka, Strathroy, Woodstock, Tillsonburg, and surrounding areas in Ontario
@@ -111,7 +116,7 @@ Write only the email body (no subject line). Follow these rules:
 - Reference relevant service details from the business context where appropriate
 - Ask only the service-specific questions above that the customer has NOT already answered in their message
 - Somewhere in the email, ask if there are any other fire safety services they may need from our list
-- End with a clear next step CTA to call or reply to get a quote
+- End with a clear next step CTA — let them know they can call us at 226-926-6367 or simply reply to this email
 - Sign off as "London Fire Protection | 226-926-6367 | info@londonfireprotection.ca"
 - Do NOT include lines like "Our team is reliable, professional, and fast — we'll get your quote back to you quickly."
 - Do NOT mention sprinkler systems or kitchen hood suppression systems`,
@@ -134,15 +139,15 @@ function makeEmailRFC(to, subject, body) {
   return Buffer.from(email).toString('base64url');
 }
 
-async function createGmailDraft(auth, lead) {
+async function sendFollowUpEmail(auth, lead) {
   const gmail = google.gmail({ version: 'v1', auth });
   const emailBody = await draftFollowUpEmail(lead);
-  const subject = `London Fire Protection Quote`;
+  const subject = `We've received your request — London Fire Protection`;
   const encoded = makeEmailRFC(lead.email, subject, emailBody);
 
-  await gmail.users.drafts.create({
+  await gmail.users.messages.send({
     userId: 'me',
-    requestBody: { message: { raw: encoded } },
+    requestBody: { raw: encoded },
   });
 }
 
@@ -162,23 +167,7 @@ module.exports = async function handler(req, res) {
   const lead = { name, phone, email, service, message };
 
   try {
-    // 1. Confirmation email to client
-    await resend.emails.send({
-      from:    'London Fire Protection <info@londonfireprotection.ca>',
-      to:      email,
-      subject: "We've received your request — London Fire Protection",
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333;">
-          <h2 style="color:#e55a2b;">London Fire Protection</h2>
-          <p>Hi ${name},</p>
-          <p>Thank you for reaching out. We've received your request and one of our team members will call you within <strong>2 hours</strong> during business hours.</p>
-          <p>If you'd prefer not to call, simply reply to this email and we'll follow up that way instead.</p>
-          <p style="margin-top:32px;">— The London Fire Protection Team</p>
-        </div>
-      `,
-    });
-
-    // 2. Internal notification to business
+    // 1. Internal notification to business
     await resend.emails.send({
       from:    'London Fire Protection <info@londonfireprotection.ca>',
       to:      businessEmail,
@@ -201,7 +190,7 @@ module.exports = async function handler(req, res) {
     try {
       const auth = getGoogleAuth();
       await logToSheet(auth, lead);
-      await createGmailDraft(auth, lead);
+      await sendFollowUpEmail(auth, lead);
       console.log('Sheet logged and draft created for:', lead.email);
     } catch (googleErr) {
       console.error('Google/Claude error (non-fatal):', googleErr.message);
