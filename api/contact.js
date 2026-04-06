@@ -1,4 +1,3 @@
-const { Resend } = require('resend');
 const { google } = require('googleapis');
 const Anthropic = require('@anthropic-ai/sdk');
 
@@ -127,16 +126,42 @@ Write only the email body (no subject line). Follow these rules:
   return message.content[0].text;
 }
 
-function makeEmailRFC(to, subject, body) {
-  const email = [
+function makeEmailRFC(to, subject, body, replyTo = null) {
+  const lines = [
     `To: ${to}`,
     `Subject: ${subject}`,
     `MIME-Version: 1.0`,
     `Content-Type: text/plain; charset=utf-8`,
+  ];
+  if (replyTo) lines.push(`Reply-To: ${replyTo}`);
+  lines.push('', body);
+  return Buffer.from(lines.join('\n')).toString('base64url');
+}
+
+async function sendInternalNotification(auth, lead) {
+  const gmail = google.gmail({ version: 'v1', auth });
+  const date = new Date().toLocaleString('en-CA', { timeZone: 'America/Toronto' });
+
+  const body = [
+    `New Quote Request - ${date}`,
     ``,
-    body,
+    `NAME:     ${lead.name}`,
+    `PHONE:    ${lead.phone || 'Not provided'}`,
+    `EMAIL:    ${lead.email}`,
+    `SERVICE:  ${lead.service || 'Not specified'}`,
+    `MESSAGE:  ${lead.message || 'None'}`,
+    ``,
+    `---`,
+    `Reply to this email to respond directly to ${lead.name}.`,
   ].join('\n');
-  return Buffer.from(email).toString('base64url');
+
+  const subject = `New Quote Request - ${lead.name} (${lead.service || 'General'})`;
+  const encoded = makeEmailRFC('info@londonfireprotection.ca', subject, body, lead.email);
+
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: { raw: encoded },
+  });
 }
 
 async function sendFollowUpEmail(auth, lead) {
@@ -162,36 +187,18 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Name and email are required' });
   }
 
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  const businessEmail = process.env.CONTACT_EMAIL;
   const lead = { name, phone, email, service, message };
 
   try {
-    // 1. Internal notification to business
-    await resend.emails.send({
-      from:    'London Fire Protection <info@londonfireprotection.ca>',
-      to:      businessEmail,
-      subject: `New Contact Form Submission — ${name}`,
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333;">
-          <h2 style="color:#e55a2b;">New Contact Form Submission</h2>
-          <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:8px 0;font-weight:bold;width:100px;">Name</td><td style="padding:8px 0;">${name}</td></tr>
-            <tr><td style="padding:8px 0;font-weight:bold;">Phone</td><td style="padding:8px 0;">${phone || '—'}</td></tr>
-            <tr><td style="padding:8px 0;font-weight:bold;">Email</td><td style="padding:8px 0;">${email}</td></tr>
-            <tr><td style="padding:8px 0;font-weight:bold;">Service</td><td style="padding:8px 0;">${service || '—'}</td></tr>
-            <tr><td style="padding:8px 0;font-weight:bold;vertical-align:top;">Message</td><td style="padding:8px 0;">${message || '—'}</td></tr>
-          </table>
-        </div>
-      `,
-    });
-
-    // 3. Log to Google Sheet + create Gmail draft (non-blocking)
+    // Log to sheet + send both emails (non-blocking for Google/Claude)
     try {
       const auth = getGoogleAuth();
       await logToSheet(auth, lead);
-      await sendFollowUpEmail(auth, lead);
-      console.log('Sheet logged and draft created for:', lead.email);
+      await Promise.all([
+        sendFollowUpEmail(auth, lead),       // personalized email to customer
+        sendInternalNotification(auth, lead), // internal notification to info@
+      ]);
+      console.log('All emails sent and sheet logged for:', lead.email);
     } catch (googleErr) {
       console.error('Google/Claude error (non-fatal):', googleErr.message);
     }
