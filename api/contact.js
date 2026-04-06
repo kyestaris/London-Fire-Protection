@@ -142,7 +142,7 @@ function makeEmailRFC(to, subject, body) {
 async function sendFollowUpEmail(auth, lead) {
   const gmail = google.gmail({ version: 'v1', auth });
   const emailBody = await draftFollowUpEmail(lead);
-  const subject = `We've received your request — London Fire Protection`;
+  const subject = `We've received your request - London Fire Protection`;
   const encoded = makeEmailRFC(lead.email, subject, emailBody);
 
   await gmail.users.messages.send({
