@@ -197,16 +197,19 @@ module.exports = async function handler(req, res) {
       `,
     });
 
-    // 3. Log to Google Sheet
-    const auth = getGoogleAuth();
-    await logToSheet(auth, lead);
-
-    // 4. Create Gmail draft with Claude-generated follow-up
-    await createGmailDraft(auth, lead);
+    // 3. Log to Google Sheet + create Gmail draft (non-blocking)
+    try {
+      const auth = getGoogleAuth();
+      await logToSheet(auth, lead);
+      await createGmailDraft(auth, lead);
+      console.log('Sheet logged and draft created for:', lead.email);
+    } catch (googleErr) {
+      console.error('Google/Claude error (non-fatal):', googleErr.message);
+    }
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    console.error('Contact handler error:', err);
-    return res.status(500).json({ error: 'Failed to process request' });
+    console.error('Contact handler error:', err.message);
+    return res.status(500).json({ error: 'Failed to send email' });
   }
 };
