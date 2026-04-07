@@ -162,8 +162,8 @@ function wrapInHtmlEmail(bodyHtml) {
     <tr><td align="center">
       <table width="100%" style="max-width:600px;background:#ffffff;border-radius:6px;overflow:hidden;">
         <tr>
-          <td style="background:#b91c1c;padding:20px 28px;">
-            <span style="color:#ffffff;font-size:18px;font-weight:bold;letter-spacing:0.5px;">London Fire Protection</span>
+          <td style="background:#E55A2B;padding:16px 28px;text-align:left;">
+            <img src="https://london-fire-protection.vercel.app/brand_assets/LOGO%20London%20Fire%20Protection%20Inc.%20%20(1).png" alt="London Fire Protection" style="height:48px;width:auto;display:block;">
           </td>
         </tr>
         <tr>
