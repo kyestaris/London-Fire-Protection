@@ -126,16 +126,61 @@ Write only the email body (no subject line). Follow these rules:
   return message.content[0].text;
 }
 
-function makeEmailRFC(to, subject, body, replyTo = null) {
+function textToHtml(text) {
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  return escaped
+    .split(/\n\n+/)
+    .map(para => `<p style="margin:0 0 16px 0;">${para.replace(/\n/g, '<br>')}</p>`)
+    .join('');
+}
+
+function makeEmailRFC(to, subject, body, replyTo = null, isHtml = false) {
+  const contentType = isHtml ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8';
   const lines = [
     `To: ${to}`,
     `Subject: ${subject}`,
     `MIME-Version: 1.0`,
-    `Content-Type: text/plain; charset=utf-8`,
+    `Content-Type: ${contentType}`,
   ];
   if (replyTo) lines.push(`Reply-To: ${replyTo}`);
   lines.push('', body);
   return Buffer.from(lines.join('\n')).toString('base64url');
+}
+
+function wrapInHtmlEmail(bodyHtml) {
+  return `<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:24px 0;">
+    <tr><td align="center">
+      <table width="100%" style="max-width:600px;background:#ffffff;border-radius:6px;overflow:hidden;">
+        <tr>
+          <td style="background:#b91c1c;padding:20px 28px;">
+            <span style="color:#ffffff;font-size:18px;font-weight:bold;letter-spacing:0.5px;">London Fire Protection</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px;color:#1a1a1a;font-size:16px;line-height:1.6;">
+            ${bodyHtml}
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f9f9f9;padding:16px 28px;border-top:1px solid #e5e5e5;font-size:13px;color:#666666;">
+            226-926-6367 &nbsp;|&nbsp; info@londonfireprotection.ca
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 }
 
 async function sendInternalNotification(auth, lead) {
@@ -168,7 +213,8 @@ async function sendFollowUpEmail(auth, lead) {
   const gmail = google.gmail({ version: 'v1', auth });
   const emailBody = await draftFollowUpEmail(lead);
   const subject = `We've received your request - London Fire Protection`;
-  const encoded = makeEmailRFC(lead.email, subject, emailBody);
+  const htmlBody = wrapInHtmlEmail(textToHtml(emailBody));
+  const encoded = makeEmailRFC(lead.email, subject, htmlBody, null, true);
 
   await gmail.users.messages.send({
     userId: 'me',
