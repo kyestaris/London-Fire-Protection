@@ -247,7 +247,6 @@ module.exports = async function handler(req, res) {
       console.log('All emails sent and sheet logged for:', lead.email);
     } catch (googleErr) {
       console.error('Google/Claude error (non-fatal):', googleErr.message);
-      return res.status(200).json({ ok: true, debug: googleErr.message });
     }
 
     return res.status(200).json({ ok: true });
