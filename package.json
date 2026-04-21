@@ -15,5 +15,8 @@
     "googleapis": "^171.4.0",
     "puppeteer": "^24.40.0",
     "resend": "^4.8.0"
+  },
+  "devDependencies": {
+    "qrcode": "^1.5.4"
   }
 }
