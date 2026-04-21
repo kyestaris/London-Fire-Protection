@@ -276,8 +276,8 @@
       text-transform: uppercase;
     }
     h1 { font-size: clamp(36px, 6vw, 56px); }
-    h2 { font-size: clamp(26px, 4vw, 36px); }
-    h3 { font-size: clamp(18px, 2.5vw, 22px); }
+    h2 { font-size: clamp(30px, 4.5vw, 44px); }
+    h3 { font-size: clamp(20px, 3vw, 26px); }
 
     /* ─── LAYOUT HELPERS ─────────────────────────────────────── */
     .container {
@@ -296,8 +296,8 @@
 
     .section-label {
       font-family: var(--font-heading);
-      font-size: 11px;
-      font-weight: 500;
+      font-size: 13px;
+      font-weight: 600;
       letter-spacing: 3px;
       text-transform: uppercase;
       color: var(--color-primary);
@@ -316,12 +316,13 @@
 
     .section-heading {
       color: var(--color-text-light);
+      font-size: clamp(31px, 4.6vw, 42px);
       margin-bottom: var(--space-md);
     }
 
     .section-sub {
       color: var(--color-text-light);
-      font-size: 15px;
+      font-size: 17px;
       line-height: 1.7;
       max-width: 540px;
     }
@@ -480,7 +481,7 @@
       flex-shrink: 0;
     }
     .nav-logo img {
-      width: 135px;
+      width: 110px;
       height: auto;
     }
     .nav-links {
@@ -521,10 +522,12 @@
       width: 100%;
     }
     .nav-cta {
-      display: none;
+      display: inline-flex;
+      font-size: 11px;
+      padding: 8px 12px;
     }
     @media (min-width: 768px) {
-      .nav-cta { display: inline-flex; }
+      .nav-cta { font-size: inherit; padding: inherit; }
     }
 
     /* Hamburger */
