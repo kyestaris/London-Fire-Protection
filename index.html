@@ -21,6 +21,8 @@
     "@type": ["LocalBusiness", "ProfessionalService"],
     "@id": "https://londonfireprotection.ca/#business",
     "name": "London Fire Protection",
+    "legalName": "London Fire Protection Corp",
+    "foundingDate": "2026-03-25",
     "description": "Professional fire protection services for commercial properties, rental buildings, and homes across London, Ontario. NFPA certified, Ontario Fire Code compliant.",
     "url": "https://londonfireprotection.ca/",
     "telephone": "+1-226-926-6367",
@@ -69,6 +71,20 @@
       { "@type": "City", "name": "Thorndale", "containedInPlace": { "@type": "AdministrativeArea", "name": "Ontario" } },
       { "@type": "GeoCircle", "geoMidpoint": { "@type": "GeoCoordinates", "latitude": 42.9849, "longitude": -81.2453 }, "geoRadius": "100000" }
     ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+1-226-926-6367",
+      "email": "info@londonfireprotection.ca",
+      "contactType": "customer service",
+      "areaServed": "CA-ON",
+      "availableLanguage": "English",
+      "hoursAvailable": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "08:00",
+        "closes": "18:00"
+      }
+    },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Fire Protection Services",
@@ -87,7 +103,7 @@
     "@context": "https://schema.org",
     "@type": "Service",
     "name": "Fire Extinguisher Servicing",
-    "description": "ABC Dry Chemical, Wet Chemical K-Class, CO2, and Water extinguishers sold, serviced, and certified on-site. Monthly and annual compliance checks available. Detailed compliance report provided. NFPA 10 and Ontario Fire Code compliant.",
+    "description": "ABC Dry Chemical, Wet Chemical K-Class, CO2, and Water extinguishers sold, serviced, and certified on-site. Monthly and annual compliance checks available. Detailed compliance report provided. NFPA 10 and Ontario Fire Code compliant. Pricing starts at $90.00 per visit.",
     "provider": { "@id": "https://www.londonfireprotection.ca/#business" },
     "areaServed": [
       { "@type": "City", "name": "London", "containedInPlace": { "@type": "AdministrativeArea", "name": "Ontario" } },
@@ -113,7 +129,7 @@
     "@context": "https://schema.org",
     "@type": "Service",
     "name": "Fire Safety Plans",
-    "description": "Custom fire safety plans for commercial, industrial, rental properties, and organizations including churches, community centres, schools, daycares, and warehouses. Includes on-site walkthrough, staff training, evacuation procedures, annual revision visits, and submission to the fire department. Detailed compliance report provided.",
+    "description": "Custom fire safety plans for commercial, industrial, rental properties, and organizations including churches, community centres, schools, daycares, and warehouses. Includes on-site walkthrough, staff training, evacuation procedures, annual revision visits, and submission to the fire department. Detailed compliance report provided. Pricing starts at $300.00 for small commercial properties.",
     "provider": { "@id": "https://www.londonfireprotection.ca/#business" },
     "areaServed": [
       { "@type": "City", "name": "London", "containedInPlace": { "@type": "AdministrativeArea", "name": "Ontario" } },
@@ -139,7 +155,7 @@
     "@context": "https://schema.org",
     "@type": "Service",
     "name": "Emergency Lighting Servicing",
-    "description": "Exit signs and battery backup units inspected and tested to Ontario Fire Code standards. Monthly and annual tests performed. Replacements, new unit supply, and installation available. Detailed compliance report provided.",
+    "description": "Exit signs and battery backup units inspected and tested to Ontario Fire Code standards. Monthly and annual tests performed. Replacements, new unit supply, and installation available. Detailed compliance report provided. Pricing starts at $90.00 per visit.",
     "provider": { "@id": "https://www.londonfireprotection.ca/#business" },
     "areaServed": [
       { "@type": "City", "name": "London", "containedInPlace": { "@type": "AdministrativeArea", "name": "Ontario" } },
@@ -165,7 +181,7 @@
     "@context": "https://schema.org",
     "@type": "Service",
     "name": "Pre-Fire Inspection Checks",
-    "description": "Pre-inspection walkthrough covering extinguisher compliance, exit signs, emergency lighting, smoke and CO detectors, and escape routes. On-site corrections made where possible depending on the infraction. Detailed compliance report provided.",
+    "description": "Pre-inspection walkthrough covering extinguisher compliance, exit signs, emergency lighting, smoke and CO detectors, and escape routes. On-site corrections made where possible depending on the infraction. Detailed compliance report provided. Custom quotes available — contact for pricing.",
     "provider": { "@id": "https://www.londonfireprotection.ca/#business" },
     "areaServed": [
       { "@type": "City", "name": "London", "containedInPlace": { "@type": "AdministrativeArea", "name": "Ontario" } },
@@ -191,7 +207,7 @@
     "@context": "https://schema.org",
     "@type": "Service",
     "name": "Residential Smoke Alarm Installation",
-    "description": "Smoke and Carbon Monoxide alarm supply and installation for homeowners. Battery replacements available. One visit to inspect, supply, and install. Detailed compliance report provided.",
+    "description": "Smoke and Carbon Monoxide alarm supply and installation for homeowners. Battery replacements available. One visit to inspect, supply, and install. Detailed compliance report provided. Installation fee is $50.00 per unit.",
     "provider": { "@id": "https://www.londonfireprotection.ca/#business" },
     "areaServed": [
       { "@type": "City", "name": "London", "containedInPlace": { "@type": "AdministrativeArea", "name": "Ontario" } },
@@ -287,6 +303,46 @@
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Yes. Rental property compliance is one of our core services. We assist landlords with fire extinguisher servicing, smoke and CO alarm installation, emergency lighting inspections, and fire safety plan preparation — all required under the Ontario Fire Code for most rental properties. We serve single-family rentals, multi-unit buildings, and rooming houses across London and surrounding areas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the fines for landlords who don't comply with Ontario fire code?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Landlords who fail to meet Ontario Fire Code requirements — including working smoke alarms, CO alarms, and fire extinguisher maintenance — can face fines up to $50,000 for individuals and up to $100,000 for corporations. In cases where non-compliance leads to injury, additional legal liability may apply. Staying compliant is significantly less expensive than the alternative. London Fire Protection helps landlords across London and surrounding areas get and stay compliant."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does my business in Ontario need a fire safety plan?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Under the Ontario Fire Code, a fire safety plan is required for assembly occupancies (restaurants, churches, event venues), care and detention occupancies (daycares, retirement homes), buildings four storeys or more, and most commercial and industrial properties. Contact London Fire Protection for a free consultation to assess whether your property requires one."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "When does a fire extinguisher need to be replaced versus recharged?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A fire extinguisher can typically be recharged after use if the cylinder passes inspection. It must be replaced if the cylinder is physically damaged, corroded, fails hydrostatic pressure testing, or is condemned during an annual inspection. Under NFPA 10, ABC extinguishers require internal inspection every 6 years and hydrostatic testing every 12 years. London Fire Protection assesses each unit during the annual inspection and provides on-site recommendations."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a hydrostatic test and when is it required for fire extinguishers?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A hydrostatic test checks the structural integrity of a fire extinguisher cylinder under high pressure to ensure it won't rupture. Under NFPA 10 and the Ontario Fire Code, CO2 and pressurized water extinguishers require hydrostatic testing every 5 years. ABC dry chemical extinguishers require testing every 12 years. Extinguishers that fail must be taken out of service and replaced."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do landlords or tenants need to maintain smoke and CO alarms in Ontario?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "In Ontario, landlords are responsible for supplying and installing working smoke alarms and CO alarms in rental units. Tenants are responsible for maintaining them — replacing batteries and not tampering with or disabling alarms. Landlords must test all alarms after every change in tenancy and keep written records. Fines for non-compliance can reach $50,000. London Fire Protection installs and certifies smoke and CO alarms for landlords across London and surrounding areas."
         }
       }
     ]
