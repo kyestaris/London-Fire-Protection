@@ -457,8 +457,11 @@
 
         <div class="row">
           <div class="form-group">
-            <label>Job ID</label>
-            <input type="text" id="jobId" placeholder="JOB-2026-001" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" required>
+            <label>Job ID <span id="jobIdStatus" style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px;"></span></label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="text" id="jobId" placeholder="JOB-2026-04-001" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" required style="flex:1;">
+              <button type="button" id="jobIdRefresh" title="Suggest next ID" style="height:47px;width:44px;flex-shrink:0;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:18px;cursor:pointer;-webkit-tap-highlight-color:transparent;">&#8635;</button>
+            </div>
           </div>
           <div class="form-group">
             <label>Inspector</label>
@@ -565,6 +568,27 @@
   });
   document.getElementById('pinBtn').addEventListener('click', verifyPin);
 
+  function fetchNextJobId() {
+    var statusEl = document.getElementById('jobIdStatus');
+    var field    = document.getElementById('jobId');
+    statusEl.textContent = 'loading…';
+    fetch(RENDER_URL + '/invoice/next-job-id')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        field.value = data.jobId;
+        statusEl.textContent = '(auto-suggested)';
+      })
+      .catch(function() {
+        var now = new Date();
+        var yyyy = now.getFullYear();
+        var mm = String(now.getMonth() + 1).padStart(2, '0');
+        field.value = 'JOB-' + yyyy + '-' + mm + '-001';
+        statusEl.textContent = '(offline default)';
+      });
+  }
+
+  document.getElementById('jobIdRefresh').addEventListener('click', fetchNextJobId);
+
   function verifyPin() {
     var entered = document.getElementById('pinInput').value;
     fetch(RENDER_URL + '/invoice/verify-pin', {
@@ -578,6 +602,7 @@
         pin = entered;
         localStorage.setItem(PIN_KEY, pin);
         document.getElementById('pinScreen').classList.add('hidden');
+        fetchNextJobId();
       } else {
         document.getElementById('pinError').textContent = 'Incorrect PIN — try again.';
       }
@@ -586,6 +611,9 @@
       document.getElementById('pinError').textContent = 'Connection error: ' + err.message;
     });
   }
+
+  // Auto-fetch if already authenticated (PIN in localStorage)
+  if (pin) fetchNextJobId();
 
   // Catalogue quick-add items per job type
   var QUICK_ITEMS = {
@@ -1012,7 +1040,9 @@
     document.getElementById('errorBanner').style.display   = 'none';
     document.getElementById('invoiceForm').style.display   = 'block';
     document.getElementById('successScreen').style.display = 'none';
+    document.getElementById('quickAddContent').innerHTML   = '';
     updateSummary();
+    fetchNextJobId();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
