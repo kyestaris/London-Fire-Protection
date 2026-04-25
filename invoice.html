@@ -428,7 +428,11 @@
           <div class="select-wrap">
             <select id="jobType" required>
               <option value="" disabled selected>Select job type&#8230;</option>
-              <optgroup label="Inspections">
+              <optgroup label="Inspections — Combined">
+                <option value="fe-el-inspection-monthly">FE + EL Inspection &#8212; Monthly</option>
+                <option value="fe-el-inspection-annual">FE + EL Inspection &#8212; Annual</option>
+              </optgroup>
+              <optgroup label="Inspections — Single">
                 <option value="fe-inspection-monthly">FE Inspection &#8212; Monthly</option>
                 <option value="fe-inspection-annual">FE Inspection &#8212; Annual</option>
                 <option value="el-inspection-monthly">EL Inspection &#8212; Monthly</option>
@@ -585,6 +589,28 @@
 
   // Catalogue quick-add items per job type
   var QUICK_ITEMS = {
+    'fe-el-inspection-monthly': {
+      title: 'FE + EL Inspection — Monthly',
+      items: [
+        { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
+        { name: 'FE Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
+        { name: 'FE Inspection — Per Unit (10–50 units)', price: 6.00, note: 'per unit' },
+        { name: 'FE Inspection — Per Unit (50+ units)', price: 5.00, note: 'per unit' },
+        { name: 'EL Monthly Functional Test — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
+        { name: 'EL Monthly Functional Test — Per Unit (10–50 units)', price: 6.00, note: 'per unit' },
+        { name: 'EL Monthly Functional Test — Per Unit (50+ units)', price: 5.00, note: 'per unit' },
+      ]
+    },
+    'fe-el-inspection-annual': {
+      title: 'FE + EL Inspection — Annual',
+      items: [
+        { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
+        { name: 'FE Annual Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
+        { name: 'FE Annual Inspection — Per Unit (10–50 units)', price: 6.00, note: 'per unit' },
+        { name: 'FE Annual Inspection — Per Unit (50+ units)', price: 5.00, note: 'per unit' },
+        { name: 'EL Annual 30-min Battery Test — Per Unit', price: 25.00, note: 'per unit' },
+      ]
+    },
     'fe-inspection-monthly': {
       title: 'FE Inspection — Monthly',
       items: [
@@ -730,6 +756,8 @@
 
     // Build full catalogue grouped by category (skip current job type — already shown)
     var CATEGORY_LABELS = {
+      'fe-el-inspection-monthly': 'FE + EL Inspection — Monthly',
+      'fe-el-inspection-annual':  'FE + EL Inspection — Annual',
       'fe-inspection-monthly': 'FE Inspection — Monthly',
       'fe-inspection-annual':  'FE Inspection — Annual',
       'el-inspection-monthly': 'EL Inspection — Monthly',
