@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>New Invoice — LFP</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:     #E55A2B;
+      --orange-dk:  #c44b22;
+      --bg:         #111214;
+      --surface:    #1c1e22;
+      --border:     #2e3036;
+      --text:       #f0f0f0;
+      --muted:      #8a8f9a;
+      --input-bg:   #242629;
+      --green-bg:   #1a3a1a;
+      --green-bdr:  #2a6a2a;
+      --red-bg:     #3a1a1a;
+      --red-bdr:    #6a2a2a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 48px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-icon {
+      width: 36px; height: 36px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+    header p  { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    /* ── Layout ── */
+    .container { max-width: 480px; margin: 0 auto; padding: 20px 16px 0; }
+
+    /* ── Section cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Form inputs ── */
+    .form-group { margin-bottom: 14px; }
+    .form-group:last-child { margin-bottom: 0; }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 7px;
+    }
+    input, select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 16px;
+      padding: 13px 15px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.15s;
+    }
+    input::placeholder { color: var(--muted); }
+    input:focus, select:focus { border-color: var(--orange); }
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute; right: 15px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); pointer-events: none; font-size: 13px;
+    }
+    select option { background: var(--input-bg); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* ── Quick add products ── */
+    .quick-add { display: none; }
+    .quick-add.visible { display: block; }
+    .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .product-btn {
+      padding: 11px 10px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s;
+    }
+    .product-btn:active { border-color: var(--orange); background: #1e1f23; }
+    .product-btn .p-name  { font-size: 12px; font-weight: 600; color: var(--text); display: block; margin-bottom: 2px; }
+    .product-btn .p-sku   { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
+    .product-btn .p-price { font-size: 14px; font-weight: 700; color: var(--orange); }
+
+    /* ── Line items ── */
+    .line-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+    .line-item-row {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr 36px;
+      gap: 8px;
+      align-items: end;
+      margin-top: 10px;
+    }
+    .line-item label { font-size: 11px; margin-bottom: 5px; }
+    .line-item input { font-size: 15px; padding: 10px 12px; }
+    .remove-btn {
+      height: 44px;
+      background: var(--red-bg);
+      border: 1px solid var(--red-bdr);
+      border-radius: 8px;
+      color: #f87171;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-add-item {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 4px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-add-item:active { background: var(--input-bg); }
+
+    /* ── Summary ── */
+    .summary {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 14px;
+    }
+    .summary-row {
+      display: flex; justify-content: space-between;
+      font-size: 14px; color: var(--muted);
+      padding: 4px 0;
+    }
+    .summary-row.total {
+      font-size: 20px; font-weight: 700; color: var(--orange);
+      border-top: 1px solid var(--border);
+      margin-top: 8px; padding-top: 10px;
+    }
+    .summary-row.total span:first-child { color: var(--text); }
+
+    /* ── Submit ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 17px;
+      cursor: pointer;
+      margin-top: 6px;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-submit:active   { background: var(--orange-dk); transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── Error banner ── */
+    .error-banner {
+      display: none;
+      background: var(--red-bg);
+      border: 1px solid var(--red-bdr);
+      border-radius: 10px;
+      color: #f87171;
+      font-size: 14px;
+      padding: 13px 15px;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── PIN screen ── */
+    .pin-screen {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 100;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 40px 24px;
+    }
+    .pin-screen.hidden { display: none; }
+    .pin-logo {
+      width: 72px; height: 72px;
+      background: var(--orange);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin-bottom: 24px;
+    }
+    .pin-screen h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .pin-screen p  { color: var(--muted); font-size: 15px; margin-bottom: 28px; text-align: center; }
+    .pin-input {
+      width: 100%; max-width: 280px;
+      padding: 16px;
+      font-size: 28px;
+      letter-spacing: 10px;
+      text-align: center;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      margin-bottom: 14px;
+      outline: none;
+    }
+    .pin-input:focus { border-color: var(--orange); }
+    .pin-btn {
+      width: 100%; max-width: 280px;
+      padding: 16px;
+      background: var(--orange);
+      color: white; border: none;
+      border-radius: 12px;
+      font-size: 17px; font-weight: 700;
+      cursor: pointer;
+    }
+    .pin-error { color: #f87171; font-size: 14px; margin-top: 12px; min-height: 20px; }
+
+    /* ── Success screen ── */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 48px 20px;
+    }
+    .success-icon {
+      width: 72px; height: 72px;
+      background: var(--green-bg);
+      border: 2px solid var(--green-bdr);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 24px;
+    }
+    .success-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .success-amount    { font-size: 40px; font-weight: 700; color: var(--orange); margin: 16px 0 4px; }
+    .success-to        { color: var(--muted); font-size: 15px; margin-bottom: 20px; }
+    .success-details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 0 0 20px;
+      text-align: left;
+    }
+    .detail-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 16px; padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { color: var(--muted); flex-shrink: 0; }
+    .detail-value { text-align: right; font-weight: 500; }
+    .reminder-note {
+      background: #1c1800;
+      border: 1px solid #4a3800;
+      border-radius: 10px;
+      color: #f0c040;
+      font-size: 13px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      line-height: 1.5;
+      text-align: left;
+    }
+    .btn-new {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      font-size: 15px;
+      padding: 14px;
+      width: 100%;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body>
+
+<!-- PIN Screen -->
+<div class="pin-screen" id="pinScreen">
+  <div class="pin-logo">&#128293;</div>
+  <h2>LFP Invoice</h2>
+  <p>Enter your PIN to access the invoice tool.</p>
+  <input class="pin-input" type="password" id="pinInput" placeholder="••••" inputmode="numeric" maxlength="10">
+  <button class="pin-btn" id="pinBtn">Continue</button>
+  <p class="pin-error" id="pinError"></p>
+</div>
+
+<!-- Main content -->
+<div id="mainContent">
+
+  <header>
+    <div class="header-icon">&#128196;</div>
+    <div>
+      <h1>New Invoice</h1>
+      <p>London Fire Protection — Internal Use</p>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Form -->
+    <form id="invoiceForm">
+
+      <div class="error-banner" id="errorBanner"></div>
+
+      <!-- Job Details -->
+      <div class="card">
+        <div class="card-title">Job Details</div>
+
+        <div class="form-group">
+          <label>Job Type</label>
+          <div class="select-wrap">
+            <select id="jobType" required>
+              <option value="" disabled selected>Select job type&#8230;</option>
+              <optgroup label="Inspections">
+                <option value="fe-inspection-monthly">FE Inspection &#8212; Monthly</option>
+                <option value="fe-inspection-annual">FE Inspection &#8212; Annual</option>
+                <option value="el-inspection-monthly">EL Inspection &#8212; Monthly</option>
+                <option value="el-inspection-annual">EL Inspection &#8212; Annual (30-min)</option>
+                <option value="pre-fire-inspection">Pre-Fire Inspection</option>
+              </optgroup>
+              <optgroup label="Installations">
+                <option value="fe-install">FE Supply &amp; Install</option>
+                <option value="co-alarm-install">CO Alarm Installation</option>
+                <option value="smoke-co-install">Smoke/CO Alarm Installation</option>
+              </optgroup>
+              <optgroup label="Services">
+                <option value="fsp">Fire Safety Plan</option>
+                <option value="training">Fire Safety Training</option>
+              </optgroup>
+              <optgroup label="Sales">
+                <option value="product-sale">Product Sale (Supply Only)</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Job ID</label>
+            <input type="text" id="jobId" placeholder="JOB-2026-001" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" required>
+          </div>
+          <div class="form-group">
+            <label>Inspector</label>
+            <div class="select-wrap">
+              <select id="inspector" required>
+                <option value="kyle">Kyle</option>
+                <option value="daniel">Daniel</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Contract Type</label>
+            <div class="select-wrap">
+              <select id="contractType" required>
+                <option value="one-time">One-time</option>
+                <option value="recurring">Recurring</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Payment</label>
+            <div class="select-wrap">
+              <select id="paymentMethod">
+                <option value="card">Card / Link</option>
+                <option value="e-transfer">E-Transfer</option>
+                <option value="cash">Cash</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Property Address</label>
+          <input type="text" id="propertyAddress" placeholder="123 Main St, London ON" autocomplete="off" required>
+        </div>
+      </div>
+
+      <!-- Customer -->
+      <div class="card">
+        <div class="card-title">Customer</div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="customerName" placeholder="Full name or business" autocomplete="name" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="customerEmail" placeholder="client@email.com" inputmode="email" autocomplete="email" required>
+        </div>
+      </div>
+
+      <!-- Quick Add (product-sale only) -->
+      <div class="card quick-add" id="quickAdd">
+        <div class="card-title">Quick Add Product</div>
+        <div class="products-grid">
+          <button type="button" class="product-btn" onclick="addProduct('5lb ABC Extinguisher (D-ABC5W)', 75.00)">
+            <span class="p-name">5lb ABC Ext.</span><span class="p-sku">D-ABC5W</span><span class="p-price">$75.00</span>
+          </button>
+          <button type="button" class="product-btn" onclick="addProduct('10lb ABC Extinguisher (D-ABC10)', 115.00)">
+            <span class="p-name">10lb ABC Ext.</span><span class="p-sku">D-ABC10</span><span class="p-price">$115.00</span>
+          </button>
+          <button type="button" class="product-btn" onclick="addProduct('20lb ABC Extinguisher (D-ABC20)', 250.00)">
+            <span class="p-name">20lb ABC Ext.</span><span class="p-sku">D-ABC20</span><span class="p-price">$250.00</span>
+          </button>
+          <button type="button" class="product-btn" onclick="addProduct('5lb CO2 Extinguisher (5CO2)', 350.00)">
+            <span class="p-name">5lb CO2 Ext.</span><span class="p-sku">5CO2</span><span class="p-price">$350.00</span>
+          </button>
+          <button type="button" class="product-btn" onclick="addProduct('CO Alarm - Sealed Battery (C3010)', 50.00)">
+            <span class="p-name">CO Alarm</span><span class="p-sku">C3010</span><span class="p-price">$50.00</span>
+          </button>
+          <button type="button" class="product-btn" onclick="addProduct('Smoke/CO Alarm - Battery (21031518)', 85.00)">
+            <span class="p-name">Smoke/CO Battery</span><span class="p-sku">21031518</span><span class="p-price">$85.00</span>
+          </button>
+          <button type="button" class="product-btn" onclick="addProduct('Smoke/CO Alarm - Hardwired (21033116)', 95.00)">
+            <span class="p-name">Smoke/CO Hardwired</span><span class="p-sku">21033116</span><span class="p-price">$95.00</span>
+          </button>
+          <button type="button" class="product-btn" onclick="addProduct('Fire Safety Plan Box (FSPB-1)', 200.00)">
+            <span class="p-name">FSP Box</span><span class="p-sku">FSPB-1</span><span class="p-price">$200.00</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Line Items -->
+      <div class="card">
+        <div class="card-title">Line Items</div>
+        <div id="lineItems"></div>
+        <button type="button" class="btn-add-item" onclick="addLineItem()">+ Add Line Item</button>
+        <div class="summary">
+          <div class="summary-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+          <div class="summary-row"><span>HST (13%)</span><span id="hst">$0.00</span></div>
+          <div class="summary-row total"><span>Total</span><span id="total">$0.00</span></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Send Invoice</button>
+
+    </form>
+
+    <!-- Success screen -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">&#10003;</div>
+      <h2>Invoice Sent!</h2>
+      <div class="success-amount" id="successAmount"></div>
+      <div class="success-to">Sent to <strong id="successEmail"></strong></div>
+      <div class="success-details" id="successDetails"></div>
+      <div class="reminder-note">&#9888; Log inventory in the Google Sheets Usage Log tab before marking this invoice paid if you haven't already.</div>
+      <button class="btn-new" onclick="resetForm()">New Invoice</button>
+    </div>
+
+  </div><!-- /container -->
+</div><!-- /mainContent -->
+
+<script>
+  var RENDER_URL = 'https://lfp-assistant.onrender.com';
+  var PIN_KEY    = 'lfp_invoice_pin';
+  var pin        = localStorage.getItem(PIN_KEY) || '';
+  var itemCount  = 0;
+
+  // Show/hide PIN screen
+  if (pin) {
+    document.getElementById('pinScreen').classList.add('hidden');
+  }
+
+  // PIN submit on Enter
+  document.getElementById('pinInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') verifyPin();
+  });
+  document.getElementById('pinBtn').addEventListener('click', verifyPin);
+
+  function verifyPin() {
+    var entered = document.getElementById('pinInput').value;
+    fetch(RENDER_URL + '/invoice/verify-pin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: entered })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.ok) {
+        pin = entered;
+        localStorage.setItem(PIN_KEY, pin);
+        document.getElementById('pinScreen').classList.add('hidden');
+      } else {
+        document.getElementById('pinError').textContent = 'Incorrect PIN — try again.';
+      }
+    })
+    .catch(function(err) {
+      document.getElementById('pinError').textContent = 'Connection error: ' + err.message;
+    });
+  }
+
+  // Job type → show/hide quick add
+  document.getElementById('jobType').addEventListener('change', function() {
+    document.getElementById('quickAdd').classList.toggle('visible', this.value === 'product-sale');
+  });
+
+  function addLineItem(description, qty, price) {
+    var id  = 'item-' + (itemCount++);
+    var div = document.createElement('div');
+    div.className = 'line-item';
+    div.id = id;
+
+    var descInput  = document.createElement('input');
+    descInput.type = 'text';
+    descInput.placeholder = 'Service or product description';
+    descInput.value = description || '';
+    descInput.addEventListener('input', updateSummary);
+
+    var descGroup = document.createElement('div');
+    descGroup.className = 'form-group';
+    var descLabel = document.createElement('label');
+    descLabel.textContent = 'Description';
+    descGroup.appendChild(descLabel);
+    descGroup.appendChild(descInput);
+
+    var qtyInput  = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.value = qty || 1;
+    qtyInput.min = '1';
+    qtyInput.step = '1';
+    qtyInput.addEventListener('input', updateSummary);
+
+    var qtyGroup = document.createElement('div');
+    qtyGroup.className = 'form-group';
+    var qtyLabel = document.createElement('label');
+    qtyLabel.textContent = 'Qty';
+    qtyGroup.appendChild(qtyLabel);
+    qtyGroup.appendChild(qtyInput);
+
+    var priceInput  = document.createElement('input');
+    priceInput.type = 'number';
+    priceInput.placeholder = '0.00';
+    priceInput.value = price || '';
+    priceInput.min = '0';
+    priceInput.step = '0.01';
+    priceInput.addEventListener('input', updateSummary);
+
+    var priceGroup = document.createElement('div');
+    priceGroup.className = 'form-group';
+    var priceLabel = document.createElement('label');
+    priceLabel.textContent = 'Unit Price';
+    priceGroup.appendChild(priceLabel);
+    priceGroup.appendChild(priceInput);
+
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-btn';
+    removeBtn.innerHTML = '&#215;';
+    removeBtn.addEventListener('click', function() {
+      div.remove();
+      updateSummary();
+    });
+
+    var itemRow = document.createElement('div');
+    itemRow.className = 'line-item-row';
+    itemRow.appendChild(qtyGroup);
+    itemRow.appendChild(priceGroup);
+    itemRow.appendChild(removeBtn);
+
+    div.appendChild(descGroup);
+    div.appendChild(itemRow);
+
+    document.getElementById('lineItems').appendChild(div);
+    updateSummary();
+  }
+
+  function addProduct(name, price) {
+    addLineItem(name, 1, price);
+  }
+
+  function getLineItems() {
+    var items = [];
+    document.querySelectorAll('.line-item').forEach(function(item) {
+      var inputs = item.querySelectorAll('input');
+      var desc   = inputs[0].value.trim();
+      var qty    = parseFloat(inputs[1].value) || 0;
+      var price  = parseFloat(inputs[2].value) || 0;
+      if (desc && qty > 0 && price > 0) {
+        items.push({ description: desc, quantity: qty, unitPrice: price });
+      }
+    });
+    return items;
+  }
+
+  function updateSummary() {
+    var subtotal = 0;
+    document.querySelectorAll('.line-item').forEach(function(item) {
+      var inputs = item.querySelectorAll('input');
+      subtotal += (parseFloat(inputs[1].value) || 0) * (parseFloat(inputs[2].value) || 0);
+    });
+    var hst   = subtotal * 0.13;
+    var total = subtotal + hst;
+    document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('hst').textContent      = '$' + hst.toFixed(2);
+    document.getElementById('total').textContent    = '$' + total.toFixed(2);
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var jobType         = document.getElementById('jobType').value;
+    var jobId           = document.getElementById('jobId').value.trim();
+    var inspector       = document.getElementById('inspector').value;
+    var contractType    = document.getElementById('contractType').value;
+    var paymentMethod   = document.getElementById('paymentMethod').value;
+    var propertyAddress = document.getElementById('propertyAddress').value.trim();
+    var customerName    = document.getElementById('customerName').value.trim();
+    var customerEmail   = document.getElementById('customerEmail').value.trim();
+    var lineItems       = getLineItems();
+
+    var errorBanner = document.getElementById('errorBanner');
+    errorBanner.style.display = 'none';
+
+    if (!jobType)          { showError('Please select a job type.'); return; }
+    if (!jobId)            { showError('Please enter a Job ID.'); return; }
+    if (!propertyAddress)  { showError('Please enter the property address.'); return; }
+    if (!customerName)     { showError('Please enter the customer name.'); return; }
+    if (!customerEmail)    { showError('Please enter the customer email.'); return; }
+    if (lineItems.length === 0) { showError('Please add at least one line item.'); return; }
+
+    var submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span>Creating invoice...';
+
+    fetch(RENDER_URL + '/invoice/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pin:             pin,
+        jobTypeKey:      jobType,
+        inspector:       inspector,
+        contractType:    contractType,
+        jobId:           jobId,
+        customerName:    customerName,
+        customerEmail:   customerEmail,
+        propertyAddress: propertyAddress,
+        paymentMethod:   paymentMethod,
+        lineItems:       lineItems,
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var subtotal = lineItems.reduce(function(s, i) { return s + i.quantity * i.unitPrice; }, 0);
+        var hst      = subtotal * 0.13;
+        document.getElementById('successAmount').textContent = '$' + data.total + ' CAD';
+        document.getElementById('successEmail').textContent  = customerEmail;
+        document.getElementById('successDetails').innerHTML  =
+          '<div class="detail-row"><span class="detail-label">Invoice ID</span><span class="detail-value" style="font-family:monospace;font-size:12px">' + esc(data.invoiceId) + '</span></div>' +
+          '<div class="detail-row"><span class="detail-label">Job ID</span><span class="detail-value">' + esc(jobId) + '</span></div>' +
+          '<div class="detail-row"><span class="detail-label">Customer</span><span class="detail-value">' + esc(customerName) + '</span></div>' +
+          '<div class="detail-row"><span class="detail-label">Property</span><span class="detail-value">' + esc(propertyAddress) + '</span></div>' +
+          '<div class="detail-row"><span class="detail-label">Subtotal</span><span class="detail-value">$' + subtotal.toFixed(2) + '</span></div>' +
+          '<div class="detail-row"><span class="detail-label">HST (13%)</span><span class="detail-value">$' + hst.toFixed(2) + '</span></div>';
+        document.getElementById('invoiceForm').style.display   = 'none';
+        document.getElementById('successScreen').style.display = 'block';
+      } else {
+        showError(data.error || 'Something went wrong. Try again.');
+      }
+    })
+    .catch(function(err) {
+      showError('Network error: ' + err.message);
+    })
+    .finally(function() {
+      submitBtn.disabled  = false;
+      submitBtn.innerHTML = 'Send Invoice';
+    });
+  });
+
+  function showError(msg) {
+    var banner = document.getElementById('errorBanner');
+    banner.textContent   = msg;
+    banner.style.display = 'block';
+    banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function resetForm() {
+    document.getElementById('invoiceForm').reset();
+    document.getElementById('lineItems').innerHTML    = '';
+    document.getElementById('quickAdd').classList.remove('visible');
+    document.getElementById('errorBanner').style.display   = 'none';
+    document.getElementById('invoiceForm').style.display   = 'block';
+    document.getElementById('successScreen').style.display = 'none';
+    updateSummary();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>

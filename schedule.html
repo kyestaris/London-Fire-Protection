@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Book Appointment — LFP</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #E55A2B;
+      --orange-dark: #c44b22;
+      --bg: #111214;
+      --surface: #1c1e22;
+      --border: #2e3036;
+      --text: #f0f0f0;
+      --muted: #8a8f9a;
+      --input-bg: #242629;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 0 0 40px;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    header p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 16px 0;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 16px;
+      padding: 14px 16px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--orange);
+    }
+
+    input::placeholder {
+      color: var(--muted);
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 14px;
+    }
+
+    select option {
+      background: var(--input-bg);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 17px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button[type="submit"]:active {
+      background: var(--orange-dark);
+      transform: scale(0.98);
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Success screen */
+    .success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: #1a3a1a;
+      border: 2px solid #2a6a2a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 24px;
+    }
+
+    .success h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .success p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .success-details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+      text-align: left;
+    }
+
+    .success-details .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .success-details .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .detail-value {
+      text-align: right;
+      font-weight: 500;
+    }
+
+    .sent-badges {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .badge {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .badge.sent {
+      border-color: #2a6a2a;
+      color: #6fcf6f;
+      background: #1a3a1a;
+    }
+
+    .book-another {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      font-size: 15px;
+      padding: 14px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 12px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Error banner */
+    .error-banner {
+      display: none;
+      background: #3a1a1a;
+      border: 1px solid #6a2a2a;
+      border-radius: 10px;
+      color: #f87171;
+      font-size: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">🗓</div>
+  <div>
+    <h1>Book Appointment</h1>
+    <p>London Fire Protection — Internal Use</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Form -->
+  <form id="bookingForm">
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="form-group">
+      <label>Stripe Customer ID</label>
+      <input type="text" id="stripeCustomerId" name="stripeCustomerId"
+        placeholder="cus_xxxxxxxxxxxxxxxx" autocomplete="off" autocorrect="off"
+        autocapitalize="none" spellcheck="false" required>
+      <div class="hint">Copy from Stripe customer record</div>
+    </div>
+
+    <div class="form-group">
+      <label>Client Name</label>
+      <input type="text" id="clientName" name="clientName"
+        placeholder="Jane Smith" autocomplete="name" required>
+    </div>
+
+    <div class="form-group">
+      <label>Property Address</label>
+      <input type="text" id="propertyAddress" name="propertyAddress"
+        placeholder="123 Main St, London ON" autocomplete="off" required>
+    </div>
+
+    <div class="form-group">
+      <label>Service Type</label>
+      <div class="select-wrap">
+        <select id="serviceType" name="serviceType" required>
+          <option value="" disabled selected>Select service…</option>
+          <option value="fe_monthly">FE Monthly</option>
+          <option value="el_monthly">EL Monthly</option>
+          <option value="fe_annual">FE Annual</option>
+          <option value="el_annual">EL Annual</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="scheduledDate" name="scheduledDate" required>
+      </div>
+      <div class="form-group">
+        <label>Time</label>
+        <input type="time" id="scheduledTime" name="scheduledTime" value="09:00" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Technician</label>
+      <div class="select-wrap">
+        <select id="technicianName" name="technicianName" required>
+          <option value="" disabled selected>Assign to…</option>
+          <option value="Kyle">Kyle</option>
+          <option value="Daniel">Daniel</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" id="submitBtn">Book Appointment</button>
+
+  </form>
+
+  <!-- Success screen (hidden initially) -->
+  <div class="success" id="successScreen">
+    <div class="success-icon">✓</div>
+    <h2>Appointment Booked</h2>
+    <p>Calendar invite and confirmation email sent to the client.</p>
+
+    <div class="success-details" id="successDetails"></div>
+
+    <div class="sent-badges">
+      <span class="badge sent">📅 Calendar invite sent</span>
+      <span class="badge sent">📧 Confirmation email sent</span>
+      <span class="badge sent">📋 CRM updated</span>
+    </div>
+
+    <button class="book-another" onclick="resetForm()">Book Another</button>
+  </div>
+
+</div>
+
+<script>
+  // Default date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('scheduledDate').value = today;
+  document.getElementById('scheduledDate').min = today;
+
+  const serviceLabels = {
+    fe_monthly: 'FE Monthly',
+    el_monthly: 'EL Monthly',
+    fe_annual:  'FE Annual',
+    el_annual:  'EL Annual',
+  };
+
+  document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const errorBanner = document.getElementById('errorBanner');
+    const submitBtn   = document.getElementById('submitBtn');
+    errorBanner.style.display = 'none';
+
+    const payload = {
+      stripeCustomerId: document.getElementById('stripeCustomerId').value.trim(),
+      clientName:       document.getElementById('clientName').value.trim(),
+      propertyAddress:  document.getElementById('propertyAddress').value.trim(),
+      serviceType:      document.getElementById('serviceType').value,
+      scheduledDate:    document.getElementById('scheduledDate').value,
+      scheduledTime:    document.getElementById('scheduledTime').value,
+      technicianName:   document.getElementById('technicianName').value,
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span>Booking…';
+
+    try {
+      const res = await fetch('/api/book-appointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong. Try again.');
+      }
+
+      // Show success screen
+      const dateObj = new Date(payload.scheduledDate + 'T' + payload.scheduledTime);
+      const dateStr = dateObj.toLocaleDateString('en-CA', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        timeZone: 'America/Toronto',
+      });
+      const timeStr = dateObj.toLocaleTimeString('en-CA', {
+        hour: 'numeric', minute: '2-digit', hour12: true,
+        timeZone: 'America/Toronto',
+      });
+
+      document.getElementById('successDetails').innerHTML = `
+        <div class="detail-row">
+          <span class="detail-label">Client</span>
+          <span class="detail-value">${esc(payload.clientName)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Email</span>
+          <span class="detail-value">${esc(data.clientEmail || '—')}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Property</span>
+          <span class="detail-value">${esc(payload.propertyAddress)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Service</span>
+          <span class="detail-value">${esc(serviceLabels[payload.serviceType] || payload.serviceType)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">${esc(dateStr)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">${esc(timeStr)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Technician</span>
+          <span class="detail-value">${esc(payload.technicianName)}</span>
+        </div>
+      `;
+
+      document.getElementById('bookingForm').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+
+    } catch (err) {
+      errorBanner.textContent = err.message;
+      errorBanner.style.display = 'block';
+      errorBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Book Appointment';
+    }
+  });
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function resetForm() {
+    document.getElementById('bookingForm').reset();
+    document.getElementById('scheduledDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('scheduledTime').value = '09:00';
+    document.getElementById('bookingForm').style.display = 'block';
+    document.getElementById('successScreen').style.display = 'none';
+    document.getElementById('errorBanner').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
