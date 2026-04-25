@@ -152,6 +152,34 @@
     .si-note  { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
     .si-price { font-size: 15px; font-weight: 700; color: var(--orange); }
 
+    /* ── Browse all catalogue ── */
+    .browse-toggle {
+      width: 100%;
+      padding: 10px 14px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 10px;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .browse-toggle:active { background: var(--input-bg); }
+    .browse-all { display: none; margin-top: 10px; }
+    .browse-all.open { display: block; }
+    .browse-category { margin-bottom: 14px; }
+    .browse-category:last-child { margin-bottom: 0; }
+    .browse-cat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 6px;
+    }
+
     /* ── Line items ── */
     .line-item {
       background: var(--bg);
@@ -690,6 +718,75 @@
         content.appendChild(btn);
       });
     }
+
+    // Browse all toggle
+    var toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'browse-toggle';
+    toggleBtn.textContent = '+ Browse all catalogue items';
+
+    var browseAll = document.createElement('div');
+    browseAll.className = 'browse-all';
+
+    // Build full catalogue grouped by category (skip current job type — already shown)
+    var CATEGORY_LABELS = {
+      'fe-inspection-monthly': 'FE Inspection — Monthly',
+      'fe-inspection-annual':  'FE Inspection — Annual',
+      'el-inspection-monthly': 'EL Inspection — Monthly',
+      'el-inspection-annual':  'EL Inspection — Annual',
+      'pre-fire-inspection':   'Pre-Fire Inspection',
+      'fe-install':            'FE Supply & Install',
+      'co-alarm-install':      'CO Alarm Installation',
+      'smoke-co-install':      'Smoke/CO Alarm Installation',
+      'fsp':                   'Fire Safety Plan',
+      'training':              'Fire Safety Training',
+      'product-sale':          'Products (Supply Only)',
+    };
+
+    Object.keys(QUICK_ITEMS).forEach(function(key) {
+      if (key === val) return; // skip — already shown above
+      var cat = QUICK_ITEMS[key];
+      var catDiv = document.createElement('div');
+      catDiv.className = 'browse-category';
+
+      var catLabel = document.createElement('div');
+      catLabel.className = 'browse-cat-label';
+      catLabel.textContent = CATEGORY_LABELS[key] || cat.title;
+      catDiv.appendChild(catLabel);
+
+      if (cat.grid) {
+        var grid = document.createElement('div');
+        grid.className = 'products-grid';
+        cat.grid.forEach(function(p) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'product-btn';
+          btn.innerHTML = '<span class="p-name">' + p.name + '</span><span class="p-sku">' + p.sku + '</span><span class="p-price">$' + p.price.toFixed(2) + '</span>';
+          btn.addEventListener('click', function() { addProduct(p.name + ' (' + p.sku + ')', p.price); });
+          grid.appendChild(btn);
+        });
+        catDiv.appendChild(grid);
+      } else {
+        cat.items.forEach(function(item) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'service-item-btn';
+          btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">$' + item.price.toFixed(2) + '</span></span>';
+          btn.addEventListener('click', function() { addProduct(item.name, item.price); });
+          catDiv.appendChild(btn);
+        });
+      }
+
+      browseAll.appendChild(catDiv);
+    });
+
+    toggleBtn.addEventListener('click', function() {
+      var isOpen = browseAll.classList.toggle('open');
+      toggleBtn.textContent = isOpen ? '− Hide catalogue' : '+ Browse all catalogue items';
+    });
+
+    content.appendChild(toggleBtn);
+    content.appendChild(browseAll);
 
     quickAdd.classList.add('visible');
   });
