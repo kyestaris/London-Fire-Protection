@@ -128,6 +128,30 @@
     .product-btn .p-sku   { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
     .product-btn .p-price { font-size: 14px; font-weight: 700; color: var(--orange); }
 
+    /* ── Service item buttons (quick add for services) ── */
+    .service-item-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s;
+      margin-bottom: 8px;
+      gap: 12px;
+    }
+    .service-item-btn:last-child { margin-bottom: 0; }
+    .service-item-btn:active { border-color: var(--orange); background: #1e1f23; }
+    .si-name  { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+    .si-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+    .si-note  { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+    .si-price { font-size: 15px; font-weight: 700; color: var(--orange); }
+
     /* ── Line items ── */
     .line-item {
       background: var(--bg);
@@ -456,35 +480,10 @@
         </div>
       </div>
 
-      <!-- Quick Add (product-sale only) -->
+      <!-- Quick Add (dynamic per job type) -->
       <div class="card quick-add" id="quickAdd">
-        <div class="card-title">Quick Add Product</div>
-        <div class="products-grid">
-          <button type="button" class="product-btn" onclick="addProduct('5lb ABC Extinguisher (D-ABC5W)', 75.00)">
-            <span class="p-name">5lb ABC Ext.</span><span class="p-sku">D-ABC5W</span><span class="p-price">$75.00</span>
-          </button>
-          <button type="button" class="product-btn" onclick="addProduct('10lb ABC Extinguisher (D-ABC10)', 115.00)">
-            <span class="p-name">10lb ABC Ext.</span><span class="p-sku">D-ABC10</span><span class="p-price">$115.00</span>
-          </button>
-          <button type="button" class="product-btn" onclick="addProduct('20lb ABC Extinguisher (D-ABC20)', 250.00)">
-            <span class="p-name">20lb ABC Ext.</span><span class="p-sku">D-ABC20</span><span class="p-price">$250.00</span>
-          </button>
-          <button type="button" class="product-btn" onclick="addProduct('5lb CO2 Extinguisher (5CO2)', 350.00)">
-            <span class="p-name">5lb CO2 Ext.</span><span class="p-sku">5CO2</span><span class="p-price">$350.00</span>
-          </button>
-          <button type="button" class="product-btn" onclick="addProduct('CO Alarm - Sealed Battery (C3010)', 50.00)">
-            <span class="p-name">CO Alarm</span><span class="p-sku">C3010</span><span class="p-price">$50.00</span>
-          </button>
-          <button type="button" class="product-btn" onclick="addProduct('Smoke/CO Alarm - Battery (21031518)', 85.00)">
-            <span class="p-name">Smoke/CO Battery</span><span class="p-sku">21031518</span><span class="p-price">$85.00</span>
-          </button>
-          <button type="button" class="product-btn" onclick="addProduct('Smoke/CO Alarm - Hardwired (21033116)', 95.00)">
-            <span class="p-name">Smoke/CO Hardwired</span><span class="p-sku">21033116</span><span class="p-price">$95.00</span>
-          </button>
-          <button type="button" class="product-btn" onclick="addProduct('Fire Safety Plan Box (FSPB-1)', 200.00)">
-            <span class="p-name">FSP Box</span><span class="p-sku">FSPB-1</span><span class="p-price">$200.00</span>
-          </button>
-        </div>
+        <div class="card-title" id="quickAddTitle">Quick Add</div>
+        <div id="quickAddContent"></div>
       </div>
 
       <!-- Line Items -->
@@ -556,9 +555,143 @@
     });
   }
 
-  // Job type → show/hide quick add
+  // Catalogue quick-add items per job type
+  var QUICK_ITEMS = {
+    'fe-inspection-monthly': {
+      title: 'FE Inspection — Monthly',
+      items: [
+        { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
+        { name: 'FE Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
+        { name: 'FE Inspection — Per Unit (10–50 units)', price: 6.00, note: 'per unit' },
+        { name: 'FE Inspection — Per Unit (50+ units)', price: 5.00, note: 'per unit' },
+      ]
+    },
+    'fe-inspection-annual': {
+      title: 'FE Inspection — Annual',
+      items: [
+        { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
+        { name: 'FE Annual Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
+        { name: 'FE Annual Inspection — Per Unit (10–50 units)', price: 6.00, note: 'per unit' },
+        { name: 'FE Annual Inspection — Per Unit (50+ units)', price: 5.00, note: 'per unit' },
+      ]
+    },
+    'el-inspection-monthly': {
+      title: 'EL Inspection — Monthly',
+      items: [
+        { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
+        { name: 'EL Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
+        { name: 'EL Inspection — Per Unit (10–50 units)', price: 6.00, note: 'per unit' },
+        { name: 'EL Inspection — Per Unit (50+ units)', price: 5.00, note: 'per unit' },
+      ]
+    },
+    'el-inspection-annual': {
+      title: 'EL Inspection — Annual (30-min)',
+      items: [
+        { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
+        { name: 'EL Annual 30-min Battery Test — Per Unit', price: 25.00, note: 'per unit' },
+      ]
+    },
+    'pre-fire-inspection': {
+      title: 'Pre-Fire Inspection',
+      items: [
+        { name: 'Pre-Fire Inspection — Service Fee', price: 65.00, note: 'custom quote' },
+      ]
+    },
+    'fe-install': {
+      title: 'FE Supply & Install',
+      items: [
+        { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
+        { name: '5lb ABC Extinguisher (D-ABC5W)', price: 75.00, note: 'each' },
+        { name: '10lb ABC Extinguisher (D-ABC10)', price: 115.00, note: 'each' },
+        { name: '20lb ABC Extinguisher (D-ABC20)', price: 250.00, note: 'each' },
+        { name: '5lb CO2 Extinguisher (5CO2)', price: 350.00, note: 'each' },
+      ]
+    },
+    'co-alarm-install': {
+      title: 'CO Alarm Installation',
+      items: [
+        { name: 'CO Alarm — Sealed Battery (C3010)', price: 50.00, note: 'per unit' },
+        { name: 'CO Alarm Installation Fee', price: 50.00, note: 'per unit' },
+      ]
+    },
+    'smoke-co-install': {
+      title: 'Smoke/CO Alarm Installation',
+      items: [
+        { name: 'Smoke/CO Alarm — Battery (21031518)', price: 80.00, note: 'per unit' },
+        { name: 'Smoke/CO Alarm — Hardwired (21033116)', price: 88.50, note: 'per unit' },
+        { name: 'Alarm Installation Fee', price: 50.00, note: 'per unit' },
+      ]
+    },
+    'fsp': {
+      title: 'Fire Safety Plan',
+      items: [
+        { name: 'Fire Safety Plan — Base Fee', price: 300.00, note: 'minimum' },
+        { name: 'Additional Floor', price: 75.00, note: 'each' },
+        { name: 'High-Risk Occupancy Supplement', price: 150.00, note: 'flat' },
+        { name: 'Fire Safety Plan Box (FSPB-1)', price: 200.00, note: 'each' },
+        { name: 'Annual FSP Revision', price: 150.00, note: 'flat' },
+      ]
+    },
+    'training': {
+      title: 'Fire Safety Training',
+      items: [
+        { name: 'Training Session — Up to 15 People', price: 150.00, note: 'flat' },
+        { name: 'Training — Per Person (15+ people)', price: 15.00, note: 'per person' },
+      ]
+    },
+    'product-sale': {
+      title: 'Products',
+      grid: [
+        { name: '5lb ABC Extinguisher', sku: 'D-ABC5W', price: 75.00 },
+        { name: '10lb ABC Extinguisher', sku: 'D-ABC10', price: 115.00 },
+        { name: '20lb ABC Extinguisher', sku: 'D-ABC20', price: 250.00 },
+        { name: '5lb CO2 Extinguisher', sku: '5CO2', price: 350.00 },
+        { name: 'CO Alarm', sku: 'C3010', price: 50.00 },
+        { name: 'Smoke/CO Battery', sku: '21031518', price: 85.00 },
+        { name: 'Smoke/CO Hardwired', sku: '21033116', price: 95.00 },
+        { name: 'FSP Box', sku: 'FSPB-1', price: 200.00 },
+      ]
+    },
+  };
+
+  // Job type → populate quick add
   document.getElementById('jobType').addEventListener('change', function() {
-    document.getElementById('quickAdd').classList.toggle('visible', this.value === 'product-sale');
+    var val     = this.value;
+    var catalog = QUICK_ITEMS[val];
+    var quickAdd = document.getElementById('quickAdd');
+
+    if (!catalog) { quickAdd.classList.remove('visible'); return; }
+
+    document.getElementById('quickAddTitle').textContent = catalog.title;
+    var content = document.getElementById('quickAddContent');
+    content.innerHTML = '';
+
+    if (catalog.grid) {
+      // Product grid layout
+      var grid = document.createElement('div');
+      grid.className = 'products-grid';
+      catalog.grid.forEach(function(p) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'product-btn';
+        btn.innerHTML = '<span class="p-name">' + p.name + '</span><span class="p-sku">' + p.sku + '</span><span class="p-price">$' + p.price.toFixed(2) + '</span>';
+        btn.addEventListener('click', function() { addProduct(p.name + ' (' + p.sku + ')', p.price); });
+        grid.appendChild(btn);
+      });
+      content.appendChild(grid);
+    } else {
+      // List layout for services
+      catalog.items.forEach(function(item) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'service-item-btn';
+        btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">$' + item.price.toFixed(2) + '</span></span>';
+        btn.addEventListener('click', function() { addProduct(item.name, item.price); });
+        content.appendChild(btn);
+      });
+    }
+
+    quickAdd.classList.add('visible');
   });
 
   function addLineItem(description, qty, price) {
