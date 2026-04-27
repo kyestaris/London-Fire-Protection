@@ -312,12 +312,17 @@
 
     <div class="error-banner" id="errorBanner"></div>
 
+    <!-- Hidden Stripe ID — populated by client dropdown -->
+    <input type="hidden" id="stripeCustomerId" name="stripeCustomerId">
+
     <div class="form-group">
-      <label>Stripe Customer ID</label>
-      <input type="text" id="stripeCustomerId" name="stripeCustomerId"
-        placeholder="cus_xxxxxxxxxxxxxxxx" autocomplete="off" autocorrect="off"
-        autocapitalize="none" spellcheck="false" required>
-      <div class="hint">Copy from Stripe customer record</div>
+      <label>Client</label>
+      <div class="select-wrap">
+        <select id="clientSelect" required>
+          <option value="" disabled selected>Loading clients…</option>
+        </select>
+      </div>
+      <div class="hint" id="clientHint"></div>
     </div>
 
     <div class="form-group">
@@ -397,6 +402,54 @@
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('scheduledDate').value = today;
   document.getElementById('scheduledDate').min = today;
+
+  // Load clients from CRM
+  const serviceLabelsMap = {
+    fe_monthly: 'FE Monthly',
+    el_monthly: 'EL Monthly',
+    fe_annual:  'FE Annual',
+    el_annual:  'EL Annual',
+  };
+
+  let clientsData = [];
+
+  (async () => {
+    const clientSelect = document.getElementById('clientSelect');
+    try {
+      const res  = await fetch('/api/get-clients');
+      const data = await res.json();
+      clientsData = data.clients || [];
+
+      clientSelect.innerHTML = '<option value="" disabled selected>Select client…</option>';
+
+      if (clientsData.length === 0) {
+        clientSelect.innerHTML = '<option value="" disabled selected>No active clients found</option>';
+        return;
+      }
+
+      clientsData.forEach((c, i) => {
+        const label = `${c.clientName} — ${serviceLabelsMap[c.serviceType] || c.serviceType}`;
+        const opt   = document.createElement('option');
+        opt.value       = i;
+        opt.textContent = label;
+        clientSelect.appendChild(opt);
+      });
+
+    } catch (err) {
+      clientSelect.innerHTML = '<option value="" disabled selected>Failed to load clients</option>';
+      console.error('get-clients error:', err);
+    }
+  })();
+
+  document.getElementById('clientSelect').addEventListener('change', function () {
+    const c = clientsData[parseInt(this.value)];
+    if (!c) return;
+    document.getElementById('stripeCustomerId').value  = c.clientId;
+    document.getElementById('clientName').value        = c.clientName;
+    document.getElementById('propertyAddress').value   = c.propertyAddress;
+    document.getElementById('serviceType').value       = c.serviceType;
+    document.getElementById('clientHint').textContent  = `ID: ${c.clientId}`;
+  });
 
   const serviceLabels = {
     fe_monthly: 'FE Monthly',
