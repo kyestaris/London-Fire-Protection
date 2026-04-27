@@ -722,12 +722,7 @@
 <div class="container" style="text-align:center;padding-top:40px">
   <div class="success-icon">✓</div>
   <h2 style="font-size:22px;font-weight:700;margin-bottom:8px">Quote Sent</h2>
-  <p style="color:var(--muted);font-size:15px">Stripe quote link is ready to share with the client.</p>
-
-  <div class="quote-url-box" id="quoteUrlBox" onclick="copyQuoteUrl()">
-    Tap to copy quote link
-  </div>
-  <div style="font-size:12px;color:var(--muted);margin-bottom:24px" id="copiedMsg"></div>
+  <p style="color:var(--muted);font-size:15px">Quote email delivered to the client. Create the invoice after the job is complete.</p>
 
   <div class="card" style="text-align:left">
     <div class="card-title">Summary</div>
@@ -1569,7 +1564,7 @@
     };
 
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Creating quote…';
+    btn.innerHTML = '<span class="spinner"></span>Sending quote…';
 
     try {
       const res  = await fetch('/api/create-quote', {
@@ -1580,8 +1575,7 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Something went wrong');
 
-      state.quoteUrl = data.quoteUrl;
-      showSuccess(data.quoteUrl, subtotal, hst);
+      showSuccess(subtotal, hst);
 
     } catch (err) {
       showErr('err4', err.message);
@@ -1591,10 +1585,7 @@
     }
   }
 
-  function showSuccess(url, subtotal, hst) {
-    document.getElementById('quoteUrlBox').textContent = url;
-    document.getElementById('quoteUrlBox')._url = url;
-
+  function showSuccess(subtotal, hst) {
     document.getElementById('successSummary').innerHTML = `
       <div class="summary-line">
         <span style="color:var(--muted)">Client</span>

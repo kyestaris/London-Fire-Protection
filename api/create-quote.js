@@ -1,5 +1,4 @@
-const Stripe       = require('stripe');
-const { google }   = require('googleapis');
+const { google } = require('googleapis');
 
 const SHEET_ID   = process.env.SHEET_ID;
 const SHEET_NAME = 'Website Leads';
@@ -13,18 +12,6 @@ function getOAuth2Client() {
   return auth;
 }
 
-// Find existing Stripe customer by email
-async function findStripeCustomer(stripe, email) {
-  if (!email) return null;
-  try {
-    const list = await stripe.customers.list({ email, limit: 1 });
-    return list.data[0] || null;
-  } catch {
-    return null;
-  }
-}
-
-// Update existing Website Leads row status to "quote-sent"
 async function updateLeadStatus(sheets, rowIndex) {
   if (!rowIndex) return;
   await sheets.spreadsheets.values.update({
@@ -35,8 +22,7 @@ async function updateLeadStatus(sheets, rowIndex) {
   });
 }
 
-// Append new row for leads that came in outside the website form
-async function appendNewLead(sheets, client) {
+async function appendNewLead(sheets, client, metadata) {
   const date = new Date().toLocaleDateString('en-CA');
   await sheets.spreadsheets.values.append({
     spreadsheetId:    SHEET_ID,
@@ -48,7 +34,7 @@ async function appendNewLead(sheets, client) {
         client.name,
         client.phone || '—',
         client.email,
-        client.serviceNote || '—',
+        metadata?.serviceNote || '—',
         '—',
         'quote-sent',
       ]],
@@ -61,76 +47,37 @@ module.exports = async function handler(req, res) {
 
   const { client, lineItems, metadata } = req.body || {};
 
-  if (!client?.name || !lineItems?.length) {
-    return res.status(400).json({ error: 'Missing client info or line items' });
+  if (!client?.name || !client?.email || !lineItems?.length) {
+    return res.status(400).json({ error: 'Missing client name, email, or line items' });
   }
 
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-    // 1. Find Stripe customer by email (if exists)
-    const customer = client.email ? await findStripeCustomer(stripe, client.email) : null;
-
-    // 2. Build Stripe Quote
-    // Quotes API requires an existing product ID — create ephemeral products per line item
-    const stripeLineItems = await Promise.all(
-      lineItems
-        .filter(item => item.amount > 0)
-        .map(async item => {
-          const product = await stripe.products.create({ name: item.name });
-          return {
-            price_data: {
-              currency:    'cad',
-              product:     product.id,
-              unit_amount: Math.round(item.amount * 100), // dollars → cents
-            },
-            quantity: 1,
-          };
-        })
-    );
-
-    if (stripeLineItems.length === 0) {
-      return res.status(400).json({ error: 'No priced line items — cannot create quote' });
-    }
-
-    const quoteParams = {
-      line_items: stripeLineItems,
-      metadata: {
-        job_type:         metadata?.jobType         || 'service',
-        service_category: metadata?.serviceCategory || '',
-        property_address: client.address            || '',
-        customer_name:    client.name,
-        customer_email:   client.email              || '',
+    // 1. Send quote email via Render
+    const renderRes = await fetch(`${process.env.RENDER_URL}/send-quote`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${process.env.INTERNAL_API_SECRET}`,
       },
-      expires_at: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days
-      header:     `Quote for ${client.name}`,
-      description: client.address ? `Property: ${client.address}` : undefined,
-    };
+      body: JSON.stringify({ client, lineItems, metadata }),
+    });
 
-    if (customer) {
-      quoteParams.customer = customer.id;
+    if (!renderRes.ok) {
+      const err = await renderRes.json().catch(() => ({}));
+      throw new Error(err.error || `Render responded ${renderRes.status}`);
     }
 
-    // Apply HST tax rate if configured in env
-    if (process.env.STRIPE_TAX_RATE_HST_ID) {
-      quoteParams.default_tax_rates = [process.env.STRIPE_TAX_RATE_HST_ID];
-    }
-
-    const quote     = await stripe.quotes.create(quoteParams);
-    const finalized = await stripe.quotes.finalizeQuote(quote.id);
-    const quoteUrl  = finalized.hosted_quote_url || finalized.url;
-
-    // 3. Update or append CRM row
+    // 2. Update or append CRM row
     const auth   = getOAuth2Client();
     const sheets = google.sheets({ version: 'v4', auth });
 
     if (client.rowIndex) {
       await updateLeadStatus(sheets, client.rowIndex);
     } else {
-      await appendNewLead(sheets, { ...client, serviceNote: metadata?.serviceNote });
+      await appendNewLead(sheets, client, metadata);
     }
 
-    return res.status(200).json({ quoteUrl, quoteId: finalized.id });
+    return res.status(200).json({ success: true });
 
   } catch (err) {
     console.error('create-quote error:', err.message);
