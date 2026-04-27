@@ -96,7 +96,6 @@ module.exports = async function handler(req, res) {
         customer_name:    client.name,
         customer_email:   client.email              || '',
       },
-      currency:   'cad',
       expires_at: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days
       header:     `Quote for ${client.name}`,
       description: client.address ? `Property: ${client.address}` : undefined,
