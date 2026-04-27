@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Quote Tool — LFP</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:    #E55A2B;
+      --orange-dk: #c44b22;
+      --bg:        #111214;
+      --surface:   #1c1e22;
+      --border:    #2e3036;
+      --text:      #f0f0f0;
+      --muted:     #8a8f9a;
+      --input-bg:  #242629;
+      --green-bg:  #1a3a1a;
+      --green-bdr: #2a6a2a;
+      --green-txt: #6fcf6f;
+      --amber-bg:  #2a2010;
+      --amber-bdr: #6a5010;
+      --amber-txt: #f0b429;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 48px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-icon {
+      width: 36px; height: 36px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+    header p  { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    /* ── Progress ── */
+    .progress {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-left: auto;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.2s;
+    }
+    .dot.active { background: var(--orange); }
+    .dot.done   { background: var(--green-txt); }
+
+    /* ── Layout ── */
+    .container { max-width: 480px; margin: 0 auto; padding: 20px 16px 0; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 11px; font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.7px;
+      margin-bottom: 14px;
+    }
+
+    /* ── Inputs ── */
+    .form-group { margin-bottom: 14px; }
+    .form-group:last-child { margin-bottom: 0; }
+    label {
+      display: block;
+      font-size: 12px; font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    input[type="text"], input[type="email"],
+    input[type="tel"], input[type="number"],
+    input[type="password"], select, textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 16px;
+      padding: 13px 14px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--orange); }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾'; position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%); color: var(--muted);
+      pointer-events: none; font-size: 14px;
+    }
+    select option { background: var(--input-bg); }
+
+    /* ── Toggle (Residential / Commercial) ── */
+    .toggle-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .toggle-btn {
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .toggle-btn.active {
+      border-color: var(--orange);
+      background: rgba(229,90,43,0.12);
+      color: var(--orange);
+    }
+
+    /* ── Yes/No toggle ── */
+    .yn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .yn-btn {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--muted);
+      font-size: 15px; font-weight: 500;
+      cursor: pointer; text-align: center;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .yn-btn.yes.active { border-color: var(--green-bdr); background: var(--green-bg); color: var(--green-txt); }
+    .yn-btn.no.active  { border-color: #6a2a2a; background: #3a1a1a; color: #f87171; }
+
+    /* ── Stepper ── */
+    .stepper {
+      display: flex; align-items: center; gap: 0;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      height: 48px;
+    }
+    .stepper-btn {
+      width: 48px; height: 48px;
+      background: none; border: none;
+      color: var(--text); font-size: 22px;
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .stepper-btn:active { background: rgba(255,255,255,0.05); }
+    .stepper-val {
+      flex: 1; text-align: center;
+      font-size: 17px; font-weight: 600;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      height: 100%; display: flex;
+      align-items: center; justify-content: center;
+    }
+
+    /* ── Search ── */
+    .search-wrap { position: relative; margin-bottom: 12px; }
+    .search-results {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 6px;
+      overflow: hidden;
+      display: none;
+    }
+    .search-result {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .search-result:last-child { border-bottom: none; }
+    .search-result:active { background: rgba(255,255,255,0.05); }
+    .search-result-name { font-size: 15px; font-weight: 500; }
+    .search-result-sub  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Service item (Screen 3) ── */
+    .service-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .service-item.selected { border-color: var(--orange); }
+    .service-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .service-check {
+      width: 22px; height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+    .service-item.selected .service-check {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+    .service-name { font-size: 15px; font-weight: 500; flex: 1; }
+    .service-price-preview { font-size: 13px; color: var(--muted); }
+
+    .service-body {
+      display: none;
+      padding: 0 16px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .service-item.selected .service-body { display: block; }
+    .service-body-inner { padding-top: 14px; }
+
+    /* ── On-site toggle ── */
+    .onsite-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .onsite-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--orange); }
+    .onsite-label { font-size: 13px; color: var(--muted); }
+
+    /* ── FSP add-ons ── */
+    .addon-list { margin-top: 10px; }
+    .addon-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .addon-item:last-child { border-bottom: none; }
+    .addon-check { display: flex; align-items: center; gap: 10px; }
+    .addon-check input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--orange); }
+    .addon-price { color: var(--muted); font-size: 13px; }
+
+    /* ── Price select buttons ── */
+    .price-options {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 10px;
+    }
+    .price-opt {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--text); font-size: 14px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.15s;
+    }
+    .price-opt.active { border-color: var(--orange); background: rgba(229,90,43,0.12); color: var(--orange); }
+
+    /* ── Warning banner ── */
+    .warning {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-bdr);
+      border-radius: 10px;
+      color: var(--amber-txt);
+      font-size: 13px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    /* ── Screen 4 summary ── */
+    .summary-section { margin-bottom: 16px; }
+    .summary-section-label {
+      font-size: 11px; font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.7px;
+      margin-bottom: 10px;
+    }
+    .summary-line {
+      display: flex; align-items: flex-start;
+      justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .summary-line:last-child { border-bottom: none; }
+    .summary-line-left { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
+    .summary-line-name { font-size: 14px; line-height: 1.3; }
+    .summary-line-ref  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .summary-line-amt  { font-size: 14px; font-weight: 600; white-space: nowrap; }
+    .summary-line-amt.dim { color: var(--muted); }
+
+    .toggle-switch {
+      position: relative; width: 36px; height: 20px; flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0;
+      background: var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 14px; height: 14px;
+      left: 3px; top: 3px;
+      background: #fff; border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--orange); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    /* ── Totals ── */
+    .totals {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .total-row {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+    .total-row.grand {
+      font-size: 18px; font-weight: 700;
+      border-top: 1px solid var(--border);
+      margin-top: 6px; padding-top: 12px;
+    }
+    .total-row .label { color: var(--muted); }
+    .total-row.grand .label { color: var(--text); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      width: 100%;
+      background: var(--orange);
+      color: #fff; border: none;
+      border-radius: 12px;
+      font-size: 17px; font-weight: 600;
+      padding: 17px; cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+      font-family: inherit;
+    }
+    .btn-primary:active { background: var(--orange-dk); transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text); border-radius: 12px;
+      font-size: 15px; padding: 14px;
+      cursor: pointer; margin-top: 10px;
+      -webkit-tap-highlight-color: transparent;
+      font-family: inherit;
+    }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: none; border: none;
+      color: var(--muted); font-size: 14px;
+      cursor: pointer; padding: 0; margin-bottom: 18px;
+      -webkit-tap-highlight-color: transparent;
+      font-family: inherit;
+    }
+
+    /* ── PIN screen ── */
+    #screenPin {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: calc(100vh - 70px);
+      padding: 24px;
+    }
+    .pin-icon {
+      width: 72px; height: 72px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; margin-bottom: 20px;
+    }
+    .pin-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .pin-sub   { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+    .pin-input {
+      font-size: 28px; font-weight: 700; letter-spacing: 10px;
+      text-align: center; width: 200px;
+      padding: 16px 20px;
+    }
+    .pin-error {
+      color: #f87171; font-size: 13px; margin-top: 10px; min-height: 18px;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-8px); }
+      40%,80%  { transform: translateX(8px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+
+    /* ── Error banner ── */
+    .error-banner {
+      display: none;
+      background: #3a1a1a; border: 1px solid #6a2a2a;
+      border-radius: 10px; color: #f87171;
+      font-size: 14px; padding: 13px 14px;
+      margin-bottom: 14px; line-height: 1.4;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Success ── */
+    .success-icon {
+      width: 72px; height: 72px;
+      background: var(--green-bg); border: 2px solid var(--green-bdr);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; margin: 0 auto 20px;
+    }
+    .quote-url-box {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      word-break: break-all;
+      font-size: 13px;
+      color: var(--orange);
+      margin: 16px 0;
+      cursor: pointer;
+    }
+
+    .hidden { display: none !important; }
+
+    @media print {
+      header, .btn-primary, .btn-secondary, .btn-back,
+      #screen4Actions { display: none !important; }
+      body { background: #fff; color: #000; }
+      .card, .totals, .summary-section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">📋</div>
+  <div>
+    <h1>Quote Tool</h1>
+    <p>London Fire Protection — Internal Use</p>
+  </div>
+  <div class="progress" id="progressDots" style="display:none">
+    <div class="dot" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+    <div class="dot" id="dot4"></div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PIN SCREEN -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="screenPin">
+  <div class="pin-icon">🔒</div>
+  <div class="pin-title">Quote Tool</div>
+  <div class="pin-sub">Enter PIN to continue</div>
+  <input type="password" id="pinInput" class="pin-input" maxlength="4"
+    inputmode="numeric" pattern="[0-9]*" placeholder="••••"
+    autocomplete="off">
+  <div class="pin-error" id="pinError"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 1 — Client Info -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="screen1" class="hidden">
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">Search CRM</div>
+    <div class="search-wrap">
+      <input type="text" id="crmSearch" placeholder="Search by name or email…" autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted)">Leave blank if new client not in the system.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Client Details</div>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="clientName" placeholder="Jane Smith" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="clientEmail" placeholder="jane@example.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Phone</label>
+      <input type="tel" id="clientPhone" placeholder="519-555-0100" autocomplete="tel">
+    </div>
+    <div class="form-group">
+      <label>Property Address</label>
+      <input type="text" id="clientAddress" placeholder="123 Main St, London ON" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>Client Type</label>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="typeCommercial" onclick="setClientType('commercial')">Commercial</button>
+        <button class="toggle-btn" id="typeResidential" onclick="setClientType('residential')">Residential</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-banner" id="err1"></div>
+  <button class="btn-primary" onclick="goScreen2()">Next — Property Details →</button>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 2 — Property Details -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="screen2" class="hidden">
+<div class="container">
+  <button class="btn-back" onclick="goScreen1()">← Back</button>
+
+  <div class="warning hidden" id="vulnerableWarning">
+    ⚠️ <strong>Vulnerable Occupancy</strong> — confirm with Kyle before proceeding or quoting.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Property Details</div>
+
+    <div class="form-group">
+      <label>Occupancy Type</label>
+      <div class="select-wrap">
+        <select id="occupancy" onchange="onOccupancyChange()">
+          <option value="" disabled selected>Select occupancy…</option>
+          <option value="office">Office</option>
+          <option value="restaurant">Restaurant / Food Service</option>
+          <option value="retail">Retail</option>
+          <option value="industrial">Industrial / Warehouse</option>
+          <option value="assembly">Assembly (church, gym, theater, event space)</option>
+          <option value="care-detention">Care / Detention (daycare, LTC, group home) ⚠️</option>
+          <option value="apartment-4plus">Apartment — 4+ storeys</option>
+          <option value="apartment-under4">Apartment — under 4 storeys</option>
+          <option value="residential">Residential (single family / duplex)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Number of Floors</label>
+      <div class="stepper">
+        <button class="stepper-btn" onclick="adjustFloors(-1)">−</button>
+        <div class="stepper-val" id="floorsVal">1</div>
+        <button class="stepper-btn" onclick="adjustFloors(1)">+</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Existing FSP on File?</label>
+      <div class="yn-row">
+        <button class="yn-btn yes" id="fspYes" onclick="setYN('existingFSP', true)">Yes</button>
+        <button class="yn-btn no active"  id="fspNo"  onclick="setYN('existingFSP', false)">No</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Currently Under Monthly Inspection Contract?</label>
+      <div class="yn-row">
+        <button class="yn-btn yes" id="contractYes" onclick="setYN('underContract', true)">Yes</button>
+        <button class="yn-btn no active"  id="contractNo"  onclick="setYN('underContract', false)">No</button>
+      </div>
+    </div>
+
+    <div class="form-group hidden" id="fuelBurningGroup">
+      <label>Fuel-Burning Appliance or Attached Garage?</label>
+      <div class="yn-row">
+        <button class="yn-btn yes" id="fuelYes" onclick="setYN('fuelBurning', true)">Yes</button>
+        <button class="yn-btn no active"  id="fuelNo"  onclick="setYN('fuelBurning', false)">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-banner" id="err2"></div>
+  <button class="btn-primary" onclick="goScreen3()">Next — Services →</button>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 3 — Services -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="screen3" class="hidden">
+<div class="container">
+  <button class="btn-back" onclick="goScreen2()">← Back</button>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Select Services</div>
+    <div style="font-size:13px;color:var(--muted)">Tap a service to select it and enter details.</div>
+  </div>
+
+  <div id="serviceList"></div>
+
+  <div class="error-banner" id="err3"></div>
+  <button class="btn-primary" onclick="goScreen4()">Next — Review Quote →</button>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 4 — Quote Summary -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="screen4" class="hidden">
+<div class="container">
+  <button class="btn-back" onclick="goScreen3()">← Back</button>
+
+  <div class="card">
+    <div class="card-title">Quote For</div>
+    <div style="font-size:15px;font-weight:600" id="s4ClientName"></div>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px" id="s4ClientAddress"></div>
+  </div>
+
+  <!-- Section A: Requested -->
+  <div class="card summary-section">
+    <div class="summary-section-label">A — What They Requested</div>
+    <div id="sectionA"></div>
+  </div>
+
+  <!-- Section B: OFC Required -->
+  <div class="card summary-section" id="sectionBCard" style="display:none">
+    <div class="summary-section-label">B — Also Required by Ontario Fire Code</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Toggle on to include in the quote. Toggle off to use as talking points only.</div>
+    <div id="sectionB"></div>
+  </div>
+
+  <!-- Section C: Upsells -->
+  <div class="card summary-section" id="sectionCCard" style="display:none">
+    <div class="summary-section-label">C — Recommended Add-Ons</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Smart suggestions based on what's selected.</div>
+    <div id="sectionC"></div>
+  </div>
+
+  <!-- Totals -->
+  <div class="totals">
+    <div class="total-row">
+      <span class="label">Subtotal (ex-HST)</span>
+      <span id="totalSubtotal">$0.00</span>
+    </div>
+    <div class="total-row">
+      <span class="label">HST (13%)</span>
+      <span id="totalHST">$0.00</span>
+    </div>
+    <div class="total-row grand">
+      <span class="label">Total</span>
+      <span id="totalGrand">$0.00</span>
+    </div>
+  </div>
+
+  <div class="error-banner" id="err4"></div>
+
+  <div id="screen4Actions">
+    <button class="btn-primary" id="sendQuoteBtn" onclick="sendQuote()">Send Quote to Client</button>
+    <button class="btn-secondary" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn-secondary" onclick="startOver()">Start Over</button>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SUCCESS SCREEN -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="screenSuccess" class="hidden">
+<div class="container" style="text-align:center;padding-top:40px">
+  <div class="success-icon">✓</div>
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:8px">Quote Sent</h2>
+  <p style="color:var(--muted);font-size:15px">Stripe quote link is ready to share with the client.</p>
+
+  <div class="quote-url-box" id="quoteUrlBox" onclick="copyQuoteUrl()">
+    Tap to copy quote link
+  </div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:24px" id="copiedMsg"></div>
+
+  <div class="card" style="text-align:left">
+    <div class="card-title">Summary</div>
+    <div id="successSummary"></div>
+  </div>
+
+  <button class="btn-primary" onclick="startOver()" style="margin-top:24px">New Quote</button>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+  // ── Constants ────────────────────────────────────────────────────
+  const PIN = '6367';
+
+  const FE_SKU_PRICES = { 'D-ABC5W': 75, 'D-ABC10': 115, 'D-ABC20': 250, '5CO2': 350 };
+  const FE_SKU_LABELS = {
+    'D-ABC5W': '5lb ABC ($75)',
+    'D-ABC10': '10lb ABC ($115)',
+    'D-ABC20': '20lb ABC ($250)',
+    '5CO2':    '5lb CO2 ($350)',
+  };
+  const SMOKE_TYPES = {
+    '21031518': { label: 'Battery (21031518)', price: 130 },
+    '21033116': { label: 'Interconnected (21033116)', price: 138.5 },
+  };
+
+  // ── State ────────────────────────────────────────────────────────
+  const state = {
+    client:   { name:'', email:'', phone:'', address:'', type:'commercial', rowIndex:null },
+    property: { occupancy:'', floors:1, existingFSP:false, underContract:false, fuelBurning:false },
+    services: {}, // populated by buildServiceList()
+    screen4:  { ofcToggles:{}, upsellToggles:{} },
+    quoteUrl: '',
+  };
+
+  // ── PIN ──────────────────────────────────────────────────────────
+  if (sessionStorage.getItem('lfp_quote_auth') === '1') unlockQuote();
+
+  const pinInput = document.getElementById('pinInput');
+  pinInput.addEventListener('input', () => {
+    if (pinInput.value.length === 4) {
+      if (pinInput.value === PIN) {
+        sessionStorage.setItem('lfp_quote_auth', '1');
+        unlockQuote();
+      } else {
+        document.getElementById('pinError').textContent = 'Incorrect PIN — try again';
+        pinInput.classList.add('shake');
+        setTimeout(() => {
+          pinInput.value = '';
+          pinInput.classList.remove('shake');
+        }, 400);
+      }
+    }
+  });
+
+  function unlockQuote() {
+    document.getElementById('screenPin').classList.add('hidden');
+    document.getElementById('progressDots').style.display = 'flex';
+    show('screen1');
+    updateDots(1);
+  }
+
+  // ── Screen navigation ─────────────────────────────────────────────
+  function show(id) {
+    ['screenPin','screen1','screen2','screen3','screen4','screenSuccess']
+      .forEach(s => document.getElementById(s).classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateDots(active) {
+    for (let i = 1; i <= 4; i++) {
+      const d = document.getElementById('dot' + i);
+      d.className = 'dot';
+      if (i < active)  d.classList.add('done');
+      if (i === active) d.classList.add('active');
+    }
+  }
+
+  function goScreen1() { show('screen1'); updateDots(1); }
+
+  function goScreen2() {
+    const name    = document.getElementById('clientName').value.trim();
+    const address = document.getElementById('clientAddress').value.trim();
+    if (!name || !address) {
+      showErr('err1', 'Name and property address are required.');
+      return;
+    }
+    clearErr('err1');
+    state.client.name    = name;
+    state.client.email   = document.getElementById('clientEmail').value.trim();
+    state.client.phone   = document.getElementById('clientPhone').value.trim();
+    state.client.address = address;
+    show('screen2'); updateDots(2);
+  }
+
+  function goScreen3() {
+    const occ = document.getElementById('occupancy').value;
+    if (!occ) { showErr('err2', 'Please select an occupancy type.'); return; }
+    clearErr('err2');
+    state.property.occupancy = occ;
+    buildServiceList();
+    show('screen3'); updateDots(3);
+  }
+
+  function goScreen4() {
+    const anySelected = Object.values(state.services).some(s => s.enabled);
+    if (!anySelected) { showErr('err3', 'Select at least one service.'); return; }
+    clearErr('err3');
+    buildSummary();
+    show('screen4'); updateDots(4);
+  }
+
+  // ── Client type toggle ────────────────────────────────────────────
+  function setClientType(type) {
+    state.client.type = type;
+    document.getElementById('typeCommercial').classList.toggle('active', type === 'commercial');
+    document.getElementById('typeResidential').classList.toggle('active', type === 'residential');
+  }
+
+  // ── Screen 2 helpers ──────────────────────────────────────────────
+  function adjustFloors(delta) {
+    state.property.floors = Math.max(1, (state.property.floors || 1) + delta);
+    document.getElementById('floorsVal').textContent = state.property.floors;
+  }
+
+  function setYN(key, val) {
+    state.property[key] = val;
+    const yes = document.getElementById(key === 'existingFSP' ? 'fspYes' : key === 'underContract' ? 'contractYes' : 'fuelYes');
+    const no  = document.getElementById(key === 'existingFSP' ? 'fspNo'  : key === 'underContract' ? 'contractNo'  : 'fuelNo');
+    if (!yes || !no) return;
+    yes.classList.toggle('active', val);
+    no.classList.toggle('active', !val);
+  }
+
+  function onOccupancyChange() {
+    const occ = document.getElementById('occupancy').value;
+    state.property.occupancy = occ;
+    const isResidential = occ === 'residential' || state.client.type === 'residential';
+    document.getElementById('fuelBurningGroup').classList.toggle('hidden', !isResidential);
+    document.getElementById('vulnerableWarning').classList.toggle('hidden', occ !== 'care-detention');
+  }
+
+  // ── CRM Search ────────────────────────────────────────────────────
+  let searchTimer;
+  document.getElementById('crmSearch').addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    const q = this.value.trim();
+    if (q.length < 2) { document.getElementById('searchResults').style.display = 'none'; return; }
+    searchTimer = setTimeout(() => doSearch(q), 300);
+  });
+
+  async function doSearch(q) {
+    try {
+      const res  = await fetch('/api/search-client?q=' + encodeURIComponent(q));
+      const data = await res.json();
+      renderSearchResults(data.results || []);
+    } catch { /* silent */ }
+  }
+
+  function renderSearchResults(results) {
+    const el = document.getElementById('searchResults');
+    if (results.length === 0) { el.style.display = 'none'; return; }
+    el.innerHTML = results.map((r, i) =>
+      `<div class="search-result" onclick="selectClient(${i})">
+        <div class="search-result-name">${esc(r.name)}</div>
+        <div class="search-result-sub">${esc(r.email)}${r.phone ? ' · ' + esc(r.phone) : ''}</div>
+      </div>`
+    ).join('');
+    el._data = results;
+    el.style.display = 'block';
+  }
+
+  function selectClient(i) {
+    const results = document.getElementById('searchResults')._data || [];
+    const r = results[i];
+    if (!r) return;
+    document.getElementById('clientName').value  = r.name;
+    document.getElementById('clientEmail').value = r.email;
+    document.getElementById('clientPhone').value = r.phone || '';
+    state.client.rowIndex = r.rowIndex;
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('crmSearch').value = '';
+  }
+
+  // ── Service list (Screen 3) ───────────────────────────────────────
+  function buildServiceList() {
+    const occ = state.property.occupancy;
+    const showFSPRevision = state.property.existingFSP;
+
+    const services = [
+      { id:'fe-monthly',   label:'FE Inspection — Monthly',               type:'units' },
+      { id:'fe-annual',    label:'FE Inspection — Annual',                 type:'units' },
+      { id:'fe-install',   label:'FE Supply & Install',                    type:'fe-install' },
+      { id:'el-monthly',   label:'EL Inspection — Monthly',                type:'units' },
+      { id:'el-annual',    label:'EL Inspection — Annual Duration Test',   type:'units' },
+      { id:'co-alarm',     label:'CO Alarm Installation (C3010)',          type:'units-nobase' },
+      { id:'smoke-co',     label:'Smoke/CO Combo Installation',            type:'smoke-co' },
+      { id:'fsp-new',      label:'Fire Safety Plan — New',                 type:'fsp' },
+      ...(showFSPRevision ? [{ id:'fsp-revision', label:'Fire Safety Plan — Annual Revision', type:'fsp-revision' }] : []),
+      { id:'pre-fire',     label:'Pre-Fire Inspection',                    type:'custom' },
+      { id:'training',     label:'Fire Safety Training',                   type:'training' },
+    ];
+
+    // Ensure state entries exist
+    services.forEach(s => {
+      if (!state.services[s.id]) {
+        state.services[s.id] = {
+          enabled: false, units: 0, confirmOnSite: false,
+          price: 0, items: [], smokeType: '21031518',
+          fspAddons: [], fspRushPct: 0,
+          trainingCount: 0, trainingRate: 150,
+          revisionPrice: 200,
+        };
+      }
+    });
+
+    const container = document.getElementById('serviceList');
+    container.innerHTML = services.map(s => buildServiceHTML(s)).join('');
+
+    // Restore checked states
+    services.forEach(s => {
+      if (state.services[s.id]?.enabled) {
+        document.getElementById('svc-'+s.id)?.classList.add('selected');
+      }
+    });
+  }
+
+  function buildServiceHTML(svc) {
+    const s = state.services[svc.id] || {};
+    let bodyHTML = '';
+
+    if (svc.type === 'units' || svc.type === 'units-nobase') {
+      const label = svc.type === 'units-nobase' ? 'units' : 'units';
+      bodyHTML = `
+        <div class="service-body-inner">
+          <label>Number of Units</label>
+          <div class="stepper">
+            <button class="stepper-btn" onclick="adjustUnits('${svc.id}',-1)">−</button>
+            <div class="stepper-val" id="units-${svc.id}">${s.units||0}</div>
+            <button class="stepper-btn" onclick="adjustUnits('${svc.id}',1)">+</button>
+          </div>
+          <div class="onsite-row">
+            <input type="checkbox" id="onsite-${svc.id}" onchange="toggleOnSite('${svc.id}',this.checked)" ${s.confirmOnSite?'checked':''}>
+            <label class="onsite-label" for="onsite-${svc.id}" style="text-transform:none;font-size:13px;letter-spacing:0">Confirm unit count on-site (priced at visit)</label>
+          </div>
+        </div>`;
+    } else if (svc.type === 'fe-install') {
+      bodyHTML = `
+        <div class="service-body-inner">
+          ${['D-ABC5W','D-ABC10','D-ABC20','5CO2'].map(sku => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:14px">${FE_SKU_LABELS[sku]}</span>
+              <div class="stepper" style="width:130px">
+                <button class="stepper-btn" onclick="adjustFEItem('${svc.id}','${sku}',-1)">−</button>
+                <div class="stepper-val" id="feitem-${svc.id}-${sku}" style="font-size:15px">${getItemQty(svc.id,sku)}</div>
+                <button class="stepper-btn" onclick="adjustFEItem('${svc.id}','${sku}',1)">+</button>
+              </div>
+            </div>`).join('')}
+          <div class="onsite-row">
+            <input type="checkbox" id="onsite-${svc.id}" onchange="toggleOnSite('${svc.id}',this.checked)" ${s.confirmOnSite?'checked':''}>
+            <label class="onsite-label" for="onsite-${svc.id}" style="text-transform:none;font-size:13px;letter-spacing:0">Confirm on-site</label>
+          </div>
+        </div>`;
+    } else if (svc.type === 'smoke-co') {
+      bodyHTML = `
+        <div class="service-body-inner">
+          <label>Type</label>
+          <div class="toggle-row" style="margin-bottom:14px">
+            <button class="toggle-btn ${!s.smokeType||s.smokeType==='21031518'?'active':''}" onclick="setSmokeType('${svc.id}','21031518')">Battery ($130)</button>
+            <button class="toggle-btn ${s.smokeType==='21033116'?'active':''}" onclick="setSmokeType('${svc.id}','21033116')">Interconnected ($138.50)</button>
+          </div>
+          <label>Number of Units</label>
+          <div class="stepper">
+            <button class="stepper-btn" onclick="adjustUnits('${svc.id}',-1)">−</button>
+            <div class="stepper-val" id="units-${svc.id}">${s.units||0}</div>
+            <button class="stepper-btn" onclick="adjustUnits('${svc.id}',1)">+</button>
+          </div>
+        </div>`;
+    } else if (svc.type === 'fsp') {
+      bodyHTML = `
+        <div class="service-body-inner">
+          <div style="font-size:14px;color:var(--muted);margin-bottom:12px">Base price: $300</div>
+          <label>Add-Ons</label>
+          <div class="addon-list">
+            ${fspAddons().map(a => `
+              <div class="addon-item">
+                <div class="addon-check">
+                  <input type="checkbox" id="fsp-${a.id}" onchange="toggleFSPAddon('${svc.id}','${a.id}','${a.label}',${a.price},this.checked)">
+                  <label for="fsp-${a.id}" style="text-transform:none;letter-spacing:0;font-weight:normal;font-size:14px;color:var(--text)">${a.label}</label>
+                </div>
+                <div class="addon-price">+$${a.price}</div>
+              </div>`).join('')}
+          </div>
+          <div style="margin-top:12px">
+            <label>Urgency</label>
+            <div class="price-options">
+              <button class="price-opt active" onclick="setFSPRush('${svc.id}',0,this)">Standard</button>
+              <button class="price-opt" onclick="setFSPRush('${svc.id}',25,this)">Rush 3–5 days (+25%)</button>
+              <button class="price-opt" onclick="setFSPRush('${svc.id}',50,this)">Emergency 1–2 days (+50%)</button>
+            </div>
+          </div>
+          <div class="onsite-row" style="margin-top:12px">
+            <input type="checkbox" id="fsp-box-${svc.id}" onchange="toggleFSPBox(this.checked)">
+            <label for="fsp-box-${svc.id}" style="text-transform:none;font-size:13px;letter-spacing:0">Include FSPB-1 plan box ($165)</label>
+          </div>
+        </div>`;
+    } else if (svc.type === 'fsp-revision') {
+      bodyHTML = `
+        <div class="service-body-inner">
+          <label>Revision Fee</label>
+          <div class="price-options">
+            ${[150,200,250,300,400].map(p =>
+              `<button class="price-opt ${s.revisionPrice===p?'active':''}" onclick="setRevisionPrice('${svc.id}',${p},this)">$${p}</button>`
+            ).join('')}
+          </div>
+          <div style="margin-top:12px">
+            <label>Custom Price</label>
+            <input type="number" placeholder="Enter amount" style="margin-top:0" oninput="setCustomRevision('${svc.id}',this.value)">
+          </div>
+        </div>`;
+    } else if (svc.type === 'custom') {
+      bodyHTML = `
+        <div class="service-body-inner">
+          <label>Custom Price ($)</label>
+          <input type="number" placeholder="0.00" id="custom-${svc.id}" oninput="setCustomPrice('${svc.id}',this.value)">
+        </div>`;
+    } else if (svc.type === 'training') {
+      bodyHTML = `
+        <div class="service-body-inner">
+          <label>Number of Attendees</label>
+          <div class="stepper" style="margin-bottom:14px">
+            <button class="stepper-btn" onclick="adjustTraining('${svc.id}',-1)">−</button>
+            <div class="stepper-val" id="train-${svc.id}">${s.trainingCount||0}</div>
+            <button class="stepper-btn" onclick="adjustTraining('${svc.id}',1)">+</button>
+          </div>
+          <div id="trainingPriceOpts-${svc.id}">
+            <label>Fee</label>
+            <div class="price-options">
+              ${[150,200,250,300].map(p =>
+                `<button class="price-opt ${s.trainingRate===p?'active':''}" onclick="setTrainingRate('${svc.id}',${p},this)">$${p}</button>`
+              ).join('')}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    const pricePreview = calcServicePrice(svc.id);
+
+    return `
+      <div class="service-item" id="svc-${svc.id}">
+        <div class="service-header" onclick="toggleService('${svc.id}')">
+          <div class="service-check" id="chk-${svc.id}">✓</div>
+          <div class="service-name">${svc.label}</div>
+          <div class="service-price-preview" id="preview-${svc.id}">${pricePreview > 0 ? '$'+pricePreview.toFixed(0) : ''}</div>
+        </div>
+        <div class="service-body">${bodyHTML}</div>
+      </div>`;
+  }
+
+  function fspAddons() {
+    return [
+      { id:'extra-floor',    label:'Additional floor (beyond 1st)',     price: 112 },
+      { id:'large',          label:'3,000–10,000 sq ft',                price: 200 },
+      { id:'very-large',     label:'10,000+ sq ft',                     price: 450 },
+      { id:'high-risk',      label:'High-risk occupancy',               price: 275 },
+      { id:'high-occupants', label:'High occupant load (>50 people)',   price: 100 },
+      { id:'fire-alarm-doc', label:'Fire alarm documentation',          price: 112 },
+      { id:'sprinkler-doc',  label:'Sprinkler documentation',           price: 112 },
+      { id:'el-doc',         label:'EL documentation',                  price: 50  },
+      { id:'evacuation',     label:'Create evacuation plans',           price: 350 },
+      { id:'full-drawings',  label:'Full drawings from scratch',        price: 600 },
+      { id:'submission',     label:'Submission to fire department',     price: 182 },
+    ];
+  }
+
+  function toggleService(id) {
+    const item = document.getElementById('svc-'+id);
+    const enabled = !state.services[id].enabled;
+    state.services[id].enabled = enabled;
+    item.classList.toggle('selected', enabled);
+  }
+
+  function adjustUnits(id, delta) {
+    const s = state.services[id];
+    s.units = Math.max(0, (s.units||0) + delta);
+    const el = document.getElementById('units-'+id);
+    if (el) el.textContent = s.units;
+    refreshPreview(id);
+  }
+
+  function toggleOnSite(id, val) {
+    state.services[id].confirmOnSite = val;
+    refreshPreview(id);
+  }
+
+  function adjustFEItem(id, sku, delta) {
+    const s = state.services[id];
+    if (!s.items) s.items = [];
+    let item = s.items.find(x => x.sku === sku);
+    if (!item) { item = { sku, qty:0 }; s.items.push(item); }
+    item.qty = Math.max(0, item.qty + delta);
+    const el = document.getElementById(`feitem-${id}-${sku}`);
+    if (el) el.textContent = item.qty;
+    refreshPreview(id);
+  }
+
+  function getItemQty(id, sku) {
+    return (state.services[id]?.items||[]).find(x=>x.sku===sku)?.qty || 0;
+  }
+
+  function setSmokeType(id, type) {
+    state.services[id].smokeType = type;
+    document.querySelectorAll(`#svc-${id} .toggle-btn`).forEach((b,i) => {
+      b.classList.toggle('active', (i===0&&type==='21031518')||(i===1&&type==='21033116'));
+    });
+    refreshPreview(id);
+  }
+
+  function toggleFSPAddon(id, addonId, label, price, checked) {
+    const s = state.services[id];
+    if (!s.fspAddons) s.fspAddons = [];
+    if (checked) {
+      if (!s.fspAddons.find(a=>a.id===addonId)) s.fspAddons.push({id:addonId,label,price});
+    } else {
+      s.fspAddons = s.fspAddons.filter(a=>a.id!==addonId);
+    }
+    refreshPreview(id);
+  }
+
+  function setFSPRush(id, pct, btn) {
+    state.services[id].fspRushPct = pct;
+    btn.closest('.price-options').querySelectorAll('.price-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    refreshPreview(id);
+  }
+
+  function toggleFSPBox(checked) {
+    state.services['fsp-new'].fspBox = checked;
+  }
+
+  function setRevisionPrice(id, price, btn) {
+    state.services[id].revisionPrice = price;
+    btn.closest('.price-options').querySelectorAll('.price-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    refreshPreview(id);
+  }
+
+  function setCustomRevision(id, val) {
+    const n = parseFloat(val);
+    state.services[id].revisionPrice = isNaN(n) ? 200 : n;
+    refreshPreview(id);
+  }
+
+  function setCustomPrice(id, val) {
+    const n = parseFloat(val);
+    state.services[id].price = isNaN(n) ? 0 : n;
+    refreshPreview(id);
+  }
+
+  function adjustTraining(id, delta) {
+    const s = state.services[id];
+    s.trainingCount = Math.max(0, (s.trainingCount||0) + delta);
+    const el = document.getElementById('train-'+id);
+    if (el) el.textContent = s.trainingCount;
+    // Show per-person rate input for 16+
+    const opts = document.getElementById('trainingPriceOpts-'+id);
+    if (opts) {
+      if (s.trainingCount >= 16) {
+        opts.innerHTML = `
+          <label>Per-Person Rate ($)</label>
+          <input type="number" value="${s.trainingRate||15}" min="15" max="20" style="margin-top:0"
+            oninput="state.services['${id}'].trainingRate=parseFloat(this.value)||15;refreshPreview('${id}')">`;
+      } else {
+        opts.innerHTML = `
+          <label>Fee</label>
+          <div class="price-options">
+            ${[150,200,250,300].map(p =>
+              `<button class="price-opt ${s.trainingRate===p?'active':''}" onclick="setTrainingRate('${id}',${p},this)">$${p}</button>`
+            ).join('')}
+          </div>`;
+      }
+    }
+    refreshPreview(id);
+  }
+
+  function setTrainingRate(id, rate, btn) {
+    state.services[id].trainingRate = rate;
+    btn.closest('.price-options').querySelectorAll('.price-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    refreshPreview(id);
+  }
+
+  function refreshPreview(id) {
+    const el = document.getElementById('preview-'+id);
+    if (!el) return;
+    const price = calcServicePrice(id);
+    el.textContent = price > 0 ? '$'+price.toFixed(0) : '';
+  }
+
+  // ── Pricing ───────────────────────────────────────────────────────
+  function feTier(units) {
+    return units <= 10 ? 8 : units <= 50 ? 6 : 5;
+  }
+
+  function calcServicePrice(id) {
+    const s = state.services[id];
+    if (!s || !s.enabled) return 0;
+    if (s.confirmOnSite) return 0;
+
+    switch(id) {
+      case 'fe-monthly':
+      case 'fe-annual': {
+        if (!s.units) return 0;
+        return Math.max(65 + s.units * feTier(s.units), 90);
+      }
+      case 'fe-install': {
+        const items = (s.items||[]).filter(x=>x.qty>0);
+        if (!items.length) return 0;
+        return 65 + items.reduce((sum,x) => sum + (FE_SKU_PRICES[x.sku]||0)*x.qty, 0);
+      }
+      case 'el-monthly': {
+        if (!s.units) return 0;
+        return 65 + s.units * feTier(s.units);
+      }
+      case 'el-annual': {
+        if (!s.units) return 0;
+        return 65 + s.units * 25;
+      }
+      case 'co-alarm':   return (s.units||0) * 100;
+      case 'smoke-co':   return (s.units||0) * (SMOKE_TYPES[s.smokeType||'21031518']?.price||130);
+      case 'fsp-new': {
+        let base = 300 + (s.fspAddons||[]).reduce((sum,a)=>sum+a.price,0);
+        if (s.fspRushPct) base *= (1 + s.fspRushPct/100);
+        return Math.round(base * 100) / 100;
+      }
+      case 'fsp-revision': return s.revisionPrice || 200;
+      case 'pre-fire':     return s.price || 0;
+      case 'training': {
+        const count = s.trainingCount || 0;
+        if (!count) return 0;
+        return count >= 16 ? count * (s.trainingRate||15) : (s.trainingRate||150);
+      }
+      default: return 0;
+    }
+  }
+
+  // ── OFC Rule Engine ───────────────────────────────────────────────
+  function getOFCFlags() {
+    const { occupancy, floors, existingFSP, fuelBurning } = state.property;
+    const isResidential = occupancy === 'residential' || state.client.type === 'residential';
+    const flags = [];
+
+    const sel = id => state.services[id]?.enabled;
+
+    if (!isResidential) {
+      if (!sel('fe-monthly'))
+        flags.push({ id:'ofc-fe-monthly', label:'FE Monthly Inspection', ref:'OFC s.6.2 / NFPA 10', price: calcOFCFEPrice('fe-monthly') });
+      if (!sel('fe-annual'))
+        flags.push({ id:'ofc-fe-annual', label:'FE Annual Maintenance', ref:'OFC s.6.2 / NFPA 10', price: calcOFCFEPrice('fe-annual') });
+      if (!sel('el-monthly'))
+        flags.push({ id:'ofc-el-monthly', label:'EL Monthly Functional Test', ref:'OFC s.6.7', price: calcOFCFEPrice('el-monthly') });
+      if (!sel('el-annual'))
+        flags.push({ id:'ofc-el-annual', label:'EL Annual Duration Test', ref:'OFC s.6.7', price: calcOFCFEPrice('el-annual') });
+    }
+
+    const needsFSP = ['assembly','care-detention','apartment-4plus'].includes(occupancy);
+    if (needsFSP && !sel('fsp-new') && !sel('fsp-revision'))
+      flags.push({ id:'ofc-fsp', label:'Fire Safety Plan — Required', ref:'OFC Div. B s.2.8', price: 300 });
+
+    if (occupancy === 'apartment-under4' && floors >= 3 && !sel('fsp-new'))
+      flags.push({ id:'ofc-fsp-maybe', label:'Fire Safety Plan — May Be Required', ref:'OFC s.2.8.1.1 — confirm occupant count', price: 300 });
+
+    if (isResidential && fuelBurning && !sel('co-alarm'))
+      flags.push({ id:'ofc-co', label:'CO Alarm Installation', ref:'O. Reg. 87/25 (Jan 2026)', price: 100 });
+
+    if (existingFSP && !sel('fsp-revision') && !sel('fsp-new'))
+      flags.push({ id:'ofc-fsp-revision', label:'Annual FSP Revision', ref:'OFC s.2.8', price: 200 });
+
+    return flags;
+  }
+
+  function calcOFCFEPrice(id) {
+    // Use matching FE/EL unit count if available, otherwise TBD
+    const feUnits = state.services['fe-monthly']?.units || state.services['fe-annual']?.units || 0;
+    const elUnits = state.services['el-monthly']?.units || state.services['el-annual']?.units || 0;
+    if (id === 'fe-monthly' || id === 'fe-annual') return feUnits ? Math.max(65+feUnits*feTier(feUnits),90) : 0;
+    if (id === 'el-monthly') return elUnits ? 65+elUnits*feTier(elUnits) : 0;
+    if (id === 'el-annual')  return elUnits ? 65+elUnits*25 : 0;
+    return 0;
+  }
+
+  // ── Upsell Logic ──────────────────────────────────────────────────
+  function getUpsells(ofcFlags) {
+    const upsells = [];
+    const sel = id => state.services[id]?.enabled;
+    const feM = sel('fe-monthly'), elM = sel('el-monthly');
+
+    // Bundle FE+EL
+    if (feM && elM) {
+      const feU = state.services['fe-monthly'].units || 0;
+      const elU = state.services['el-monthly'].units || 0;
+      const bundlePrice   = 65 + (feU+elU)*6;
+      const separatePrice = Math.max(65+feU*feTier(feU),90) + 65+elU*feTier(elU);
+      const savings = separatePrice - bundlePrice;
+      if (savings > 0) {
+        upsells.push({
+          id:'bundle-fe-el',
+          label:`FE + EL Inspection Bundle — save $${savings.toFixed(0)}`,
+          desc:'One visit, one base fee, $6/unit flat rate for all units',
+          price: -savings,
+        });
+      }
+    }
+
+    // FSP → training
+    if (sel('fsp-new') && !sel('training'))
+      upsells.push({ id:'training', label:'Fire Safety Training', desc:'OFC requires occupants to be trained on their FSP', price: 150 });
+
+    // FE only → suggest EL
+    if (feM && !elM && !ofcFlags.find(f=>f.id==='ofc-el-monthly'))
+      upsells.push({ id:'add-el', label:'Add EL Monthly Inspection', desc:'If emergency lighting is present, bundle the visit and reduce your cost', price: 0 });
+
+    // No monthly contract → suggest it
+    if (!feM && !elM)
+      upsells.push({ id:'monthly-contract', label:'Monthly Inspection Contract', desc:'Set up a recurring monthly schedule — OFC-compliant, no reminders needed', price: 0 });
+
+    return upsells;
+  }
+
+  // ── Build Screen 4 ────────────────────────────────────────────────
+  function buildSummary() {
+    document.getElementById('s4ClientName').textContent    = state.client.name;
+    document.getElementById('s4ClientAddress').textContent = state.client.address;
+
+    // Section A
+    const aLines = [];
+    Object.entries(state.services).forEach(([id, s]) => {
+      if (!s.enabled) return;
+      const price = calcServicePrice(id);
+      const label = serviceLabelById(id, s);
+      const priceStr = s.confirmOnSite ? 'Priced on-site' : '$'+price.toFixed(2);
+      aLines.push({ id, label, price: s.confirmOnSite ? 0 : price, display: priceStr, confirmOnSite: s.confirmOnSite });
+    });
+
+    // Add FSP box as separate line if checked
+    if (state.services['fsp-new']?.fspBox) {
+      aLines.push({ id:'fspb1', label:'FSPB-1 Plan Box', price:165, display:'$165.00' });
+    }
+
+    document.getElementById('sectionA').innerHTML = aLines.map(l =>
+      `<div class="summary-line">
+        <div class="summary-line-left">
+          <div><div class="summary-line-name">${esc(l.label)}</div></div>
+        </div>
+        <div class="summary-line-amt">${l.display}</div>
+      </div>`
+    ).join('') || '<div style="color:var(--muted);font-size:14px">No services selected</div>';
+
+    // Section B
+    const ofcFlags = getOFCFlags();
+    const sectionBCard = document.getElementById('sectionBCard');
+    if (ofcFlags.length > 0) {
+      sectionBCard.style.display = 'block';
+      document.getElementById('sectionB').innerHTML = ofcFlags.map(f => {
+        const priceStr = f.price > 0 ? '$'+f.price.toFixed(2) : 'TBD';
+        return `
+          <div class="summary-line">
+            <div class="summary-line-left">
+              <label class="toggle-switch">
+                <input type="checkbox" id="ofc-toggle-${f.id}" onchange="refreshTotals()">
+                <span class="toggle-slider"></span>
+              </label>
+              <div>
+                <div class="summary-line-name">${esc(f.label)}</div>
+                <div class="summary-line-ref">${esc(f.ref)}</div>
+              </div>
+            </div>
+            <div class="summary-line-amt dim">${priceStr}</div>
+          </div>`;
+      }).join('');
+      // Store flags for totals
+      sectionBCard._flags = ofcFlags;
+    } else {
+      sectionBCard.style.display = 'none';
+    }
+
+    // Section C
+    const upsells = getUpsells(ofcFlags);
+    const sectionCCard = document.getElementById('sectionCCard');
+    if (upsells.length > 0) {
+      sectionCCard.style.display = 'block';
+      document.getElementById('sectionC').innerHTML = upsells.map(u => {
+        const priceStr = u.price !== 0 ? (u.price<0?'-':'')+'$'+Math.abs(u.price).toFixed(2) : 'TBD';
+        return `
+          <div class="summary-line">
+            <div class="summary-line-left">
+              <label class="toggle-switch">
+                <input type="checkbox" id="ups-toggle-${u.id}" onchange="refreshTotals()">
+                <span class="toggle-slider"></span>
+              </label>
+              <div>
+                <div class="summary-line-name">${esc(u.label)}</div>
+                <div class="summary-line-ref">${esc(u.desc)}</div>
+              </div>
+            </div>
+            <div class="summary-line-amt dim">${priceStr}</div>
+          </div>`;
+      }).join('');
+      sectionCCard._upsells = upsells;
+    } else {
+      sectionCCard.style.display = 'none';
+    }
+
+    refreshTotals();
+  }
+
+  function refreshTotals() {
+    let subtotal = 0;
+
+    // Section A
+    Object.entries(state.services).forEach(([id, s]) => {
+      if (!s.enabled || s.confirmOnSite) return;
+      subtotal += calcServicePrice(id);
+    });
+    if (state.services['fsp-new']?.fspBox) subtotal += 165;
+
+    // Section B toggled on
+    const bCard  = document.getElementById('sectionBCard');
+    const bFlags = bCard?._flags || [];
+    bFlags.forEach(f => {
+      const toggle = document.getElementById('ofc-toggle-'+f.id);
+      if (toggle?.checked && f.price > 0) subtotal += f.price;
+    });
+
+    // Section C toggled on
+    const cCard   = document.getElementById('sectionCCard');
+    const upsells = cCard?._upsells || [];
+    upsells.forEach(u => {
+      const toggle = document.getElementById('ups-toggle-'+u.id);
+      if (toggle?.checked && u.price !== 0) subtotal += u.price;
+    });
+
+    subtotal = Math.max(0, subtotal);
+    const hst   = subtotal * 0.13;
+    const grand = subtotal + hst;
+
+    document.getElementById('totalSubtotal').textContent = '$'+subtotal.toFixed(2);
+    document.getElementById('totalHST').textContent      = '$'+hst.toFixed(2);
+    document.getElementById('totalGrand').textContent    = '$'+grand.toFixed(2);
+  }
+
+  // ── Service label helper ──────────────────────────────────────────
+  function serviceLabelById(id, s) {
+    const labels = {
+      'fe-monthly':   `FE Monthly Inspection${s.units?' — '+s.units+' units':''}`,
+      'fe-annual':    `FE Annual Maintenance${s.units?' — '+s.units+' units':''}`,
+      'fe-install':   'FE Supply & Install',
+      'el-monthly':   `EL Monthly Inspection${s.units?' — '+s.units+' units':''}`,
+      'el-annual':    `EL Annual Duration Test${s.units?' — '+s.units+' units':''}`,
+      'co-alarm':     `CO Alarm Installation${s.units?' — '+s.units+' units':''}`,
+      'smoke-co':     `Smoke/CO ${SMOKE_TYPES[s.smokeType||'21031518']?.label||''} Install${s.units?' — '+s.units+' units':''}`,
+      'fsp-new':      'Fire Safety Plan — New',
+      'fsp-revision': 'Fire Safety Plan — Annual Revision',
+      'pre-fire':     'Pre-Fire Inspection',
+      'training':     `Fire Safety Training${s.trainingCount?' — '+s.trainingCount+' attendees':''}`,
+    };
+    return labels[id] || id;
+  }
+
+  // ── Send Quote ────────────────────────────────────────────────────
+  async function sendQuote() {
+    const btn = document.getElementById('sendQuoteBtn');
+    clearErr('err4');
+
+    // Build line items
+    const lineItems = [];
+
+    // Section A
+    Object.entries(state.services).forEach(([id, s]) => {
+      if (!s.enabled) return;
+      const price = s.confirmOnSite ? 0 : calcServicePrice(id);
+      lineItems.push({
+        name:   s.confirmOnSite ? serviceLabelById(id,s)+' — Priced on-site' : serviceLabelById(id,s),
+        amount: price,
+      });
+    });
+    if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:165 });
+
+    // Section B (toggled on)
+    const bFlags = document.getElementById('sectionBCard')?._flags || [];
+    bFlags.forEach(f => {
+      if (document.getElementById('ofc-toggle-'+f.id)?.checked)
+        lineItems.push({ name:f.label+' (OFC '+f.ref+')', amount:f.price||0 });
+    });
+
+    // Section C (toggled on)
+    const upsells = document.getElementById('sectionCCard')?._upsells || [];
+    upsells.forEach(u => {
+      if (document.getElementById('ups-toggle-'+u.id)?.checked && u.price !== 0)
+        lineItems.push({ name:u.label, amount:u.price });
+    });
+
+    // HST line item
+    const subtotal = lineItems.reduce((s,l)=>s+l.amount,0);
+    const hst = Math.round(subtotal*0.13*100)/100;
+    lineItems.push({ name:'HST (13% Ontario)', amount: hst });
+
+    if (subtotal <= 0) {
+      showErr('err4', 'Quote total is $0 — add priced line items before sending.');
+      return;
+    }
+
+    // Determine primary service category for metadata
+    const primaryId = Object.keys(state.services).find(id => state.services[id].enabled) || '';
+    const categoryMap = {
+      'fe-monthly':'fe','fe-annual':'fe','fe-install':'fe',
+      'el-monthly':'el','el-annual':'el',
+      'fsp-new':'fsp','fsp-revision':'fsp',
+      'training':'training','co-alarm':'co','smoke-co':'co',
+    };
+
+    const payload = {
+      client: {
+        name:     state.client.name,
+        email:    state.client.email,
+        phone:    state.client.phone,
+        address:  state.client.address,
+        rowIndex: state.client.rowIndex,
+        serviceNote: serviceLabelById(primaryId, state.services[primaryId]||{}),
+      },
+      lineItems,
+      metadata: {
+        jobType:         'service',
+        serviceCategory: categoryMap[primaryId] || '',
+        serviceNote:     serviceLabelById(primaryId, state.services[primaryId]||{}),
+      },
+    };
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Creating quote…';
+
+    try {
+      const res  = await fetch('/api/create-quote', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+
+      state.quoteUrl = data.quoteUrl;
+      showSuccess(data.quoteUrl, subtotal, hst);
+
+    } catch (err) {
+      showErr('err4', err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Send Quote to Client';
+    }
+  }
+
+  function showSuccess(url, subtotal, hst) {
+    document.getElementById('quoteUrlBox').textContent = url;
+    document.getElementById('quoteUrlBox')._url = url;
+
+    document.getElementById('successSummary').innerHTML = `
+      <div class="summary-line">
+        <span style="color:var(--muted)">Client</span>
+        <span>${esc(state.client.name)}</span>
+      </div>
+      <div class="summary-line">
+        <span style="color:var(--muted)">Property</span>
+        <span>${esc(state.client.address)}</span>
+      </div>
+      <div class="summary-line">
+        <span style="color:var(--muted)">Subtotal</span>
+        <span>$${subtotal.toFixed(2)}</span>
+      </div>
+      <div class="summary-line">
+        <span style="color:var(--muted)">HST</span>
+        <span>$${hst.toFixed(2)}</span>
+      </div>
+      <div class="summary-line" style="font-weight:700">
+        <span>Total</span>
+        <span>$${(subtotal+hst).toFixed(2)}</span>
+      </div>`;
+
+    show('screenSuccess');
+    document.getElementById('progressDots').style.display = 'none';
+  }
+
+  function copyQuoteUrl() {
+    const url = document.getElementById('quoteUrlBox')._url;
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => {
+      document.getElementById('copiedMsg').textContent = 'Link copied to clipboard';
+      setTimeout(() => document.getElementById('copiedMsg').textContent = '', 2000);
+    });
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+  function clearErr(id) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent=''; el.style.display='none'; }
+  }
+  function esc(str) {
+    return String(str||'')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function startOver() {
+    // Reset state
+    Object.assign(state, {
+      client:   { name:'',email:'',phone:'',address:'',type:'commercial',rowIndex:null },
+      property: { occupancy:'',floors:1,existingFSP:false,underContract:false,fuelBurning:false },
+      services: {},
+      screen4:  { ofcToggles:{},upsellToggles:{} },
+      quoteUrl: '',
+    });
+    document.getElementById('progressDots').style.display = 'flex';
+    document.getElementById('crmSearch').value      = '';
+    document.getElementById('clientName').value     = '';
+    document.getElementById('clientEmail').value    = '';
+    document.getElementById('clientPhone').value    = '';
+    document.getElementById('clientAddress').value  = '';
+    document.getElementById('occupancy').value      = '';
+    document.getElementById('floorsVal').textContent = '1';
+    setClientType('commercial');
+    setYN('existingFSP', false);
+    setYN('underContract', false);
+    show('screen1');
+    updateDots(1);
+  }
+</script>
+</body>
+</html>
