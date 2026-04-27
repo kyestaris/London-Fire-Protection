@@ -72,16 +72,22 @@ module.exports = async function handler(req, res) {
     const customer = client.email ? await findStripeCustomer(stripe, client.email) : null;
 
     // 2. Build Stripe Quote
-    const stripeLineItems = lineItems
-      .filter(item => item.amount > 0)
-      .map(item => ({
-        price_data: {
-          currency:     'cad',
-          product_data: { name: item.name },
-          unit_amount:  Math.round(item.amount * 100), // dollars → cents
-        },
-        quantity: 1,
-      }));
+    // Quotes API requires an existing product ID — create ephemeral products per line item
+    const stripeLineItems = await Promise.all(
+      lineItems
+        .filter(item => item.amount > 0)
+        .map(async item => {
+          const product = await stripe.products.create({ name: item.name });
+          return {
+            price_data: {
+              currency:    'cad',
+              product:     product.id,
+              unit_amount: Math.round(item.amount * 100), // dollars → cents
+            },
+            quantity: 1,
+          };
+        })
+    );
 
     if (stripeLineItems.length === 0) {
       return res.status(400).json({ error: 'No priced line items — cannot create quote' });
