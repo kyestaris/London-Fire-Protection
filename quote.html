@@ -952,9 +952,9 @@
         state.services[s.id] = {
           enabled: false, units: 0, confirmOnSite: false,
           price: 0, items: [], smokeType: '21031518',
-          fspAddons: [], fspRushPct: 0,
+          fspAddons: [], fspRushPct: 0, fspSize: 'small', fspHasFloorPlans: true,
           trainingCount: 0, trainingRate: 150,
-          revisionPrice: 200,
+          revisionPrice: 250,
         };
       }
     });
@@ -1024,7 +1024,17 @@
     } else if (svc.type === 'fsp') {
       bodyHTML = `
         <div class="service-body-inner">
-          <div style="font-size:14px;color:var(--muted);margin-bottom:12px">Base price: $300</div>
+          <label>Building Size</label>
+          <div class="price-options" style="margin-bottom:14px">
+            <button class="price-opt ${s.fspSize==='small'||!s.fspSize?'active':''}" onclick="setFSPSize('${svc.id}','small',this)">Small &lt;3,000 sq ft — $650</button>
+            <button class="price-opt ${s.fspSize==='medium'?'active':''}" onclick="setFSPSize('${svc.id}','medium',this)">Medium 3–10k sq ft — $1,250</button>
+            <button class="price-opt ${s.fspSize==='large'?'active':''}" onclick="setFSPSize('${svc.id}','large',this)">Large 10,000+ sq ft — $2,250</button>
+          </div>
+          <label>Client has existing floor plans?</label>
+          <div class="yn-row" style="margin-bottom:14px">
+            <button class="yn-btn yes ${s.fspHasFloorPlans!==false?'active':''}" id="fsp-fp-yes-${svc.id}" onclick="setFSPFloorPlans('${svc.id}',true)">Yes</button>
+            <button class="yn-btn no ${s.fspHasFloorPlans===false?'active':''}" id="fsp-fp-no-${svc.id}" onclick="setFSPFloorPlans('${svc.id}',false)">No — quote drafting separately</button>
+          </div>
           <label>Add-Ons</label>
           <div class="addon-list">
             ${fspAddons().map(a => `
@@ -1054,8 +1064,8 @@
         <div class="service-body-inner">
           <label>Revision Fee</label>
           <div class="price-options">
-            ${[150,200,250,300,400].map(p =>
-              `<button class="price-opt ${s.revisionPrice===p?'active':''}" onclick="setRevisionPrice('${svc.id}',${p},this)">$${p}</button>`
+            ${[200,250,300,350,400].map(p =>
+              `<button class="price-opt ${(s.revisionPrice||250)===p?'active':''}" onclick="setRevisionPrice('${svc.id}',${p},this)">$${p}</button>`
             ).join('')}
           </div>
           <div style="margin-top:12px">
@@ -1104,17 +1114,12 @@
 
   function fspAddons() {
     return [
-      { id:'extra-floor',    label:'Additional floor (beyond 1st)',     price: 112 },
-      { id:'large',          label:'3,000–10,000 sq ft',                price: 200 },
-      { id:'very-large',     label:'10,000+ sq ft',                     price: 450 },
-      { id:'high-risk',      label:'High-risk occupancy',               price: 275 },
-      { id:'high-occupants', label:'High occupant load (>50 people)',   price: 100 },
-      { id:'fire-alarm-doc', label:'Fire alarm documentation',          price: 112 },
-      { id:'sprinkler-doc',  label:'Sprinkler documentation',           price: 112 },
-      { id:'el-doc',         label:'EL documentation',                  price: 50  },
-      { id:'evacuation',     label:'Create evacuation plans',           price: 350 },
-      { id:'full-drawings',  label:'Full drawings from scratch',        price: 600 },
-      { id:'submission',     label:'Submission to fire department',     price: 182 },
+      { id:'extra-floor-plan', label:'Additional unique floor plan',    price: 150 },
+      { id:'high-risk',        label:'High-risk occupancy',             price: 350 },
+      { id:'fire-alarm-doc',   label:'Fire alarm documentation',        price: 150 },
+      { id:'sprinkler-doc',    label:'Sprinkler documentation',         price: 150 },
+      { id:'el-doc',           label:'EL documentation',                price: 75  },
+      { id:'evacuation',       label:'Create evacuation plans',         price: 500 },
     ];
   }
 
@@ -1170,6 +1175,19 @@
       s.fspAddons = s.fspAddons.filter(a=>a.id!==addonId);
     }
     refreshPreview(id);
+  }
+
+  function setFSPSize(id, size, btn) {
+    state.services[id].fspSize = size;
+    btn.closest('.price-options').querySelectorAll('.price-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    refreshPreview(id);
+  }
+
+  function setFSPFloorPlans(id, val) {
+    state.services[id].fspHasFloorPlans = val;
+    document.getElementById('fsp-fp-yes-'+id)?.classList.toggle('active', val);
+    document.getElementById('fsp-fp-no-'+id)?.classList.toggle('active', !val);
   }
 
   function setFSPRush(id, pct, btn) {
@@ -1274,11 +1292,12 @@
       case 'co-alarm':   return (s.units||0) * 55;
       case 'smoke-co':   return (s.units||0) * (SMOKE_TYPES[s.smokeType||'21031518']?.price||120);
       case 'fsp-new': {
-        let base = 300 + (s.fspAddons||[]).reduce((sum,a)=>sum+a.price,0);
+        const sizeBase = { small: 650, medium: 1250, large: 2250 };
+        let base = (sizeBase[s.fspSize] || 650) + (s.fspAddons||[]).reduce((sum,a)=>sum+a.price,0);
         if (s.fspRushPct) base *= (1 + s.fspRushPct/100);
         return Math.round(base * 100) / 100;
       }
-      case 'fsp-revision': return s.revisionPrice || 200;
+      case 'fsp-revision': return s.revisionPrice || 250;
       case 'pre-fire':     return s.price || 0;
       case 'training': {
         const count = s.trainingCount || 0;
@@ -1310,16 +1329,16 @@
 
     const needsFSP = ['assembly','care-detention','apartment-4plus'].includes(occupancy);
     if (needsFSP && !sel('fsp-new') && !sel('fsp-revision'))
-      flags.push({ id:'ofc-fsp', label:'Fire Safety Plan — Required', ref:'OFC Div. B s.2.8', price: 300 });
+      flags.push({ id:'ofc-fsp', label:'Fire Safety Plan — Required', ref:'OFC Div. B s.2.8', price: 650 });
 
     if (occupancy === 'apartment-under4' && floors >= 3 && !sel('fsp-new'))
-      flags.push({ id:'ofc-fsp-maybe', label:'Fire Safety Plan — May Be Required', ref:'OFC s.2.8.1.1 — confirm occupant count', price: 300 });
+      flags.push({ id:'ofc-fsp-maybe', label:'Fire Safety Plan — May Be Required', ref:'OFC s.2.8.1.1 — confirm occupant count', price: 650 });
 
     if (isResidential && fuelBurning && !sel('co-alarm'))
       flags.push({ id:'ofc-co', label:'CO Alarm Recommended (add-on)', ref:'O. Reg. 87/25 (Jan 2026) — $55/unit, supply + install', price: 55 });
 
     if (existingFSP && !sel('fsp-revision') && !sel('fsp-new'))
-      flags.push({ id:'ofc-fsp-revision', label:'Annual FSP Revision', ref:'OFC s.2.8', price: 200 });
+      flags.push({ id:'ofc-fsp-revision', label:'Annual FSP Revision', ref:'OFC s.2.8', price: 250 });
 
     return flags;
   }
@@ -1400,6 +1419,10 @@
     // Add FSP box as separate line if checked
     if (state.services['fsp-new']?.fspBox) {
       aLines.push({ id:'fspb1', label:'FSPB-1 Plan Box', price:165, display:'$165.00' });
+    }
+    // Floor plan drafting — TBD line if client has no existing floor plans
+    if (state.services['fsp-new']?.enabled && state.services['fsp-new']?.fspHasFloorPlans === false) {
+      aLines.push({ id:'fsp-drawings', label:'Floor Plan Drafting', price:0, display:'TBD — quoted separately' });
     }
 
     document.getElementById('sectionA').innerHTML = aLines.map(l =>
@@ -1548,6 +1571,8 @@
       });
     });
     if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:165 });
+    if (state.services['fsp-new']?.enabled && state.services['fsp-new']?.fspHasFloorPlans === false)
+      lineItems.push({ name:'Floor Plan Drafting — quoted separately', amount:0 });
 
     // Section B (toggled on)
     const bFlags = document.getElementById('sectionBCard')?._flags || [];
