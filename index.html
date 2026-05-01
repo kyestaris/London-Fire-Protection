@@ -520,8 +520,8 @@
   }
   </script>
 
-  <link rel="icon" type="image/png" href="/brand_assets/Website Font White.png">
-  <link rel="apple-touch-icon" href="/brand_assets/Website Font White.png">
+  <link rel="icon" type="image/png" href="/brand_assets/logo-gbp.png">
+  <link rel="apple-touch-icon" href="/brand_assets/logo-gbp.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -1576,7 +1576,11 @@
       margin-bottom: var(--space-2xl);
     }
     @media (min-width: 768px) {
-      .footer-top { grid-template-columns: 1.5fr 1fr 1fr; }
+      .footer-top { grid-template-columns: 1.5fr 1fr 1fr 1fr; }
+    }
+    .footer-service-area-list {
+      columns: 2;
+      column-gap: var(--space-md);
     }
     .footer-brand { display: flex; flex-direction: column; gap: var(--space-md); }
     .footer-logo { width: 240px; height: auto; }
@@ -1745,7 +1749,7 @@
   <div class="container">
     <nav class="nav-inner" aria-label="Main navigation">
       <a href="#hero" class="nav-logo" aria-label="London Fire Protection — Home">
-        <img src="brand_assets/Website Font White.png" alt="London Fire Protection logo">
+        <img src="brand_assets/Website Font White.png" alt="London Fire Protection logo" loading="lazy">
       </a>
 
       <ul class="nav-links" role="list">
@@ -2019,8 +2023,8 @@
           <p class="pricing-plan-desc">Book fire extinguisher and emergency lighting inspections together on the same visit for a lower per-unit rate.</p>
         </div>
         <div>
-          <div class="pricing-quote-tag">Starting at $90</div>
-          <div class="pricing-quote-sub">One service fee when both services booked together</div>
+          <div class="pricing-quote-tag">Starting at $65</div>
+          <div class="pricing-quote-sub">Service fee + per unit inspection pricing</div>
         </div>
         <div class="pricing-divider"></div>
         <ul class="pricing-features" aria-label="Fire and lighting inspection includes">
@@ -2034,7 +2038,7 @@
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Flat $6/unit for all units combined
+            Discounted rate when combining both services
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
@@ -2053,7 +2057,7 @@
           <p class="pricing-plan-desc">For homeowners and landlords needing Ontario Fire Code and Building Code compliance.</p>
         </div>
         <div>
-          <div class="pricing-quote-tag">Starting at $100</div>
+          <div class="pricing-quote-tag">Installations start at $40</div>
           <div class="pricing-quote-sub">No minimum order</div>
         </div>
         <div class="pricing-divider"></div>
@@ -2582,7 +2586,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="#hero" aria-label="London Fire Protection — Back to top">
-          <img src="brand_assets/Website Font White.png" alt="London Fire Protection logo" class="footer-logo">
+          <img src="brand_assets/Website Font White.png" alt="London Fire Protection logo" class="footer-logo" loading="lazy">
         </a>
         <p class="footer-tagline">
           Certified fire safety services for commercial, residential, and rental properties across London, Ontario.
@@ -2608,6 +2612,25 @@
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a href="#contact">Get a Quote</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Service Area</div>
+        <ul class="footer-links footer-service-area-list" role="list">
+          <li>London</li>
+          <li>St. Thomas</li>
+          <li>Dorchester</li>
+          <li>Aylmer</li>
+          <li>Komoka</li>
+          <li>Strathroy</li>
+          <li>Mount Brydges</li>
+          <li>Ilderton</li>
+          <li>Ingersoll</li>
+          <li>Woodstock</li>
+          <li>Tillsonburg</li>
+          <li>Belmont</li>
+          <li>Thorndale</li>
         </ul>
       </div>
     </div>
