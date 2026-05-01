@@ -97,6 +97,12 @@
       appearance: none;
       transition: border-color 0.15s;
     }
+    input[type="checkbox"],
+    input[type="radio"] {
+      all: revert;
+      accent-color: var(--orange);
+      cursor: pointer;
+    }
     input::placeholder { color: var(--muted); }
     input:focus, select:focus { border-color: var(--orange); }
     .select-wrap { position: relative; }
@@ -205,7 +211,7 @@
       background: none; border: none; padding: 0;
       -webkit-appearance: auto; appearance: auto;
     }
-    .ms-label { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; cursor: pointer; }
+    .ms-label { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; cursor: pointer; text-transform: none; letter-spacing: 0; }
     .ms-freq { display: flex; gap: 10px; }
     .ms-freq-wrap {
       display: flex; align-items: center; gap: 4px;
