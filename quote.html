@@ -591,6 +591,7 @@
           <option value="apartment-4plus">Apartment — 4+ storeys</option>
           <option value="apartment-under4">Apartment — under 4 storeys</option>
           <option value="residential">Residential (single family / duplex)</option>
+          <option value="other">Other</option>
         </select>
       </div>
     </div>
@@ -613,7 +614,7 @@
     </div>
 
     <div class="form-group">
-      <label>Currently Under Monthly Inspection Contract?</label>
+      <label>Currently Under Contract?</label>
       <div class="yn-row">
         <button class="yn-btn yes" id="contractYes" onclick="setYN('underContract', true)">Yes</button>
         <button class="yn-btn no active"  id="contractNo"  onclick="setYN('underContract', false)">No</button>
@@ -645,6 +646,21 @@
   <div class="card" style="margin-bottom:14px">
     <div class="card-title">Select Services</div>
     <div style="font-size:13px;color:var(--muted)">Tap a service to select it and enter details.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="card-title" style="margin-bottom:2px">Service / Call Fee</div>
+        <div style="font-size:13px;color:var(--muted)">Covers technician travel and on-site time. Set to $0 to waive.</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:15px;color:var(--muted)">$</span>
+        <input type="number" id="callFeeInput" value="65" min="0" step="1"
+          style="width:72px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:16px;font-weight:600;color:var(--text);text-align:center"
+          oninput="state.callFee = parseFloat(this.value)||0">
+      </div>
+    </div>
   </div>
 
   <div id="serviceList"></div>
@@ -738,16 +754,17 @@
   // ── Constants ────────────────────────────────────────────────────
   const PIN = '6367';
 
-  const FE_SKU_PRICES = { 'D-ABC5W': 75, 'D-ABC10': 115, 'D-ABC20': 250, '5CO2': 350 };
+  const FE_SKU_PRICES = { 'CT-ABC2': 60, 'D-ABC5W': 75, 'D-ABC10': 115, 'D-ABC20': 250, '5CO2': 350 };
   const FE_SKU_LABELS = {
+    'CT-ABC2': '2lb ABC — Garrison ($60)',
     'D-ABC5W': '5lb ABC ($75)',
     'D-ABC10': '10lb ABC ($115)',
     'D-ABC20': '20lb ABC ($250)',
     '5CO2':    '5lb CO2 ($350)',
   };
   const SMOKE_TYPES = {
-    '21031518': { label: 'Battery (21031518)', price: 130 },
-    '21033116': { label: 'Interconnected (21033116)', price: 138.5 },
+    '21031518': { label: 'Battery (21031518)', price: 120 },
+    '21033116': { label: 'Interconnected (21033116)', price: 128.5 },
   };
 
   // ── State ────────────────────────────────────────────────────────
@@ -756,6 +773,7 @@
     property: { occupancy:'', floors:1, existingFSP:false, underContract:false, fuelBurning:false },
     services: {}, // populated by buildServiceList()
     screen4:  { ofcToggles:{}, upsellToggles:{} },
+    callFee:  65,
     quoteUrl: '',
   };
 
@@ -974,7 +992,7 @@
     } else if (svc.type === 'fe-install') {
       bodyHTML = `
         <div class="service-body-inner">
-          ${['D-ABC5W','D-ABC10','D-ABC20','5CO2'].map(sku => `
+          ${['CT-ABC2','D-ABC5W','D-ABC10','D-ABC20','5CO2'].map(sku => `
             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
               <span style="font-size:14px">${FE_SKU_LABELS[sku]}</span>
               <div class="stepper" style="width:130px">
@@ -993,8 +1011,8 @@
         <div class="service-body-inner">
           <label>Type</label>
           <div class="toggle-row" style="margin-bottom:14px">
-            <button class="toggle-btn ${!s.smokeType||s.smokeType==='21031518'?'active':''}" onclick="setSmokeType('${svc.id}','21031518')">Battery ($130)</button>
-            <button class="toggle-btn ${s.smokeType==='21033116'?'active':''}" onclick="setSmokeType('${svc.id}','21033116')">Interconnected ($138.50)</button>
+            <button class="toggle-btn ${!s.smokeType||s.smokeType==='21031518'?'active':''}" onclick="setSmokeType('${svc.id}','21031518')">Battery ($120)</button>
+            <button class="toggle-btn ${s.smokeType==='21033116'?'active':''}" onclick="setSmokeType('${svc.id}','21033116')">Interconnected ($128.50)</button>
           </div>
           <label>Number of Units</label>
           <div class="stepper">
@@ -1238,23 +1256,23 @@
       case 'fe-monthly':
       case 'fe-annual': {
         if (!s.units) return 0;
-        return Math.max(65 + s.units * feTier(s.units), 90);
+        return s.units * feTier(s.units);
       }
       case 'fe-install': {
         const items = (s.items||[]).filter(x=>x.qty>0);
         if (!items.length) return 0;
-        return 65 + items.reduce((sum,x) => sum + (FE_SKU_PRICES[x.sku]||0)*x.qty, 0);
+        return items.reduce((sum,x) => sum + (FE_SKU_PRICES[x.sku]||0)*x.qty, 0);
       }
       case 'el-monthly': {
         if (!s.units) return 0;
-        return 65 + s.units * feTier(s.units);
+        return s.units * feTier(s.units);
       }
       case 'el-annual': {
         if (!s.units) return 0;
-        return 65 + s.units * 25;
+        return s.units * 25;
       }
-      case 'co-alarm':   return (s.units||0) * 100;
-      case 'smoke-co':   return (s.units||0) * (SMOKE_TYPES[s.smokeType||'21031518']?.price||130);
+      case 'co-alarm':   return (s.units||0) * 55;
+      case 'smoke-co':   return (s.units||0) * (SMOKE_TYPES[s.smokeType||'21031518']?.price||120);
       case 'fsp-new': {
         let base = 300 + (s.fspAddons||[]).reduce((sum,a)=>sum+a.price,0);
         if (s.fspRushPct) base *= (1 + s.fspRushPct/100);
@@ -1298,7 +1316,7 @@
       flags.push({ id:'ofc-fsp-maybe', label:'Fire Safety Plan — May Be Required', ref:'OFC s.2.8.1.1 — confirm occupant count', price: 300 });
 
     if (isResidential && fuelBurning && !sel('co-alarm'))
-      flags.push({ id:'ofc-co', label:'CO Alarm Installation', ref:'O. Reg. 87/25 (Jan 2026)', price: 100 });
+      flags.push({ id:'ofc-co', label:'CO Alarm Recommended (add-on)', ref:'O. Reg. 87/25 (Jan 2026) — $55/unit, supply + install', price: 55 });
 
     if (existingFSP && !sel('fsp-revision') && !sel('fsp-new'))
       flags.push({ id:'ofc-fsp-revision', label:'Annual FSP Revision', ref:'OFC s.2.8', price: 200 });
@@ -1361,6 +1379,16 @@
 
     // Section A
     const aLines = [];
+
+    // Call fee — always first
+    const callFeeWaived = !state.callFee;
+    aLines.push({
+      id: 'call-fee',
+      label: callFeeWaived ? '<s>Service / Call Fee</s>' : 'Service / Call Fee',
+      price: state.callFee || 0,
+      display: callFeeWaived ? '<s style="color:var(--muted)">Waived</s>' : '$'+(state.callFee).toFixed(2),
+    });
+
     Object.entries(state.services).forEach(([id, s]) => {
       if (!s.enabled) return;
       const price = calcServicePrice(id);
@@ -1377,7 +1405,7 @@
     document.getElementById('sectionA').innerHTML = aLines.map(l =>
       `<div class="summary-line">
         <div class="summary-line-left">
-          <div><div class="summary-line-name">${esc(l.label)}</div></div>
+          <div><div class="summary-line-name">${l.label}</div></div>
         </div>
         <div class="summary-line-amt">${l.display}</div>
       </div>`
@@ -1467,6 +1495,7 @@
       if (toggle?.checked && u.price !== 0) subtotal += u.price;
     });
 
+    subtotal += state.callFee || 0;
     subtotal = Math.max(0, subtotal);
     const hst   = subtotal * 0.13;
     const grand = subtotal + hst;
@@ -1479,13 +1508,13 @@
   // ── Service label helper ──────────────────────────────────────────
   function serviceLabelById(id, s) {
     const labels = {
-      'fe-monthly':   `FE Monthly Inspection${s.units?' — '+s.units+' units':''}`,
-      'fe-annual':    `FE Annual Maintenance${s.units?' — '+s.units+' units':''}`,
-      'fe-install':   'FE Supply & Install',
-      'el-monthly':   `EL Monthly Inspection${s.units?' — '+s.units+' units':''}`,
-      'el-annual':    `EL Annual Duration Test${s.units?' — '+s.units+' units':''}`,
-      'co-alarm':     `CO Alarm Installation${s.units?' — '+s.units+' units':''}`,
-      'smoke-co':     `Smoke/CO ${SMOKE_TYPES[s.smokeType||'21031518']?.label||''} Install${s.units?' — '+s.units+' units':''}`,
+      'fe-monthly':   `Fire Extinguisher Inspection — Monthly${s.units?' ('+s.units+' units)':''}`,
+      'fe-annual':    `Fire Extinguisher Inspection — Annual${s.units?' ('+s.units+' units)':''}`,
+      'fe-install':   'Fire Extinguisher Supply & Install',
+      'el-monthly':   `Emergency Lighting Inspection — Monthly${s.units?' ('+s.units+' units)':''}`,
+      'el-annual':    `Emergency Lighting Inspection — Annual Duration Test${s.units?' ('+s.units+' units)':''}`,
+      'co-alarm':     `CO Alarm Installation${s.units?' ('+s.units+' units)':''}`,
+      'smoke-co':     `Smoke/CO Combination Alarm Installation${s.units?' ('+s.units+' units)':''}`,
       'fsp-new':      'Fire Safety Plan — New',
       'fsp-revision': 'Fire Safety Plan — Annual Revision',
       'pre-fire':     'Pre-Fire Inspection',
@@ -1501,6 +1530,13 @@
 
     // Build line items
     const lineItems = [];
+
+    // Call fee (always first)
+    lineItems.push({
+      name:   'Service / Call Fee',
+      amount: state.callFee || 0,
+      waived: !state.callFee,
+    });
 
     // Section A
     Object.entries(state.services).forEach(([id, s]) => {
