@@ -180,6 +180,48 @@
       margin-bottom: 6px;
     }
 
+    /* ── Multi-service checkboxes ── */
+    .ms-section-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin: 0 0 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ms-service-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ms-service-row:last-child { border-bottom: none; }
+    .ms-checkbox { width: 20px; height: 20px; min-width: 20px; accent-color: var(--orange); cursor: pointer; background: none; border: none; padding: 0; }
+    .ms-label { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; cursor: pointer; }
+    .ms-freq { display: flex; gap: 10px; }
+    .ms-freq-wrap {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 12px; color: var(--muted); font-weight: 500;
+      text-transform: none; letter-spacing: 0; margin: 0; cursor: pointer;
+    }
+    .ms-freq-wrap input[type=radio] {
+      width: auto; background: none; border: none; padding: 0;
+      accent-color: var(--orange); cursor: pointer;
+    }
+    .ms-all-items-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin: 20px 0 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
     /* ── Line items ── */
     .line-item {
       background: var(--bg);
@@ -451,6 +493,9 @@
               <optgroup label="Sales">
                 <option value="product-sale">Product Sale (Supply Only)</option>
               </optgroup>
+              <optgroup label="Combined">
+                <option value="multi-service">Multi-Service (Multiple Job Types)</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -496,6 +541,19 @@
                 <option value="cash">Cash / Tap-to-Pay</option>
               </select>
             </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Payment Terms</label>
+          <div class="select-wrap">
+            <select id="paymentTerms">
+              <option value="0">Due on Receipt</option>
+              <option value="15">Net 15</option>
+              <option value="30" selected>Net 30</option>
+              <option value="45">Net 45</option>
+              <option value="60">Net 60</option>
+            </select>
           </div>
         </div>
 
@@ -562,10 +620,154 @@
 </div><!-- /mainContent -->
 
 <script>
-  var RENDER_URL = 'https://lfp-assistant.onrender.com';
-  var PIN_KEY    = 'lfp_invoice_pin';
-  var pin        = localStorage.getItem(PIN_KEY) || '';
-  var itemCount  = 0;
+  var RENDER_URL         = 'https://lfp-assistant.onrender.com';
+  var PIN_KEY            = 'lfp_invoice_pin';
+  var pin                = localStorage.getItem(PIN_KEY) || '';
+  var itemCount          = 0;
+  var selectedJobTypeKeys = [];
+
+  var MULTI_SERVICES = [
+    { label: 'Fire Extinguisher Inspection', hasFreq: true,  keys: { monthly: 'fe-inspection-monthly', annual: 'fe-inspection-annual' } },
+    { label: 'Emergency Lighting Inspection', hasFreq: true, keys: { monthly: 'el-inspection-monthly', annual: 'el-inspection-annual' } },
+    { label: 'Fire Extinguisher Supply & Install', hasFreq: false, key: 'fe-install' },
+    { label: 'CO Alarm Installation',              hasFreq: false, key: 'co-alarm-install' },
+    { label: 'Smoke/CO Alarm Installation',        hasFreq: false, key: 'smoke-co-install' },
+    { label: 'Fire Safety Plan',                   hasFreq: false, key: 'fsp' },
+    { label: 'Fire Safety Training',               hasFreq: false, key: 'training' },
+    { label: 'Product Sale',                       hasFreq: false, key: 'product-sale' },
+  ];
+
+  function buildSelectedJobTypeKeys() {
+    selectedJobTypeKeys = [];
+    MULTI_SERVICES.forEach(function(svc, i) {
+      var chk = document.getElementById('ms-chk-' + i);
+      if (!chk || !chk.checked) return;
+      if (svc.hasFreq) {
+        var monthly = document.getElementById('ms-freq-monthly-' + i);
+        var freq = (monthly && monthly.checked) ? 'monthly' : 'annual';
+        selectedJobTypeKeys.push(svc.keys[freq]);
+      } else {
+        selectedJobTypeKeys.push(svc.key);
+      }
+    });
+  }
+
+  var CATEGORY_LABELS = {
+    'fe-el-inspection-monthly': 'FE + EL Inspection — Monthly',
+    'fe-el-inspection-annual':  'FE + EL Inspection — Annual',
+    'fe-inspection-monthly': 'Fire Extinguisher Inspection — Monthly',
+    'fe-inspection-annual':  'Fire Extinguisher Inspection — Annual',
+    'el-inspection-monthly': 'Emergency Lighting Inspection — Monthly',
+    'el-inspection-annual':  'Emergency Lighting Inspection — Annual (30-min)',
+    'pre-fire-inspection':   'Pre-Fire Inspection',
+    'fe-install':            'Fire Extinguisher Supply & Install',
+    'co-alarm-install':      'CO Alarm Installation',
+    'smoke-co-install':      'Smoke/CO Alarm Installation',
+    'fsp':                   'Fire Safety Plan',
+    'training':              'Fire Safety Training',
+    'product-sale':          'Products (Supply Only)',
+  };
+
+  function renderCatalogueSection(key, skipKey) {
+    if (key === skipKey) return null;
+    var cat = QUICK_ITEMS[key];
+    var catDiv = document.createElement('div');
+    catDiv.className = 'browse-category';
+
+    var catLabel = document.createElement('div');
+    catLabel.className = 'browse-cat-label';
+    catLabel.textContent = CATEGORY_LABELS[key] || cat.title;
+    catDiv.appendChild(catLabel);
+
+    if (cat.grid) {
+      var grid = document.createElement('div');
+      grid.className = 'products-grid';
+      cat.grid.forEach(function(p) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'product-btn';
+        btn.innerHTML = '<span class="p-name">' + p.name + '</span><span class="p-sku">' + p.sku + '</span><span class="p-price">$' + p.price.toFixed(2) + '</span>';
+        btn.addEventListener('click', function() { addProduct(p.name + ' (' + p.sku + ')', p.price); });
+        grid.appendChild(btn);
+      });
+      catDiv.appendChild(grid);
+    } else {
+      cat.items.forEach(function(item) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'service-item-btn';
+        btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">$' + item.price.toFixed(2) + '</span></span>';
+        btn.addEventListener('click', function() { addProduct(item.name, item.price); });
+        catDiv.appendChild(btn);
+      });
+    }
+    return catDiv;
+  }
+
+  function renderMultiServicePanel(content) {
+    // --- Service type checkboxes ---
+    var chkHeader = document.createElement('div');
+    chkHeader.className = 'ms-section-header';
+    chkHeader.textContent = 'Select Services Performed';
+    content.appendChild(chkHeader);
+
+    var chkDiv = document.createElement('div');
+    MULTI_SERVICES.forEach(function(svc, i) {
+      var row = document.createElement('div');
+      row.className = 'ms-service-row';
+
+      var chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'ms-checkbox';
+      chk.id = 'ms-chk-' + i;
+      chk.addEventListener('change', buildSelectedJobTypeKeys);
+
+      var lbl = document.createElement('label');
+      lbl.className = 'ms-label';
+      lbl.htmlFor = 'ms-chk-' + i;
+      lbl.textContent = svc.label;
+
+      row.appendChild(chk);
+      row.appendChild(lbl);
+
+      if (svc.hasFreq) {
+        var freqDiv = document.createElement('div');
+        freqDiv.className = 'ms-freq';
+
+        ['monthly', 'annual'].forEach(function(freq, fi) {
+          var r = document.createElement('input');
+          r.type    = 'radio';
+          r.name    = 'ms-freq-' + i;
+          r.id      = 'ms-freq-' + freq + '-' + i;
+          r.value   = freq;
+          r.checked = fi === 0;
+          r.addEventListener('change', buildSelectedJobTypeKeys);
+
+          var wrap = document.createElement('label');
+          wrap.className = 'ms-freq-wrap';
+          wrap.appendChild(r);
+          wrap.appendChild(document.createTextNode(freq.charAt(0).toUpperCase() + freq.slice(1)));
+          freqDiv.appendChild(wrap);
+        });
+
+        row.appendChild(freqDiv);
+      }
+
+      chkDiv.appendChild(row);
+    });
+    content.appendChild(chkDiv);
+
+    // --- All catalogue items (no toggle) ---
+    var itemsHeader = document.createElement('div');
+    itemsHeader.className = 'ms-all-items-header';
+    itemsHeader.textContent = 'Add Line Items';
+    content.appendChild(itemsHeader);
+
+    Object.keys(QUICK_ITEMS).forEach(function(key) {
+      var section = renderCatalogueSection(key, null);
+      if (section) content.appendChild(section);
+    });
+  }
 
   // Show/hide PIN screen
   if (pin) {
@@ -759,18 +961,27 @@
 
   // Job type → populate quick add
   document.getElementById('jobType').addEventListener('change', function() {
-    var val     = this.value;
-    var catalog = QUICK_ITEMS[val];
+    var val      = this.value;
     var quickAdd = document.getElementById('quickAdd');
+    var content  = document.getElementById('quickAddContent');
 
+    selectedJobTypeKeys = [];
+    content.innerHTML   = '';
+
+    // Multi-service mode
+    if (val === 'multi-service') {
+      document.getElementById('quickAddTitle').textContent = 'Multi-Service Job';
+      renderMultiServicePanel(content);
+      quickAdd.classList.add('visible');
+      return;
+    }
+
+    var catalog = QUICK_ITEMS[val];
     if (!catalog) { quickAdd.classList.remove('visible'); return; }
 
     document.getElementById('quickAddTitle').textContent = catalog.title;
-    var content = document.getElementById('quickAddContent');
-    content.innerHTML = '';
 
     if (catalog.grid) {
-      // Product grid layout
       var grid = document.createElement('div');
       grid.className = 'products-grid';
       catalog.grid.forEach(function(p) {
@@ -783,7 +994,6 @@
       });
       content.appendChild(grid);
     } else {
-      // List layout for services
       catalog.items.forEach(function(item) {
         var btn = document.createElement('button');
         btn.type = 'button';
@@ -794,7 +1004,7 @@
       });
     }
 
-    // Browse all toggle
+    // Browse all toggle (single-type mode — skip current category)
     var toggleBtn = document.createElement('button');
     toggleBtn.type = 'button';
     toggleBtn.className = 'browse-toggle';
@@ -803,58 +1013,9 @@
     var browseAll = document.createElement('div');
     browseAll.className = 'browse-all';
 
-    // Build full catalogue grouped by category (skip current job type — already shown)
-    var CATEGORY_LABELS = {
-      'fe-el-inspection-monthly': 'Fire Extinguisher + Emergency Lighting Inspection — Monthly',
-      'fe-el-inspection-annual':  'Fire Extinguisher + Emergency Lighting Inspection — Annual',
-      'fe-inspection-monthly': 'Fire Extinguisher Inspection — Monthly',
-      'fe-inspection-annual':  'Fire Extinguisher Inspection — Annual',
-      'el-inspection-monthly': 'Emergency Lighting Inspection — Monthly',
-      'el-inspection-annual':  'Emergency Lighting Inspection — Annual',
-      'pre-fire-inspection':   'Pre-Fire Inspection',
-      'fe-install':            'Fire Extinguisher Supply & Install',
-      'co-alarm-install':      'CO Alarm Installation',
-      'smoke-co-install':      'Smoke/CO Alarm Installation',
-      'fsp':                   'Fire Safety Plan',
-      'training':              'Fire Safety Training',
-      'product-sale':          'Products (Supply Only)',
-    };
-
     Object.keys(QUICK_ITEMS).forEach(function(key) {
-      if (key === val) return; // skip — already shown above
-      var cat = QUICK_ITEMS[key];
-      var catDiv = document.createElement('div');
-      catDiv.className = 'browse-category';
-
-      var catLabel = document.createElement('div');
-      catLabel.className = 'browse-cat-label';
-      catLabel.textContent = CATEGORY_LABELS[key] || cat.title;
-      catDiv.appendChild(catLabel);
-
-      if (cat.grid) {
-        var grid = document.createElement('div');
-        grid.className = 'products-grid';
-        cat.grid.forEach(function(p) {
-          var btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'product-btn';
-          btn.innerHTML = '<span class="p-name">' + p.name + '</span><span class="p-sku">' + p.sku + '</span><span class="p-price">$' + p.price.toFixed(2) + '</span>';
-          btn.addEventListener('click', function() { addProduct(p.name + ' (' + p.sku + ')', p.price); });
-          grid.appendChild(btn);
-        });
-        catDiv.appendChild(grid);
-      } else {
-        cat.items.forEach(function(item) {
-          var btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'service-item-btn';
-          btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">$' + item.price.toFixed(2) + '</span></span>';
-          btn.addEventListener('click', function() { addProduct(item.name, item.price); });
-          catDiv.appendChild(btn);
-        });
-      }
-
-      browseAll.appendChild(catDiv);
+      var section = renderCatalogueSection(key, val);
+      if (section) browseAll.appendChild(section);
     });
 
     toggleBtn.addEventListener('click', function() {
@@ -983,6 +1144,7 @@
     var inspector       = document.getElementById('inspector').value;
     var contractType    = document.getElementById('contractType').value;
     var paymentMethod   = document.getElementById('paymentMethod').value;
+    var paymentTerms    = parseInt(document.getElementById('paymentTerms').value, 10);
     var propertyAddress = document.getElementById('propertyAddress').value.trim();
     var customerName    = document.getElementById('customerName').value.trim();
     var customerEmail   = document.getElementById('customerEmail').value.trim();
@@ -992,6 +1154,9 @@
     errorBanner.style.display = 'none';
 
     if (!jobType)          { showError('Please select a job type.'); return; }
+    if (jobType === 'multi-service' && selectedJobTypeKeys.length === 0) {
+      showError('Please select at least one service type.'); return;
+    }
     if (!jobId)            { showError('Please enter a Job ID.'); return; }
     if (!propertyAddress)  { showError('Please enter the property address.'); return; }
     if (!customerName)     { showError('Please enter the customer name.'); return; }
@@ -1002,21 +1167,29 @@
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="spinner"></span>Creating invoice...';
 
+    var bodyPayload = {
+      pin:             pin,
+      inspector:       inspector,
+      contractType:    contractType,
+      jobId:           jobId,
+      customerName:    customerName,
+      customerEmail:   customerEmail,
+      propertyAddress: propertyAddress,
+      paymentMethod:   paymentMethod,
+      paymentTerms:    paymentTerms,
+      lineItems:       lineItems,
+    };
+
+    if (jobType === 'multi-service') {
+      bodyPayload.jobTypeKeys = selectedJobTypeKeys;
+    } else {
+      bodyPayload.jobTypeKey = jobType;
+    }
+
     fetch(RENDER_URL + '/invoice/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pin:             pin,
-        jobTypeKey:      jobType,
-        inspector:       inspector,
-        contractType:    contractType,
-        jobId:           jobId,
-        customerName:    customerName,
-        customerEmail:   customerEmail,
-        propertyAddress: propertyAddress,
-        paymentMethod:   paymentMethod,
-        lineItems:       lineItems,
-      })
+      body: JSON.stringify(bodyPayload)
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -1063,6 +1236,7 @@
   }
 
   function resetForm() {
+    selectedJobTypeKeys = [];
     document.getElementById('invoiceForm').reset();
     document.getElementById('lineItems').innerHTML    = '';
     document.getElementById('quickAdd').classList.remove('visible');
