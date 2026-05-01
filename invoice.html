@@ -429,18 +429,18 @@
             <select id="jobType" required>
               <option value="" disabled selected>Select job type&#8230;</option>
               <optgroup label="Inspections — Combined">
-                <option value="fe-el-inspection-monthly">FE + EL Inspection &#8212; Monthly</option>
-                <option value="fe-el-inspection-annual">FE + EL Inspection &#8212; Annual</option>
+                <option value="fe-el-inspection-monthly">Fire Extinguisher + Emergency Lighting Inspection &#8212; Monthly</option>
+                <option value="fe-el-inspection-annual">Fire Extinguisher + Emergency Lighting Inspection &#8212; Annual</option>
               </optgroup>
               <optgroup label="Inspections — Single">
-                <option value="fe-inspection-monthly">FE Inspection &#8212; Monthly</option>
-                <option value="fe-inspection-annual">FE Inspection &#8212; Annual</option>
-                <option value="el-inspection-monthly">EL Inspection &#8212; Monthly</option>
-                <option value="el-inspection-annual">EL Inspection &#8212; Annual (30-min)</option>
+                <option value="fe-inspection-monthly">Fire Extinguisher Inspection &#8212; Monthly</option>
+                <option value="fe-inspection-annual">Fire Extinguisher Inspection &#8212; Annual</option>
+                <option value="el-inspection-monthly">Emergency Lighting Inspection &#8212; Monthly</option>
+                <option value="el-inspection-annual">Emergency Lighting Inspection &#8212; Annual (30-min)</option>
                 <option value="pre-fire-inspection">Pre-Fire Inspection</option>
               </optgroup>
               <optgroup label="Installations">
-                <option value="fe-install">FE Supply &amp; Install</option>
+                <option value="fe-install">Fire Extinguisher Supply &amp; Install</option>
                 <option value="co-alarm-install">CO Alarm Installation</option>
                 <option value="smoke-co-install">Smoke/CO Alarm Installation</option>
               </optgroup>
@@ -459,7 +459,7 @@
           <div class="form-group">
             <label>Job ID</label>
             <div style="display:flex;gap:8px;align-items:center;">
-              <input type="text" id="jobId" placeholder="Loading…" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" required readonly style="flex:1;background:#1a1c20;color:var(--orange);font-weight:700;cursor:default;">
+              <input type="text" id="jobId" placeholder="Loading…" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" required readonly style="flex:1;min-width:0;background:#1a1c20;color:var(--orange);font-weight:700;cursor:default;font-size:13px;letter-spacing:0.3px;">
               <button type="button" id="jobIdCopy" title="Copy Job ID" style="height:47px;width:44px;flex-shrink:0;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">&#128203;</button>
               <button type="button" id="jobIdRefresh" title="Get next ID" style="height:47px;width:44px;flex-shrink:0;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:18px;cursor:pointer;-webkit-tap-highlight-color:transparent;">&#8635;</button>
             </div>
@@ -591,8 +591,7 @@
       .catch(function() {
         var now = new Date();
         var yyyy = now.getFullYear();
-        var mm = String(now.getMonth() + 1).padStart(2, '0');
-        field.value = 'JOB-' + yyyy + '-' + mm + '-001';
+        field.value = 'JOB-' + yyyy + '-001';
         statusEl.textContent = '(offline default)';
       });
   }
@@ -639,7 +638,7 @@
   // Catalogue quick-add items per job type
   var QUICK_ITEMS = {
     'fe-el-inspection-monthly': {
-      title: 'FE + EL Inspection — Monthly',
+      title: 'Fire Extinguisher + Emergency Lighting Inspection — Monthly',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
         { name: 'FE Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
@@ -651,7 +650,7 @@
       ]
     },
     'fe-el-inspection-annual': {
-      title: 'FE + EL Inspection — Annual',
+      title: 'Fire Extinguisher + Emergency Lighting Inspection — Annual',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
         { name: 'FE Annual Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
@@ -661,7 +660,7 @@
       ]
     },
     'fe-inspection-monthly': {
-      title: 'FE Inspection — Monthly',
+      title: 'Fire Extinguisher Inspection — Monthly',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
         { name: 'FE Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
@@ -670,7 +669,7 @@
       ]
     },
     'fe-inspection-annual': {
-      title: 'FE Inspection — Annual',
+      title: 'Fire Extinguisher Inspection — Annual',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
         { name: 'FE Annual Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
@@ -679,7 +678,7 @@
       ]
     },
     'el-inspection-monthly': {
-      title: 'EL Inspection — Monthly',
+      title: 'Emergency Lighting Inspection — Monthly',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
         { name: 'EL Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
@@ -688,7 +687,7 @@
       ]
     },
     'el-inspection-annual': {
-      title: 'EL Inspection — Annual (30-min)',
+      title: 'Emergency Lighting Inspection — Annual (30-min)',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
         { name: 'EL Annual 30-min Battery Test — Per Unit', price: 25.00, note: 'per unit' },
@@ -701,7 +700,7 @@
       ]
     },
     'fe-install': {
-      title: 'FE Supply & Install',
+      title: 'Fire Extinguisher Supply & Install',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
         { name: '2lb ABC Extinguisher (CT-ABC2)', price: 60.00, note: 'each' },
@@ -714,8 +713,7 @@
     'co-alarm-install': {
       title: 'CO Alarm Installation',
       items: [
-        { name: 'CO Alarm — Sealed Battery (C3010)', price: 50.00, note: 'per unit' },
-        { name: 'CO Alarm Installation Fee', price: 50.00, note: 'per unit' },
+        { name: 'CO Alarm Install — Supply + Install (C3010)', price: 55.00, note: 'per unit' },
       ]
     },
     'smoke-co-install': {
@@ -723,7 +721,7 @@
       items: [
         { name: 'Smoke/CO Alarm — Battery (21031518)', price: 80.00, note: 'per unit' },
         { name: 'Smoke/CO Alarm — Hardwired (21033116)', price: 88.50, note: 'per unit' },
-        { name: 'Alarm Installation Fee', price: 50.00, note: 'per unit' },
+        { name: 'Alarm Installation Fee', price: 40.00, note: 'per unit' },
       ]
     },
     'fsp': {
@@ -807,14 +805,14 @@
 
     // Build full catalogue grouped by category (skip current job type — already shown)
     var CATEGORY_LABELS = {
-      'fe-el-inspection-monthly': 'FE + EL Inspection — Monthly',
-      'fe-el-inspection-annual':  'FE + EL Inspection — Annual',
-      'fe-inspection-monthly': 'FE Inspection — Monthly',
-      'fe-inspection-annual':  'FE Inspection — Annual',
-      'el-inspection-monthly': 'EL Inspection — Monthly',
-      'el-inspection-annual':  'EL Inspection — Annual',
+      'fe-el-inspection-monthly': 'Fire Extinguisher + Emergency Lighting Inspection — Monthly',
+      'fe-el-inspection-annual':  'Fire Extinguisher + Emergency Lighting Inspection — Annual',
+      'fe-inspection-monthly': 'Fire Extinguisher Inspection — Monthly',
+      'fe-inspection-annual':  'Fire Extinguisher Inspection — Annual',
+      'el-inspection-monthly': 'Emergency Lighting Inspection — Monthly',
+      'el-inspection-annual':  'Emergency Lighting Inspection — Annual',
       'pre-fire-inspection':   'Pre-Fire Inspection',
-      'fe-install':            'FE Supply & Install',
+      'fe-install':            'Fire Extinguisher Supply & Install',
       'co-alarm-install':      'CO Alarm Installation',
       'smoke-co-install':      'Smoke/CO Alarm Installation',
       'fsp':                   'Fire Safety Plan',
