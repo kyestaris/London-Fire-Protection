@@ -665,6 +665,21 @@
 
   <div id="serviceList"></div>
 
+  <div class="card" style="margin-top:14px">
+    <div class="card-title">Product Sales</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0">
+      <div>
+        <div style="font-size:15px;font-weight:500">CO Alarm — C3010</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Sealed Battery CO Alarm — $50/unit</div>
+      </div>
+      <div class="stepper" style="width:130px;flex-shrink:0">
+        <button class="stepper-btn" onclick="adjustProduct('co-alarm-c3010',-1)">−</button>
+        <div class="stepper-val" id="prod-co-alarm-c3010">0</div>
+        <button class="stepper-btn" onclick="adjustProduct('co-alarm-c3010',1)">+</button>
+      </div>
+    </div>
+  </div>
+
   <div class="error-banner" id="err3"></div>
   <button class="btn-primary" onclick="goScreen4()">Next — Review Quote →</button>
 
@@ -775,6 +790,7 @@
     screen4:  { ofcToggles:{}, upsellToggles:{} },
     callFee:  65,
     quoteUrl: '',
+    productSales: { 'co-alarm-c3010': 0 },
   };
 
   // ── PIN ──────────────────────────────────────────────────────────
@@ -848,8 +864,9 @@
   }
 
   function goScreen4() {
-    const anySelected = Object.values(state.services).some(s => s.enabled);
-    if (!anySelected) { showErr('err3', 'Select at least one service.'); return; }
+    const anySelected = Object.values(state.services).some(s => s.enabled)
+      || Object.values(state.productSales).some(q => q > 0);
+    if (!anySelected) { showErr('err3', 'Select at least one service or product.'); return; }
     clearErr('err3');
     buildSummary();
     show('screen4'); updateDots(4);
@@ -1220,6 +1237,12 @@
     refreshPreview(id);
   }
 
+  function adjustProduct(id, delta) {
+    state.productSales[id] = Math.max(0, (state.productSales[id]||0) + delta);
+    const el = document.getElementById('prod-'+id);
+    if (el) el.textContent = state.productSales[id];
+  }
+
   function adjustTraining(id, delta) {
     const s = state.services[id];
     s.trainingCount = Math.max(0, (s.trainingCount||0) + delta);
@@ -1416,6 +1439,15 @@
       aLines.push({ id, label, price: s.confirmOnSite ? 0 : price, display: priceStr, confirmOnSite: s.confirmOnSite });
     });
 
+    // Product sales
+    const PROD_LABELS = { 'co-alarm-c3010': 'CO Alarm — C3010' };
+    const PROD_PRICES = { 'co-alarm-c3010': 50 };
+    Object.entries(state.productSales).forEach(([id, qty]) => {
+      if (!qty) return;
+      const price = (PROD_PRICES[id]||0) * qty;
+      aLines.push({ id, label: `${PROD_LABELS[id]||id} (\u00d7${qty})`, price, display: '$'+price.toFixed(2) });
+    });
+
     // Add FSP box as separate line if checked
     if (state.services['fsp-new']?.fspBox) {
       aLines.push({ id:'fspb1', label:'FSPB-1 Plan Box', price:165, display:'$165.00' });
@@ -1502,6 +1534,10 @@
     });
     if (state.services['fsp-new']?.fspBox) subtotal += 165;
 
+    // Product sales
+    const _PROD_PRICES = { 'co-alarm-c3010': 50 };
+    Object.entries(state.productSales).forEach(([id, qty]) => { subtotal += (_PROD_PRICES[id]||0) * qty; });
+
     // Section B toggled on
     const bCard  = document.getElementById('sectionBCard');
     const bFlags = bCard?._flags || [];
@@ -1571,6 +1607,14 @@
       });
     });
     if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:165 });
+
+    // Product sales
+    const _SQ_PROD_LABELS = { 'co-alarm-c3010': 'CO Alarm — C3010' };
+    const _SQ_PROD_PRICES = { 'co-alarm-c3010': 50 };
+    Object.entries(state.productSales).forEach(([id, qty]) => {
+      if (!qty) return;
+      lineItems.push({ name: `${_SQ_PROD_LABELS[id]||id} (\u00d7${qty})`, amount: (_SQ_PROD_PRICES[id]||0) * qty });
+    });
     if (state.services['fsp-new']?.enabled && state.services['fsp-new']?.fspHasFloorPlans === false)
       lineItems.push({ name:'Floor Plan Drafting — quoted separately', amount:0 });
 
@@ -1702,12 +1746,15 @@
   function startOver() {
     // Reset state
     Object.assign(state, {
-      client:   { name:'',email:'',phone:'',address:'',type:'commercial',rowIndex:null },
-      property: { occupancy:'',floors:1,existingFSP:false,underContract:false,fuelBurning:false },
-      services: {},
-      screen4:  { ofcToggles:{},upsellToggles:{} },
-      quoteUrl: '',
+      client:       { name:'',email:'',phone:'',address:'',type:'commercial',rowIndex:null },
+      property:     { occupancy:'',floors:1,existingFSP:false,underContract:false,fuelBurning:false },
+      services:     {},
+      screen4:      { ofcToggles:{},upsellToggles:{} },
+      quoteUrl:     '',
+      productSales: { 'co-alarm-c3010': 0 },
     });
+    const prodEl = document.getElementById('prod-co-alarm-c3010');
+    if (prodEl) prodEl.textContent = '0';
     document.getElementById('progressDots').style.display = 'flex';
     document.getElementById('crmSearch').value      = '';
     document.getElementById('clientName').value     = '';
