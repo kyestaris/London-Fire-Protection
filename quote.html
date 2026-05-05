@@ -669,8 +669,8 @@
     <div class="card-title">Product Sales</div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0">
       <div>
-        <div style="font-size:15px;font-weight:500">CO Alarm — C3010</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Sealed Battery CO Alarm — $50/unit</div>
+        <div style="font-size:15px;font-weight:500">Carbon Monoxide Alarm — C3010</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Sealed Battery Carbon Monoxide Alarm — $50/unit</div>
       </div>
       <div class="stepper" style="width:130px;flex-shrink:0">
         <button class="stepper-btn" onclick="adjustProduct('co-alarm-c3010',-1)">−</button>
@@ -950,13 +950,13 @@
     const showFSPRevision = state.property.existingFSP;
 
     const services = [
-      { id:'fe-monthly',   label:'FE Inspection — Monthly',               type:'units' },
-      { id:'fe-annual',    label:'FE Inspection — Annual',                 type:'units' },
-      { id:'fe-install',   label:'FE Supply & Install',                    type:'fe-install' },
-      { id:'el-monthly',   label:'EL Inspection — Monthly',                type:'units' },
-      { id:'el-annual',    label:'EL Inspection — Annual Duration Test',   type:'units' },
-      { id:'co-alarm',     label:'CO Alarm Installation (C3010)',          type:'units-nobase' },
-      { id:'smoke-co',     label:'Smoke/CO Combo Installation',            type:'smoke-co' },
+      { id:'fe-monthly',   label:'Fire Extinguisher Inspection — Monthly',               type:'units' },
+      { id:'fe-annual',    label:'Fire Extinguisher Inspection — Annual',                 type:'units' },
+      { id:'fe-install',   label:'Fire Extinguisher Supply & Install',                    type:'fe-install' },
+      { id:'el-monthly',   label:'Emergency Lighting Inspection — Monthly',               type:'units' },
+      { id:'el-annual',    label:'Emergency Lighting Inspection — Annual Duration Test',  type:'units' },
+      { id:'co-alarm',     label:'Carbon Monoxide Alarm Installation (C3010)',            type:'units-nobase' },
+      { id:'smoke-co',     label:'Smoke & Carbon Monoxide Alarm Installation',            type:'smoke-co' },
       { id:'fsp-new',      label:'Fire Safety Plan — New',                 type:'fsp' },
       ...(showFSPRevision ? [{ id:'fsp-revision', label:'Fire Safety Plan — Annual Revision', type:'fsp-revision' }] : []),
       { id:'pre-fire',     label:'Pre-Fire Inspection',                    type:'custom' },
@@ -1341,13 +1341,13 @@
 
     if (!isResidential) {
       if (!sel('fe-monthly'))
-        flags.push({ id:'ofc-fe-monthly', label:'FE Monthly Inspection', ref:'OFC s.6.2 / NFPA 10', price: calcOFCFEPrice('fe-monthly') });
+        flags.push({ id:'ofc-fe-monthly', label:'Fire Extinguisher Monthly Inspection', ref:'OFC s.6.2 / NFPA 10', price: calcOFCFEPrice('fe-monthly') });
       if (!sel('fe-annual'))
-        flags.push({ id:'ofc-fe-annual', label:'FE Annual Maintenance', ref:'OFC s.6.2 / NFPA 10', price: calcOFCFEPrice('fe-annual') });
+        flags.push({ id:'ofc-fe-annual', label:'Fire Extinguisher Annual Maintenance', ref:'OFC s.6.2 / NFPA 10', price: calcOFCFEPrice('fe-annual') });
       if (!sel('el-monthly'))
-        flags.push({ id:'ofc-el-monthly', label:'EL Monthly Functional Test', ref:'OFC s.6.7', price: calcOFCFEPrice('el-monthly') });
+        flags.push({ id:'ofc-el-monthly', label:'Emergency Lighting Monthly Functional Test', ref:'OFC s.6.7', price: calcOFCFEPrice('el-monthly') });
       if (!sel('el-annual'))
-        flags.push({ id:'ofc-el-annual', label:'EL Annual Duration Test', ref:'OFC s.6.7', price: calcOFCFEPrice('el-annual') });
+        flags.push({ id:'ofc-el-annual', label:'Emergency Lighting Annual Duration Test', ref:'OFC s.6.7', price: calcOFCFEPrice('el-annual') });
     }
 
     const needsFSP = ['assembly','care-detention','apartment-4plus'].includes(occupancy);
@@ -1358,7 +1358,7 @@
       flags.push({ id:'ofc-fsp-maybe', label:'Fire Safety Plan — May Be Required', ref:'OFC s.2.8.1.1 — confirm occupant count', price: 650 });
 
     if (isResidential && fuelBurning && !sel('co-alarm'))
-      flags.push({ id:'ofc-co', label:'CO Alarm Recommended (add-on)', ref:'O. Reg. 87/25 (Jan 2026) — $55/unit, supply + install', price: 55 });
+      flags.push({ id:'ofc-co', label:'Carbon Monoxide Alarm Recommended (add-on)', ref:'O. Reg. 87/25 (Jan 2026) — $55/unit, supply + install', price: 55 });
 
     if (existingFSP && !sel('fsp-revision') && !sel('fsp-new'))
       flags.push({ id:'ofc-fsp-revision', label:'Annual FSP Revision', ref:'OFC s.2.8', price: 250 });
@@ -1392,7 +1392,7 @@
       if (savings > 0) {
         upsells.push({
           id:'bundle-fe-el',
-          label:`FE + EL Inspection Bundle — save $${savings.toFixed(0)}`,
+          label:`Fire Extinguisher + Emergency Lighting Inspection Bundle — save $${savings.toFixed(0)}`,
           desc:'One visit, one base fee, $6/unit flat rate for all units',
           price: -savings,
         });
@@ -1405,7 +1405,7 @@
 
     // FE only → suggest EL
     if (feM && !elM && !ofcFlags.find(f=>f.id==='ofc-el-monthly'))
-      upsells.push({ id:'add-el', label:'Add EL Monthly Inspection', desc:'If emergency lighting is present, bundle the visit and reduce your cost', price: 0 });
+      upsells.push({ id:'add-el', label:'Add Emergency Lighting Monthly Inspection', desc:'If emergency lighting is present, bundle the visit and reduce your cost', price: 0 });
 
     // No monthly contract → suggest it
     if (!feM && !elM)
@@ -1440,7 +1440,7 @@
     });
 
     // Product sales
-    const PROD_LABELS = { 'co-alarm-c3010': 'CO Alarm — C3010' };
+    const PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010' };
     const PROD_PRICES = { 'co-alarm-c3010': 50 };
     Object.entries(state.productSales).forEach(([id, qty]) => {
       if (!qty) return;
@@ -1572,8 +1572,8 @@
       'fe-install':   'Fire Extinguisher Supply & Install',
       'el-monthly':   `Emergency Lighting Inspection — Monthly${s.units?' ('+s.units+' units)':''}`,
       'el-annual':    `Emergency Lighting Inspection — Annual Duration Test${s.units?' ('+s.units+' units)':''}`,
-      'co-alarm':     `CO Alarm Installation${s.units?' ('+s.units+' units)':''}`,
-      'smoke-co':     `Smoke/CO Combination Alarm Installation${s.units?' ('+s.units+' units)':''}`,
+      'co-alarm':     `Carbon Monoxide Alarm Installation${s.units?' ('+s.units+' units)':''}`,
+      'smoke-co':     `Smoke & Carbon Monoxide Alarm Installation${s.units?' ('+s.units+' units)':''}`,
       'fsp-new':      'Fire Safety Plan — New',
       'fsp-revision': 'Fire Safety Plan — Annual Revision',
       'pre-fire':     'Pre-Fire Inspection',
@@ -1609,7 +1609,7 @@
     if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:165 });
 
     // Product sales
-    const _SQ_PROD_LABELS = { 'co-alarm-c3010': 'CO Alarm — C3010' };
+    const _SQ_PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010' };
     const _SQ_PROD_PRICES = { 'co-alarm-c3010': 50 };
     Object.entries(state.productSales).forEach(([id, qty]) => {
       if (!qty) return;
