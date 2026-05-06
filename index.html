@@ -1382,6 +1382,27 @@
       color: var(--color-text-muted);
       margin-top: 2px;
     }
+    .pricing-sale-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--color-primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .pricing-original {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-decoration: line-through;
+      letter-spacing: 0.5px;
+      margin-right: 6px;
+    }
     .pricing-divider {
       height: 0.5px;
       background: var(--color-border);
@@ -1758,7 +1779,7 @@
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#faq">FAQ</a></li>
-        <li><a href="#testimonials">Testimonials</a></li>
+        <!-- <li><a href="#testimonials">Testimonials</a></li> -->
         <li><a href="#contact">Contact</a></li>
       </ul>
 
@@ -1780,7 +1801,7 @@
   <a href="#pricing"      class="mobile-link" onclick="closeMobileMenu()">Pricing</a>
   <a href="#about"        class="mobile-link" onclick="closeMobileMenu()">About</a>
   <a href="#faq"          class="mobile-link" onclick="closeMobileMenu()">FAQ</a>
-  <a href="#testimonials" class="mobile-link" onclick="closeMobileMenu()">Testimonials</a>
+  <!-- <a href="#testimonials" class="mobile-link" onclick="closeMobileMenu()">Testimonials</a> -->
   <a href="#contact"      class="mobile-link" onclick="closeMobileMenu()">Contact</a>
   <a href="#contact" class="btn btn-primary mobile-cta" onclick="closeMobileMenu()">Get a Quote</a>
 </div>
@@ -2057,8 +2078,11 @@
           <p class="pricing-plan-desc">For homeowners and landlords needing Ontario Fire Code and Building Code compliance.</p>
         </div>
         <div>
-          <div class="pricing-quote-tag">Installations start at $40</div>
-          <div class="pricing-quote-sub">No minimum order</div>
+          <div class="pricing-sale-badge">Limited Time Offer</div>
+          <div>
+            <span class="pricing-original">$40</span><span class="pricing-quote-tag" style="display:inline;">Installations from $20</span>
+          </div>
+          <div class="pricing-quote-sub">50% off — no minimum order</div>
         </div>
         <div class="pricing-divider"></div>
         <ul class="pricing-features" aria-label="Residential installations include">
@@ -2364,8 +2388,9 @@
 
 
 <!-- ─────────────────────────────────────────────────────────────── -->
-<!--  TESTIMONIALS                                                   -->
+<!--  TESTIMONIALS (commented out until real reviews are available) -->
 <!-- ─────────────────────────────────────────────────────────────── -->
+<!-- TESTIMONIALS_START
 <section id="testimonials" class="section" aria-labelledby="testimonials-heading">
   <div class="container">
     <div class="testimonials-header fade-up">
@@ -2439,6 +2464,7 @@
     </div>
   </div>
 </section>
+TESTIMONIALS_END -->
 
 
 <!-- ─────────────────────────────────────────────────────────────── -->
@@ -2608,7 +2634,7 @@
         <div class="footer-col-title">Company</div>
         <ul class="footer-links" role="list">
           <li><a href="#about">About</a></li>
-          <li><a href="#testimonials">Testimonials</a></li>
+          <!-- <li><a href="#testimonials">Testimonials</a></li> -->
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a href="#contact">Get a Quote</a></li>
