@@ -1089,7 +1089,7 @@
           </div>
           <div class="onsite-row" style="margin-top:12px">
             <input type="checkbox" id="fsp-box-${svc.id}" onchange="toggleFSPBox(this.checked)">
-            <label for="fsp-box-${svc.id}" style="text-transform:none;font-size:13px;letter-spacing:0">Include FSPB-1 plan box ($165)</label>
+            <label for="fsp-box-${svc.id}" style="text-transform:none;font-size:13px;letter-spacing:0">Include FSPB-1 plan box ($200)</label>
           </div>
         </div>`;
     } else if (svc.type === 'fsp-revision') {
@@ -1466,7 +1466,7 @@
 
     // Add FSP box as separate line if checked
     if (state.services['fsp-new']?.fspBox) {
-      aLines.push({ id:'fspb1', label:'FSPB-1 Plan Box', price:165, display:'$165.00' });
+      aLines.push({ id:'fspb1', label:'FSPB-1 Plan Box', price:200, display:'$200.00' });
     }
     // Floor plan drafting — TBD line if client has no existing floor plans
     if (state.services['fsp-new']?.enabled && state.services['fsp-new']?.fspHasFloorPlans === false) {
@@ -1557,7 +1557,7 @@
       if (!s.enabled || s.confirmOnSite) return;
       subtotal += calcServicePrice(id);
     });
-    if (state.services['fsp-new']?.fspBox) subtotal += 165;
+    if (state.services['fsp-new']?.fspBox) subtotal += 200;
 
     // Product sales
     const _PROD_PRICES = { 'co-alarm-c3010': 50 };
@@ -1648,7 +1648,7 @@
         amount: price,
       });
     });
-    if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:165 });
+    if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:200 });
 
     // Product sales
     const _SQ_PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010' };
