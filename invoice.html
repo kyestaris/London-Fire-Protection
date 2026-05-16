@@ -600,6 +600,21 @@
         <div id="lineItems"></div>
         <button type="button" class="btn-add-item" onclick="addLineItem()">+ Add Line Item</button>
         <div class="summary">
+          <div class="summary-row" style="padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px">
+            <div style="display:flex;align-items:center;gap:8px;flex:1">
+              <span style="color:var(--muted);flex-shrink:0">Discount</span>
+              <div style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;font-size:12px;flex-shrink:0">
+                <button id="discTypePct" type="button" onclick="setDiscountType('pct')"
+                  style="padding:4px 9px;background:var(--orange);color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:600">%</button>
+                <button id="discTypeDollar" type="button" onclick="setDiscountType('dollar')"
+                  style="padding:4px 9px;background:none;color:var(--muted);border:none;cursor:pointer;font-family:inherit;font-weight:600">$</button>
+              </div>
+              <input type="number" id="discountInput" value="0" min="0" step="1"
+                style="width:70px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:15px;font-weight:600;color:var(--text);text-align:center;font-family:inherit"
+                oninput="discountState.value=parseFloat(this.value)||0;updateSummary()">
+            </div>
+            <span id="discountAmt" style="color:#4ade80;font-size:14px;font-weight:600">—</span>
+          </div>
           <div class="summary-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
           <div class="summary-row"><span>HST (13%)</span><span id="hst">$0.00</span></div>
           <div class="summary-row total"><span>Total</span><span id="total">$0.00</span></div>
@@ -637,6 +652,16 @@
   var pin                = localStorage.getItem(PIN_KEY) || '';
   var itemCount          = 0;
   var selectedJobTypeKeys = [];
+  var discountState      = { type: 'pct', value: 0 };
+
+  function setDiscountType(type) {
+    discountState.type = type;
+    document.getElementById('discTypePct').style.background    = type === 'pct'    ? 'var(--orange)' : 'none';
+    document.getElementById('discTypePct').style.color         = type === 'pct'    ? '#fff' : 'var(--muted)';
+    document.getElementById('discTypeDollar').style.background = type === 'dollar' ? 'var(--orange)' : 'none';
+    document.getElementById('discTypeDollar').style.color      = type === 'dollar' ? '#fff' : 'var(--muted)';
+    updateSummary();
+  }
 
   var MULTI_SERVICES = [
     { label: 'Fire Extinguisher Inspection', hasFreq: true,  keys: { monthly: 'fe-inspection-monthly', annual: 'fe-inspection-annual' } },
@@ -1128,13 +1153,25 @@
   }
 
   function updateSummary() {
-    var subtotal = 0;
+    var preDiscount = 0;
     document.querySelectorAll('.line-item').forEach(function(item) {
       var inputs = item.querySelectorAll('input');
-      subtotal += (parseFloat(inputs[1].value) || 0) * (parseFloat(inputs[2].value) || 0);
+      preDiscount += (parseFloat(inputs[1].value) || 0) * (parseFloat(inputs[2].value) || 0);
     });
-    var hst   = subtotal * 0.13;
-    var total = subtotal + hst;
+
+    var discVal = discountState.value || 0;
+    var discAmt = 0;
+    if (discVal > 0) {
+      discAmt = discountState.type === 'pct'
+        ? Math.min(preDiscount * discVal / 100, preDiscount)
+        : Math.min(discVal, preDiscount);
+      discAmt = Math.round(discAmt * 100) / 100;
+    }
+    document.getElementById('discountAmt').textContent = discAmt > 0 ? '-$' + discAmt.toFixed(2) : '—';
+
+    var subtotal = preDiscount - discAmt;
+    var hst      = subtotal * 0.13;
+    var total    = subtotal + hst;
     document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
     document.getElementById('hst').textContent      = '$' + hst.toFixed(2);
     document.getElementById('total').textContent    = '$' + total.toFixed(2);
@@ -1159,6 +1196,20 @@
     var customerName    = document.getElementById('customerName').value.trim();
     var customerEmail   = document.getElementById('customerEmail').value.trim();
     var lineItems       = getLineItems();
+
+    // Inject discount as negative line item if set
+    var discVal = discountState.value || 0;
+    if (discVal > 0 && lineItems.length > 0) {
+      var preDiscount = lineItems.reduce(function(s, i) { return s + i.quantity * i.unitPrice; }, 0);
+      var discAmt = discountState.type === 'pct'
+        ? Math.min(preDiscount * discVal / 100, preDiscount)
+        : Math.min(discVal, preDiscount);
+      discAmt = Math.round(discAmt * 100) / 100;
+      if (discAmt > 0) {
+        var discLabel = discountState.type === 'pct' ? 'Discount (' + discVal + '%)' : 'Discount';
+        lineItems.push({ description: discLabel, quantity: 1, unitPrice: -discAmt });
+      }
+    }
 
     var errorBanner = document.getElementById('errorBanner');
     errorBanner.style.display = 'none';
@@ -1247,6 +1298,10 @@
 
   function resetForm() {
     selectedJobTypeKeys = [];
+    discountState = { type: 'pct', value: 0 };
+    var discInput = document.getElementById('discountInput');
+    if (discInput) discInput.value = '0';
+    setDiscountType('pct');
     document.getElementById('invoiceForm').reset();
     document.getElementById('lineItems').innerHTML    = '';
     document.getElementById('quickAdd').classList.remove('visible');
