@@ -721,6 +721,21 @@
 
   <!-- Totals -->
   <div class="totals">
+    <div class="total-row" style="padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <span class="label" style="flex-shrink:0">Discount</span>
+        <div style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;font-size:12px;flex-shrink:0">
+          <button id="discTypePct" onclick="setDiscountType('pct')"
+            style="padding:4px 9px;background:var(--orange);color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:600">%</button>
+          <button id="discTypeDollar" onclick="setDiscountType('dollar')"
+            style="padding:4px 9px;background:none;color:var(--muted);border:none;cursor:pointer;font-family:inherit;font-weight:600">$</button>
+        </div>
+        <input type="number" id="discountInput" value="0" min="0" step="1"
+          style="width:70px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:15px;font-weight:600;color:var(--text);text-align:center;font-family:inherit"
+          oninput="state.discount.value=parseFloat(this.value)||0;refreshTotals()">
+      </div>
+      <span id="totalDiscount" style="color:var(--green-txt);font-size:14px;font-weight:600">—</span>
+    </div>
     <div class="total-row">
       <span class="label">Subtotal (ex-HST)</span>
       <span id="totalSubtotal">$0.00</span>
@@ -791,6 +806,7 @@
     callFee:  65,
     quoteUrl: '',
     productSales: { 'co-alarm-c3010': 0 },
+    discount: { type: 'pct', value: 0 },
   };
 
   // ── PIN ──────────────────────────────────────────────────────────
@@ -1524,6 +1540,15 @@
     refreshTotals();
   }
 
+  function setDiscountType(type) {
+    state.discount.type = type;
+    document.getElementById('discTypePct').style.background    = type === 'pct'    ? 'var(--orange)' : 'none';
+    document.getElementById('discTypePct').style.color         = type === 'pct'    ? '#fff' : 'var(--muted)';
+    document.getElementById('discTypeDollar').style.background = type === 'dollar' ? 'var(--orange)' : 'none';
+    document.getElementById('discTypeDollar').style.color      = type === 'dollar' ? '#fff' : 'var(--muted)';
+    refreshTotals();
+  }
+
   function refreshTotals() {
     let subtotal = 0;
 
@@ -1556,10 +1581,27 @@
 
     subtotal += state.callFee || 0;
     subtotal = Math.max(0, subtotal);
-    const hst   = subtotal * 0.13;
-    const grand = subtotal + hst;
 
-    document.getElementById('totalSubtotal').textContent = '$'+subtotal.toFixed(2);
+    // Discount
+    const discVal = state.discount.value || 0;
+    let discAmt = 0;
+    if (discVal > 0) {
+      discAmt = state.discount.type === 'pct'
+        ? Math.min(subtotal * discVal / 100, subtotal)
+        : Math.min(discVal, subtotal);
+    }
+    const discEl = document.getElementById('totalDiscount');
+    if (discAmt > 0) {
+      discEl.textContent = '-$'+discAmt.toFixed(2);
+    } else {
+      discEl.textContent = '—';
+    }
+
+    const discounted = subtotal - discAmt;
+    const hst   = discounted * 0.13;
+    const grand = discounted + hst;
+
+    document.getElementById('totalSubtotal').textContent = '$'+discounted.toFixed(2);
     document.getElementById('totalHST').textContent      = '$'+hst.toFixed(2);
     document.getElementById('totalGrand').textContent    = '$'+grand.toFixed(2);
   }
@@ -1632,8 +1674,23 @@
         lineItems.push({ name:u.label, amount:u.price });
     });
 
+    // Discount line item
+    const preDiscountSubtotal = lineItems.reduce((s,l)=>s+l.amount,0);
+    const discVal = state.discount.value || 0;
+    let discAmt = 0;
+    if (discVal > 0) {
+      discAmt = state.discount.type === 'pct'
+        ? Math.min(preDiscountSubtotal * discVal / 100, preDiscountSubtotal)
+        : Math.min(discVal, preDiscountSubtotal);
+      discAmt = Math.round(discAmt * 100) / 100;
+      const discLabel = state.discount.type === 'pct'
+        ? `Discount (${discVal}%)`
+        : 'Discount';
+      lineItems.push({ name: discLabel, amount: -discAmt });
+    }
+
     // HST line item
-    const subtotal = lineItems.reduce((s,l)=>s+l.amount,0);
+    const subtotal = preDiscountSubtotal - discAmt;
     const hst = Math.round(subtotal*0.13*100)/100;
     lineItems.push({ name:'HST (13% Ontario)', amount: hst });
 
@@ -1752,7 +1809,11 @@
       screen4:      { ofcToggles:{},upsellToggles:{} },
       quoteUrl:     '',
       productSales: { 'co-alarm-c3010': 0 },
+      discount:     { type: 'pct', value: 0 },
     });
+    const discInput = document.getElementById('discountInput');
+    if (discInput) discInput.value = '0';
+    setDiscountType('pct');
     const prodEl = document.getElementById('prod-co-alarm-c3010');
     if (prodEl) prodEl.textContent = '0';
     document.getElementById('progressDots').style.display = 'flex';
