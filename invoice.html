@@ -733,7 +733,8 @@
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'service-item-btn';
-        btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">$' + item.price.toFixed(2) + '</span></span>';
+        var priceDisplay = item.price != null ? '$' + item.price.toFixed(2) : 'Enter price';
+        btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">' + priceDisplay + '</span></span>';
         btn.addEventListener('click', function() { addProduct(item.name, item.price); });
         catDiv.appendChild(btn);
       });
@@ -903,9 +904,7 @@
       title: 'Fire Extinguisher Inspection — Annual',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
-        { name: 'FE Annual Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
-        { name: 'FE Annual Inspection — Per Unit (10–50 units)', price: 6.00, note: 'per unit' },
-        { name: 'FE Annual Inspection — Per Unit (50+ units)', price: 5.00, note: 'per unit' },
+        { name: 'FE Annual Inspection — Per Unit', price: null, note: 'enter price' },
       ]
     },
     'el-inspection-monthly': {
@@ -951,8 +950,8 @@
       title: 'Smoke/CO Alarm Installation',
       items: [
         { name: 'Smoke/CO Alarm — Battery (21031518)', price: 80.00, note: 'per unit' },
-        { name: 'Smoke/CO Alarm — Hardwired (21033116)', price: 88.50, note: 'per unit' },
-        { name: 'Alarm Installation Fee', price: 40.00, note: 'per unit' },
+        { name: 'Smoke/CO Alarm — Interconnected (21033116)', price: 88.50, note: 'per unit' },
+        { name: 'Installation Fee', price: null, note: 'enter amount' },
       ]
     },
     'fsp': {
@@ -1033,7 +1032,8 @@
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'service-item-btn';
-        btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">$' + item.price.toFixed(2) + '</span></span>';
+        var priceDisplay = item.price != null ? '$' + item.price.toFixed(2) : 'Enter price';
+        btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">' + priceDisplay + '</span></span>';
         btn.addEventListener('click', function() { addProduct(item.name, item.price); });
         content.appendChild(btn);
       });
