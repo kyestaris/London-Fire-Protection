@@ -793,8 +793,8 @@
     '5CO2':    '5lb CO2 ($350)',
   };
   const SMOKE_TYPES = {
-    '21031518': { label: 'Battery (21031518)', price: 80 },
-    '21033116': { label: 'Interconnected (21033116)', price: 88.5 },
+    '21031518': { label: 'Battery (21031518)', price: 120 },
+    '21033116': { label: 'Interconnected (21033116)', price: 128.5 },
   };
 
   // ── State ────────────────────────────────────────────────────────
@@ -1044,8 +1044,8 @@
         <div class="service-body-inner">
           <label>Type</label>
           <div class="toggle-row" style="margin-bottom:14px">
-            <button class="toggle-btn ${!s.smokeType||s.smokeType==='21031518'?'active':''}" onclick="setSmokeType('${svc.id}','21031518')">Battery ($80)</button>
-            <button class="toggle-btn ${s.smokeType==='21033116'?'active':''}" onclick="setSmokeType('${svc.id}','21033116')">Interconnected ($88.50)</button>
+            <button class="toggle-btn ${!s.smokeType||s.smokeType==='21031518'?'active':''}" onclick="setSmokeType('${svc.id}','21031518')">Battery ($120)</button>
+            <button class="toggle-btn ${s.smokeType==='21033116'?'active':''}" onclick="setSmokeType('${svc.id}','21033116')">Interconnected ($128.50)</button>
           </div>
           <label>Number of Units</label>
           <div class="stepper">
@@ -1333,7 +1333,7 @@
         return s.units * 25;
       }
       case 'co-alarm':   return (s.units||0) * 55;
-      case 'smoke-co':   return (s.units||0) * ((SMOKE_TYPES[s.smokeType||'21031518']?.price||80) + (parseFloat(s.smokeInstallFee)||0));
+      case 'smoke-co':   return (s.units||0) * ((SMOKE_TYPES[s.smokeType||'21031518']?.price||120) + (parseFloat(s.smokeInstallFee)||0));
       case 'fsp-new': {
         const sizeBase = { small: 650, medium: 1250, large: 2250 };
         let base = (sizeBase[s.fspSize] || 650) + (s.fspAddons||[]).reduce((sum,a)=>sum+a.price,0);
