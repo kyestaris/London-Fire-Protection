@@ -795,6 +795,8 @@
   const SMOKE_TYPES = {
     '21031518': { label: 'Battery (21031518)', price: 80 },
     '21033116': { label: 'Interconnected (21033116)', price: 88.5 },
+    '21031471': { label: 'Smoke Only — Battery (21031471)', price: 51.5 },
+    '21031559': { label: 'Smoke Only — Hardwired (21031559)', price: 56 },
   };
 
   // ── State ────────────────────────────────────────────────────────
@@ -1046,6 +1048,8 @@
           <div class="toggle-row" style="margin-bottom:14px">
             <button class="toggle-btn ${!s.smokeType||s.smokeType==='21031518'?'active':''}" onclick="setSmokeType('${svc.id}','21031518')">Battery ($80/unit)</button>
             <button class="toggle-btn ${s.smokeType==='21033116'?'active':''}" onclick="setSmokeType('${svc.id}','21033116')">Interconnected ($88.50/unit)</button>
+            <button class="toggle-btn ${s.smokeType==='21031471'?'active':''}" onclick="setSmokeType('${svc.id}','21031471')">Smoke Only — Battery ($51.50/unit)</button>
+            <button class="toggle-btn ${s.smokeType==='21031559'?'active':''}" onclick="setSmokeType('${svc.id}','21031559')">Smoke Only — Hardwired ($56/unit)</button>
           </div>
           <label>Number of Units</label>
           <div class="stepper">
@@ -1201,7 +1205,8 @@
   function setSmokeType(id, type) {
     state.services[id].smokeType = type;
     document.querySelectorAll(`#svc-${id} .toggle-btn`).forEach((b,i) => {
-      b.classList.toggle('active', (i===0&&type==='21031518')||(i===1&&type==='21033116'));
+      const _smokeOrder = ['21031518','21033116','21031471','21031559'];
+      b.classList.toggle('active', _smokeOrder[i] === type);
     });
     refreshPreview(id);
   }
