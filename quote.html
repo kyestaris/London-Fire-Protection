@@ -784,13 +784,14 @@
   // ── Constants ────────────────────────────────────────────────────
   const PIN = '6367';
 
-  const FE_SKU_PRICES = { 'CT-ABC2': 60, 'D-ABC5W': 75, 'D-ABC10': 115, 'D-ABC20': 250, '5CO2': 350 };
+  const FE_SKU_PRICES = { 'CT-ABC2': 60, 'D-ABC5W': 75, 'D-ABC5W-EX': 75, 'D-ABC10': 115, 'D-ABC20': 250, '5CO2': 350 };
   const FE_SKU_LABELS = {
-    'CT-ABC2': '2lb ABC — Garrison ($60)',
-    'D-ABC5W': '5lb ABC ($75)',
-    'D-ABC10': '10lb ABC ($115)',
-    'D-ABC20': '20lb ABC ($250)',
-    '5CO2':    '5lb CO2 ($350)',
+    'CT-ABC2':    '2lb ABC — Garrison ($60)',
+    'D-ABC5W':    '5lb ABC ($75)',
+    'D-ABC5W-EX': '5lb ABC ($75)',
+    'D-ABC10':    '10lb ABC ($115)',
+    'D-ABC20':    '20lb ABC ($250)',
+    '5CO2':       '5lb CO2 ($350)',
   };
   const SMOKE_TYPES = {
     '21031518': { label: 'Battery (21031518)', price: 80 },
@@ -1027,7 +1028,7 @@
     } else if (svc.type === 'fe-install') {
       bodyHTML = `
         <div class="service-body-inner">
-          ${['CT-ABC2','D-ABC5W','D-ABC10','D-ABC20','5CO2'].map(sku => `
+          ${['CT-ABC2','D-ABC5W','D-ABC5W-EX','D-ABC10','D-ABC20','5CO2'].map(sku => `
             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
               <span style="font-size:14px">${FE_SKU_LABELS[sku]}</span>
               <div class="stepper" style="width:130px">
