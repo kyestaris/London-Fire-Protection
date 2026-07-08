@@ -586,6 +586,10 @@
           <label>Email</label>
           <input type="email" id="customerEmail" placeholder="client@email.com" inputmode="email" autocomplete="email" required>
         </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:4px">
+          <input type="checkbox" id="annualFollowup" style="width:auto">
+          <label for="annualFollowup" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--text);cursor:pointer">Add to annual follow-up (CRM reminder in 12 months)</label>
+        </div>
       </div>
 
       <!-- Quick Add (dynamic per job type) -->
@@ -1234,6 +1238,8 @@
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="spinner"></span>Creating invoice...';
 
+    var annualFollowup = document.getElementById('annualFollowup').checked;
+
     var bodyPayload = {
       pin:             pin,
       inspector:       inspector,
@@ -1245,6 +1251,7 @@
       paymentMethod:   paymentMethod,
       paymentTerms:    paymentTerms,
       lineItems:       lineItems,
+      annualFollowup:  annualFollowup,
     };
 
     if (jobType === 'multi-service') {
