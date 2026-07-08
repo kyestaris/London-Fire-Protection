@@ -1,5 +1,6 @@
 const { google } = require('googleapis');
 const Anthropic = require('@anthropic-ai/sdk');
+const twilio = require('twilio');
 
 const SHEET_ID = process.env.SHEET_ID;
 const SHEET_NAME = process.env.SHEET_NAME || 'Website Leads';
@@ -183,6 +184,22 @@ function wrapInHtmlEmail(bodyHtml) {
 </html>`;
 }
 
+async function sendSmsNotification(lead) {
+  const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  const body = [
+    `New LFP lead: ${lead.name}`,
+    `Service: ${lead.service || 'Not specified'}`,
+    `Phone: ${lead.phone || 'Not provided'}`,
+    `Email: ${lead.email}`,
+    lead.message ? `Msg: ${lead.message.slice(0, 100)}` : null,
+  ].filter(Boolean).join('\n');
+
+  const to = process.env.TWILIO_TO.split(',').map(n => n.trim());
+  await Promise.all(to.map(num =>
+    client.messages.create({ from: process.env.TWILIO_FROM, to: num, body })
+  ));
+}
+
 async function sendInternalNotification(auth, lead) {
   const gmail = google.gmail({ version: 'v1', auth });
   const date = new Date().toLocaleString('en-CA', { timeZone: 'America/Toronto' });
@@ -241,8 +258,9 @@ module.exports = async function handler(req, res) {
       const auth = getGoogleAuth();
       await logToSheet(auth, lead);
       await Promise.all([
-        sendFollowUpEmail(auth, lead),       // personalized email to customer
+        // sendFollowUpEmail(auth, lead),       // DISABLED — Kyle wants to manually follow up
         sendInternalNotification(auth, lead), // internal notification to info@
+        sendSmsNotification(lead),            // SMS alert to Kyle/Daniel
       ]);
       console.log('All emails sent and sheet logged for:', lead.email);
     } catch (googleErr) {
