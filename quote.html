@@ -1043,6 +1043,35 @@
           </div>
         </div>`;
     } else if (svc.type === 'smoke-co') {
+      const isInterconnected = s.smokeType === '21033116' || s.smokeType === '21031559';
+      const interconnectedFee = calcInterconnectedFee(s.units || 0);
+      let feeHTML = '';
+      if (isInterconnected) {
+        feeHTML = `
+          <label style="margin-top:14px">Interconnected Service Fee</label>
+          <div style="margin-top:4px;padding:10px 14px;background:rgba(229,90,43,0.08);border:1px solid rgba(229,90,43,0.25);border-radius:10px;">
+            <div style="font-size:14px;color:var(--text);margin-bottom:6px">$150 base (up to 3 units) + $30/unit beyond 3 — includes licensed electrician</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:15px;font-weight:700;color:var(--orange)">$${interconnectedFee.toFixed(2)}</span>
+              <span style="color:var(--muted);font-size:13px">(${s.units||0} units)</span>
+            </div>
+            <div style="margin-top:8px">
+              <label style="font-size:11px">Override (optional)</label>
+              <input type="number" min="0" step="0.01" placeholder="${interconnectedFee.toFixed(2)}" value="${s.smokeServiceFeeOverride||''}"
+                style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:16px;padding:10px 12px;width:110px;outline:none;margin-top:4px"
+                oninput="state.services['${svc.id}'].smokeServiceFeeOverride=parseFloat(this.value)||0;refreshPreview('${svc.id}')">
+            </div>
+          </div>`;
+      } else {
+        feeHTML = `
+          <label style="margin-top:14px">Installation Fee (per unit)</label>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+            <input type="number" min="0" step="0.01" placeholder="0.00" value="${s.smokeInstallFee||''}"
+              style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:16px;padding:13px 15px;width:100px;outline:none;flex-shrink:0"
+              oninput="state.services['${svc.id}'].smokeInstallFee=parseFloat(this.value)||0;refreshPreview('${svc.id}')">
+            <span style="color:var(--muted);font-size:14px;white-space:nowrap">&times; ${s.units||0} units = <strong style="color:var(--text)">$${((parseFloat(s.smokeInstallFee)||0)*(s.units||0)).toFixed(2)}</strong></span>
+          </div>`;
+      }
       bodyHTML = `
         <div class="service-body-inner">
           <label>Type</label>
@@ -1058,13 +1087,7 @@
             <div class="stepper-val" id="units-${svc.id}">${s.units||0}</div>
             <button class="stepper-btn" onclick="adjustUnits('${svc.id}',1)">+</button>
           </div>
-          <label style="margin-top:14px">Installation Fee (per unit)</label>
-          <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
-            <input type="number" min="0" step="0.01" placeholder="0.00" value="${s.smokeInstallFee||''}"
-              style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:16px;padding:13px 15px;width:100px;outline:none;flex-shrink:0"
-              oninput="state.services['${svc.id}'].smokeInstallFee=parseFloat(this.value)||0;refreshPreview('${svc.id}')">
-            <span style="color:var(--muted);font-size:14px;white-space:nowrap">× ${s.units||0} units = <strong style="color:var(--text)">$${((parseFloat(s.smokeInstallFee)||0)*(s.units||0)).toFixed(2)}</strong></span>
-          </div>
+          ${feeHTML}
         </div>`;
     } else if (svc.type === 'fsp') {
       bodyHTML = `
@@ -1203,12 +1226,29 @@
     return (state.services[id]?.items||[]).find(x=>x.sku===sku)?.qty || 0;
   }
 
+  function calcInterconnectedFee(units) {
+    if (units <= 0) return 0;
+    return units <= 3 ? 150 : 150 + (units - 3) * 30;
+  }
+
   function setSmokeType(id, type) {
+    const wasInterconnected = state.services[id].smokeType === '21033116' || state.services[id].smokeType === '21031559';
+    const isInterconnected = type === '21033116' || type === '21031559';
     state.services[id].smokeType = type;
-    document.querySelectorAll(`#svc-${id} .toggle-btn`).forEach((b,i) => {
-      const _smokeOrder = ['21031518','21033116','21031471','21031559'];
-      b.classList.toggle('active', _smokeOrder[i] === type);
-    });
+    // Clear the other fee type's value when switching
+    if (wasInterconnected && !isInterconnected) {
+      state.services[id].smokeServiceFeeOverride = 0;
+    } else if (!wasInterconnected && isInterconnected) {
+      state.services[id].smokeInstallFee = 0;
+    }
+    // Re-render the full service body to swap fee UI
+    const svc = { id, label: 'Smoke & Carbon Monoxide Alarm Installation', type: 'smoke-co' };
+    const el = document.getElementById('svc-' + id);
+    if (el) {
+      const wasEnabled = el.classList.contains('selected');
+      el.outerHTML = buildServiceHTML(svc);
+      if (wasEnabled) document.getElementById('svc-' + id)?.classList.add('selected');
+    }
     refreshPreview(id);
   }
 
@@ -1342,7 +1382,16 @@
         return s.units * 25;
       }
       case 'co-alarm':   return (s.units||0) * 55;
-      case 'smoke-co':   return (s.units||0) * ((SMOKE_TYPES[s.smokeType||'21031518']?.price||80) + (parseFloat(s.smokeInstallFee)||0));
+      case 'smoke-co': {
+        const units = s.units || 0;
+        const isIC = s.smokeType === '21033116' || s.smokeType === '21031559';
+        const productTotal = units * (SMOKE_TYPES[s.smokeType||'21031518']?.price||80);
+        if (isIC) {
+          const serviceFee = s.smokeServiceFeeOverride > 0 ? s.smokeServiceFeeOverride : calcInterconnectedFee(units);
+          return productTotal + serviceFee;
+        }
+        return productTotal + (parseFloat(s.smokeInstallFee)||0) * units;
+      }
       case 'fsp-new': {
         const sizeBase = { small: 650, medium: 1250, large: 2250 };
         let base = (sizeBase[s.fspSize] || 650) + (s.fspAddons||[]).reduce((sum,a)=>sum+a.price,0);
@@ -1628,7 +1677,7 @@
       'el-monthly':   `Emergency Lighting Inspection — Monthly${s.units?' ('+s.units+' units)':''}`,
       'el-annual':    `Emergency Lighting Inspection — Annual Duration Test${s.units?' ('+s.units+' units)':''}`,
       'co-alarm':     `Carbon Monoxide Alarm Installation${s.units?' ('+s.units+' units)':''}`,
-      'smoke-co':     `Smoke & Carbon Monoxide Alarm Installation${s.units?' ('+s.units+' units)':''}`,
+      'smoke-co':     `Smoke & Carbon Monoxide Alarm Installation — ${(s.smokeType==='21033116'||s.smokeType==='21031559')?'Interconnected':'Battery'}${s.units?' ('+s.units+' units)':''}`,
       'fsp-new':      'Fire Safety Plan — New',
       'fsp-revision': 'Fire Safety Plan — Annual Revision',
       'pre-fire':     'Pre-Fire Inspection',
@@ -1655,11 +1704,22 @@
     // Section A
     Object.entries(state.services).forEach(([id, s]) => {
       if (!s.enabled) return;
-      const price = s.confirmOnSite ? 0 : calcServicePrice(id);
-      lineItems.push({
-        name:   s.confirmOnSite ? serviceLabelById(id,s)+' — Priced on-site' : serviceLabelById(id,s),
-        amount: price,
-      });
+      if (s.confirmOnSite) {
+        lineItems.push({ name: serviceLabelById(id,s)+' — Priced on-site', amount: 0 });
+        return;
+      }
+      // Interconnected alarms: split into product line + service fee line
+      if (id === 'smoke-co' && (s.smokeType === '21033116' || s.smokeType === '21031559')) {
+        const units = s.units || 0;
+        const unitPrice = SMOKE_TYPES[s.smokeType]?.price || 0;
+        const skuLabel = s.smokeType === '21033116' ? 'Interconnected Smoke/CO Alarm (21033116)' : 'Interconnected Smoke Alarm (21031559)';
+        lineItems.push({ name: `${skuLabel} \u00d7 ${units}`, amount: unitPrice * units });
+        const serviceFee = s.smokeServiceFeeOverride > 0 ? s.smokeServiceFeeOverride : calcInterconnectedFee(units);
+        lineItems.push({ name: 'Interconnected Installation Service Fee (includes licensed electrician)', amount: serviceFee });
+        return;
+      }
+      const price = calcServicePrice(id);
+      lineItems.push({ name: serviceLabelById(id,s), amount: price });
     });
     if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:200 });
 
