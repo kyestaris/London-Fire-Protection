@@ -239,9 +239,52 @@ async function sendFollowUpEmail(auth, lead) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Rate limiting
+// ---------------------------------------------------------------------------
+// In-memory per-IP throttle. Serverless instances are recycled and requests may
+// land on different instances, so this is a speed bump rather than a guarantee —
+// but it stops a single script hammering the form and running up API costs.
+const RATE_WINDOW_MS  = 10 * 60 * 1000; // 10 minutes
+const RATE_MAX        = 5;              // submissions per IP per window
+const rateBuckets     = new Map();      // ip -> { count, resetAt }
+
+function clientIp(req) {
+  const fwd = req.headers['x-forwarded-for'];
+  return (Array.isArray(fwd) ? fwd[0] : String(fwd || '')).split(',')[0].trim()
+    || req.socket?.remoteAddress
+    || 'unknown';
+}
+
+function isRateLimited(ip) {
+  const now = Date.now();
+
+  // Opportunistic cleanup so the map cannot grow without bound
+  if (rateBuckets.size > 5000) {
+    for (const [key, rec] of rateBuckets) {
+      if (now > rec.resetAt) rateBuckets.delete(key);
+    }
+  }
+
+  const rec = rateBuckets.get(ip);
+  if (!rec || now > rec.resetAt) {
+    rateBuckets.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+
+  rec.count += 1;
+  return rec.count > RATE_MAX;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Throttle before any paid work happens — this endpoint writes to Sheets and
+  // can call the Claude API, so an unthrottled flood costs real money.
+  if (isRateLimited(clientIp(req))) {
+    return res.status(429).json({ error: 'Too many requests — please try again in a few minutes.' });
   }
 
   const { name, phone, email, service, message } = req.body;

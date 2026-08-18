@@ -782,7 +782,20 @@
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <script>
   // ── Constants ────────────────────────────────────────────────────
-  const PIN = '6367';
+  const TOKEN_KEY = 'lfp_quote_token';
+
+  /** Auth header for internal API calls. Empty until the PIN is exchanged. */
+  function authHeaders() {
+    const token = sessionStorage.getItem(TOKEN_KEY);
+    return token && token !== 'unconfigured' ? { 'Authorization': 'Bearer ' + token } : {};
+  }
+
+  /** Session expired or revoked — drop the token and show the PIN screen. */
+  function handleAuthFailure() {
+    sessionStorage.removeItem(TOKEN_KEY);
+    document.getElementById('screenPin').classList.remove('hidden');
+    document.getElementById('pinError').textContent = 'Session expired — enter PIN again';
+  }
 
   const FE_SKU_PRICES = { 'CT-ABC2': 60, 'D-ABC5W': 75, 'D-ABC5W-EX': 75, 'D-ABC10': 115, 'D-ABC20': 250, '5CO2': 350 };
   const FE_SKU_LABELS = {
@@ -813,24 +826,51 @@
   };
 
   // ── PIN ──────────────────────────────────────────────────────────
-  if (sessionStorage.getItem('lfp_quote_auth') === '1') unlockQuote();
+  // The PIN is checked by /api/tool-login on the server. What comes back is a
+  // signed, expiring token that every API call carries — nothing secret lives
+  // in this file.
+  if (sessionStorage.getItem(TOKEN_KEY)) unlockQuote();
 
   const pinInput = document.getElementById('pinInput');
-  pinInput.addEventListener('input', () => {
-    if (pinInput.value.length === 4) {
-      if (pinInput.value === PIN) {
-        sessionStorage.setItem('lfp_quote_auth', '1');
+  pinInput.addEventListener('input', async () => {
+    if (pinInput.value.length !== 4) return;
+
+    const entered = pinInput.value;
+    pinInput.disabled = true;
+    document.getElementById('pinError').textContent = '';
+
+    try {
+      const res  = await fetch('/api/tool-login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ pin: entered }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        // token is null while auth is not yet configured server-side
+        sessionStorage.setItem(TOKEN_KEY, data.token || 'unconfigured');
         unlockQuote();
       } else {
-        document.getElementById('pinError').textContent = 'Incorrect PIN — try again';
-        pinInput.classList.add('shake');
-        setTimeout(() => {
-          pinInput.value = '';
-          pinInput.classList.remove('shake');
-        }, 400);
+        rejectPin(res.status === 429
+          ? 'Too many attempts — wait a few minutes'
+          : 'Incorrect PIN — try again');
       }
+    } catch (err) {
+      rejectPin('Connection error — check your signal');
+    } finally {
+      pinInput.disabled = false;
     }
   });
+
+  function rejectPin(message) {
+    document.getElementById('pinError').textContent = message;
+    pinInput.classList.add('shake');
+    setTimeout(() => {
+      pinInput.value = '';
+      pinInput.classList.remove('shake');
+    }, 400);
+  }
 
   function unlockQuote() {
     document.getElementById('screenPin').classList.add('hidden');
@@ -932,7 +972,10 @@
 
   async function doSearch(q) {
     try {
-      const res  = await fetch('/api/search-client?q=' + encodeURIComponent(q));
+      const res  = await fetch('/api/search-client?q=' + encodeURIComponent(q), {
+        headers: authHeaders(),
+      });
+      if (res.status === 401) { handleAuthFailure(); return; }
       const data = await res.json();
       renderSearchResults(data.results || []);
     } catch { /* silent */ }
@@ -1804,9 +1847,10 @@
     try {
       const res  = await fetch('/api/create-quote', {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body:    JSON.stringify(payload),
       });
+      if (res.status === 401) { handleAuthFailure(); throw new Error('Session expired — enter your PIN again'); }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Something went wrong');
 

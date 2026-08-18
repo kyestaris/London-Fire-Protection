@@ -1,4 +1,5 @@
 const { google } = require('googleapis');
+const { requireAuth } = require('./_auth');
 
 const SHEET_ID    = process.env.GOOGLE_SHEETS_CRM_ID;
 const CLIENTS_TAB = 'Clients';
@@ -16,6 +17,8 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  if (!requireAuth(req, res)) return;
 
   try {
     const auth   = getOAuth2Client();

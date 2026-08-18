@@ -18,6 +18,45 @@
       --input-bg: #242629;
     }
 
+    /* ── PIN screen ── */
+    #screenPin {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    #screenPin.hidden { display: none; }
+    .pin-icon  { font-size: 40px; margin-bottom: 16px; }
+    .pin-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .pin-sub   { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+    .pin-input {
+      width: 160px;
+      padding: 14px;
+      font-size: 28px;
+      letter-spacing: 12px;
+      text-align: center;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      outline: none;
+    }
+    .pin-input:focus { border-color: var(--orange); outline: none; }
+    .pin-input:disabled { opacity: 0.6; }
+    .pin-error { color: #f87171; font-size: 14px; margin-top: 14px; min-height: 20px; }
+    .shake { animation: shake 0.4s; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25%      { transform: translateX(-8px); }
+      75%      { transform: translateX(8px); }
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
@@ -297,6 +336,16 @@
 </head>
 <body>
 
+<!-- PIN SCREEN — the PIN is verified server-side by /api/tool-login -->
+<div id="screenPin">
+  <div class="pin-icon">🔒</div>
+  <div class="pin-title">Book Appointment</div>
+  <div class="pin-sub">Enter PIN to continue</div>
+  <input type="password" id="pinInput" class="pin-input" maxlength="4"
+         inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="PIN">
+  <div class="pin-error" id="pinError"></div>
+</div>
+
 <header>
   <div class="header-icon">🗓</div>
   <div>
@@ -398,6 +447,74 @@
 </div>
 
 <script>
+  // ── Auth ──────────────────────────────────────────────────────────
+  // The PIN is checked by /api/tool-login on the server, which returns a
+  // signed, expiring token. Nothing secret lives in this file.
+  const TOKEN_KEY = 'lfp_schedule_token';
+
+  function authHeaders() {
+    const token = sessionStorage.getItem(TOKEN_KEY);
+    return token && token !== 'unconfigured' ? { 'Authorization': 'Bearer ' + token } : {};
+  }
+
+  function handleAuthFailure() {
+    sessionStorage.removeItem(TOKEN_KEY);
+    document.getElementById('screenPin').classList.remove('hidden');
+    document.getElementById('pinError').textContent = 'Session expired — enter PIN again';
+  }
+
+  const pinInput = document.getElementById('pinInput');
+
+  if (sessionStorage.getItem(TOKEN_KEY)) {
+    unlockSchedule();
+  } else {
+    pinInput.focus();
+  }
+
+  pinInput.addEventListener('input', async () => {
+    if (pinInput.value.length !== 4) return;
+
+    const entered = pinInput.value;
+    pinInput.disabled = true;
+    document.getElementById('pinError').textContent = '';
+
+    try {
+      const res  = await fetch('/api/tool-login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ pin: entered }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        sessionStorage.setItem(TOKEN_KEY, data.token || 'unconfigured');
+        unlockSchedule();
+      } else {
+        rejectPin(res.status === 429
+          ? 'Too many attempts — wait a few minutes'
+          : 'Incorrect PIN — try again');
+      }
+    } catch (err) {
+      rejectPin('Connection error — check your signal');
+    } finally {
+      pinInput.disabled = false;
+    }
+  });
+
+  function rejectPin(message) {
+    document.getElementById('pinError').textContent = message;
+    pinInput.classList.add('shake');
+    setTimeout(() => {
+      pinInput.value = '';
+      pinInput.classList.remove('shake');
+    }, 400);
+  }
+
+  function unlockSchedule() {
+    document.getElementById('screenPin').classList.add('hidden');
+    loadClients();
+  }
+
   // Default date to today
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('scheduledDate').value = today;
@@ -413,10 +530,15 @@
 
   let clientsData = [];
 
-  (async () => {
+  async function loadClients() {
     const clientSelect = document.getElementById('clientSelect');
     try {
-      const res  = await fetch('/api/get-clients');
+      const res  = await fetch('/api/get-clients', { headers: authHeaders() });
+      if (res.status === 401) {
+        handleAuthFailure();
+        clientSelect.innerHTML = '<option value="" disabled selected>Session expired</option>';
+        return;
+      }
       const data = await res.json();
       clientsData = data.clients || [];
 
@@ -439,7 +561,7 @@
       clientSelect.innerHTML = '<option value="" disabled selected>Failed to load clients</option>';
       console.error('get-clients error:', err);
     }
-  })();
+  }
 
   document.getElementById('clientSelect').addEventListener('change', function () {
     const c = clientsData[parseInt(this.value)];
@@ -481,9 +603,14 @@
     try {
       const res = await fetch('/api/book-appointment', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify(payload),
       });
+
+      if (res.status === 401) {
+        handleAuthFailure();
+        throw new Error('Session expired — enter your PIN again');
+      }
 
       const data = await res.json();
 
