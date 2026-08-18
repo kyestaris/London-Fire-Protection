@@ -493,10 +493,10 @@
                 <option value="el-inspection-annual">Emergency Lighting Inspection &#8212; Annual (30-min)</option>
                 <option value="pre-fire-inspection">Pre-Fire Inspection</option>
               </optgroup>
-              <optgroup label="Installations">
+              <optgroup label="Installations &amp; Replacements">
                 <option value="fe-install">Fire Extinguisher Supply &amp; Install</option>
-                <option value="co-alarm-install">Carbon Monoxide Alarm Installation</option>
-                <option value="smoke-co-install">Smoke & Carbon Monoxide Alarm Installation</option>
+                <option value="co-alarm-install">Carbon Monoxide Alarm Replacement</option>
+                <option value="smoke-co-install">Smoke & Carbon Monoxide Alarm Replacement</option>
               </optgroup>
               <optgroup label="Services">
                 <option value="fsp">Fire Safety Plan</option>
@@ -671,8 +671,8 @@
     { label: 'Fire Extinguisher Inspection', hasFreq: true,  keys: { monthly: 'fe-inspection-monthly', annual: 'fe-inspection-annual' } },
     { label: 'Emergency Lighting Inspection', hasFreq: true, keys: { monthly: 'el-inspection-monthly', annual: 'el-inspection-annual' } },
     { label: 'Fire Extinguisher Supply & Install', hasFreq: false, key: 'fe-install' },
-    { label: 'Carbon Monoxide Alarm Installation',              hasFreq: false, key: 'co-alarm-install' },
-    { label: 'Smoke & Carbon Monoxide Alarm Installation',        hasFreq: false, key: 'smoke-co-install' },
+    { label: 'Carbon Monoxide Alarm Replacement',               hasFreq: false, key: 'co-alarm-install' },
+    { label: 'Smoke & Carbon Monoxide Alarm Replacement',         hasFreq: false, key: 'smoke-co-install' },
     { label: 'Fire Safety Plan',                   hasFreq: false, key: 'fsp' },
     { label: 'Fire Safety Training',               hasFreq: false, key: 'training' },
     { label: 'Product Sale',                       hasFreq: false, key: 'product-sale' },
@@ -702,8 +702,8 @@
     'el-inspection-annual':  'Emergency Lighting Inspection — Annual (30-min)',
     'pre-fire-inspection':   'Pre-Fire Inspection',
     'fe-install':            'Fire Extinguisher Supply & Install',
-    'co-alarm-install':      'Carbon Monoxide Alarm Installation',
-    'smoke-co-install':      'Smoke & Carbon Monoxide Alarm Installation',
+    'co-alarm-install':      'Carbon Monoxide Alarm Replacement',
+    'smoke-co-install':      'Smoke & Carbon Monoxide Alarm Replacement',
     'fsp':                   'Fire Safety Plan',
     'training':              'Fire Safety Training',
     'product-sale':          'Products (Supply Only)',
@@ -946,19 +946,19 @@
       ]
     },
     'co-alarm-install': {
-      title: 'Carbon Monoxide Alarm Installation',
+      title: 'Carbon Monoxide Alarm Replacement',
       items: [
-        { name: 'Carbon Monoxide Alarm — Supply + Install (C3010)', price: 55.00, note: 'per unit' },
+        { name: 'Carbon Monoxide Alarm — Supply + Replacement (C3010)', price: 55.00, note: 'per unit' },
       ]
     },
     'smoke-co-install': {
-      title: 'Smoke & Carbon Monoxide Alarm Installation',
+      title: 'Smoke & Carbon Monoxide Alarm Replacement',
       items: [
         { name: 'Smoke & Carbon Monoxide Alarm — Battery (21031518)', price: 80.00, note: 'per unit' },
         { name: 'Smoke & Carbon Monoxide Alarm — Interconnected (21033116)', price: 88.50, note: 'per unit' },
         { name: 'Smoke Alarm — Battery 10yr (21031471)', price: 51.50, note: 'per unit' },
         { name: 'Smoke Alarm — Hardwired 120V (21031559)', price: 56.00, note: 'per unit' },
-        { name: 'Installation Fee (Battery — per unit)', price: null, note: 'enter amount' },
+        { name: 'Replacement Fee (Battery — per unit)', price: null, note: 'enter amount' },
         { name: 'Interconnected Service Fee (up to 3 units)', price: 150.00, note: 'includes electrician' },
         { name: 'Interconnected Service Fee — Additional Unit', price: 30.00, note: 'per unit beyond 3' },
       ]
