@@ -811,6 +811,7 @@
     '21033116': { label: 'Interconnected (21033116)', price: 88.5 },
     '21031471': { label: 'Smoke Only — Battery (21031471)', price: 51.5 },
     '21031559': { label: 'Smoke Only — Hardwired (21031559)', price: 56 },
+    'P4010ACLEDSCO-2': { label: '3-in-1 LED Strobe Combo/CO (P4010ACLEDSCO-2)', price: 160 },
   };
 
   // ── State ────────────────────────────────────────────────────────
@@ -1086,7 +1087,7 @@
           </div>
         </div>`;
     } else if (svc.type === 'smoke-co') {
-      const isInterconnected = s.smokeType === '21033116' || s.smokeType === '21031559';
+      const isInterconnected = s.smokeType === '21033116' || s.smokeType === '21031559' || s.smokeType === 'P4010ACLEDSCO-2';
       const interconnectedFee = calcInterconnectedFee(s.units || 0);
       let feeHTML = '';
       if (isInterconnected) {
@@ -1123,6 +1124,7 @@
             <button class="toggle-btn ${s.smokeType==='21033116'?'active':''}" onclick="setSmokeType('${svc.id}','21033116')">Interconnected ($88.50/unit)</button>
             <button class="toggle-btn ${s.smokeType==='21031471'?'active':''}" onclick="setSmokeType('${svc.id}','21031471')">Smoke Only — Battery ($51.50/unit)</button>
             <button class="toggle-btn ${s.smokeType==='21031559'?'active':''}" onclick="setSmokeType('${svc.id}','21031559')">Smoke Only — Hardwired ($56/unit)</button>
+            <button class="toggle-btn ${s.smokeType==='P4010ACLEDSCO-2'?'active':''}" onclick="setSmokeType('${svc.id}','P4010ACLEDSCO-2')">3-in-1 LED Strobe Combo/CO ($160/unit)</button>
           </div>
           <label>Number of Units</label>
           <div class="stepper">
@@ -1276,7 +1278,7 @@
 
   function setSmokeType(id, type) {
     const wasInterconnected = state.services[id].smokeType === '21033116' || state.services[id].smokeType === '21031559';
-    const isInterconnected = type === '21033116' || type === '21031559';
+    const isInterconnected = type === '21033116' || type === '21031559' || type === 'P4010ACLEDSCO-2';
     state.services[id].smokeType = type;
     // Clear the other fee type's value when switching
     if (wasInterconnected && !isInterconnected) {
@@ -1427,7 +1429,7 @@
       case 'co-alarm':   return (s.units||0) * 55;
       case 'smoke-co': {
         const units = s.units || 0;
-        const isIC = s.smokeType === '21033116' || s.smokeType === '21031559';
+        const isIC = s.smokeType === '21033116' || s.smokeType === '21031559' || s.smokeType === 'P4010ACLEDSCO-2';
         const productTotal = units * (SMOKE_TYPES[s.smokeType||'21031518']?.price||80);
         if (isIC) {
           const serviceFee = s.smokeServiceFeeOverride > 0 ? s.smokeServiceFeeOverride : calcInterconnectedFee(units);
@@ -1752,10 +1754,10 @@
         return;
       }
       // Interconnected alarms: split into product line + service fee line
-      if (id === 'smoke-co' && (s.smokeType === '21033116' || s.smokeType === '21031559')) {
+      if (id === 'smoke-co' && (s.smokeType === '21033116' || s.smokeType === '21031559' || s.smokeType === 'P4010ACLEDSCO-2')) {
         const units = s.units || 0;
         const unitPrice = SMOKE_TYPES[s.smokeType]?.price || 0;
-        const skuLabel = s.smokeType === '21033116' ? 'Interconnected Smoke/CO Alarm (21033116)' : 'Interconnected Smoke Alarm (21031559)';
+        const skuLabel = s.smokeType === '21033116' ? 'Interconnected Smoke/CO Alarm (21033116)' : s.smokeType === 'P4010ACLEDSCO-2' ? '3-in-1 LED Strobe Combo/CO Alarm (P4010ACLEDSCO-2)' : 'Interconnected Smoke Alarm (21031559)';
         lineItems.push({ name: `${skuLabel} \u00d7 ${units}`, amount: unitPrice * units });
         const serviceFee = s.smokeServiceFeeOverride > 0 ? s.smokeServiceFeeOverride : calcInterconnectedFee(units);
         lineItems.push({ name: 'Interconnected Replacement Service Fee (includes licensed electrician)', amount: serviceFee });
