@@ -573,6 +573,11 @@
           <label>Property Address</label>
           <input type="text" id="propertyAddress" placeholder="123 Main St, London ON" autocomplete="off" required>
         </div>
+
+        <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:4px">
+          <input type="checkbox" id="electricianNeeded" style="width:auto">
+          <label for="electricianNeeded" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--text);cursor:pointer">Electrician needed (interconnected alarm install)</label>
+        </div>
       </div>
 
       <!-- Customer -->
@@ -939,7 +944,6 @@
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
         { name: '2lb ABC Extinguisher (CT-ABC2)', price: 60.00, note: 'each' },
         { name: '5lb ABC Extinguisher (D-ABC5W)', price: 75.00, note: 'each' },
-        { name: '5lb ABC Extinguisher (D-ABC5W-EX)', price: 75.00, note: 'each' },
         { name: '10lb ABC Extinguisher (D-ABC10)', price: 115.00, note: 'each' },
         { name: '20lb ABC Extinguisher (D-ABC20)', price: 250.00, note: 'each' },
         { name: '5lb CO2 Extinguisher (5CO2)', price: 350.00, note: 'each' },
@@ -992,7 +996,6 @@
       grid: [
         { name: '2lb ABC Extinguisher', sku: 'CT-ABC2', price: 60.00 },
         { name: '5lb ABC Extinguisher', sku: 'D-ABC5W', price: 75.00 },
-        { name: '5lb ABC Extinguisher', sku: 'D-ABC5W-EX', price: 75.00 },
         { name: '10lb ABC Extinguisher', sku: 'D-ABC10', price: 115.00 },
         { name: '20lb ABC Extinguisher', sku: 'D-ABC20', price: 250.00 },
         { name: '5lb CO2 Extinguisher', sku: '5CO2', price: 350.00 },
@@ -1243,6 +1246,7 @@
     submitBtn.innerHTML = '<span class="spinner"></span>Creating invoice...';
 
     var annualFollowup = document.getElementById('annualFollowup').checked;
+    var electricianNeeded = document.getElementById('electricianNeeded').checked;
 
     var bodyPayload = {
       pin:             pin,
@@ -1256,6 +1260,7 @@
       paymentTerms:    paymentTerms,
       lineItems:       lineItems,
       annualFollowup:  annualFollowup,
+      electrician:     electricianNeeded,
     };
 
     if (jobType === 'multi-service') {
