@@ -98,7 +98,14 @@
       "Fire Code Violation London Ontario",
       "Failed Fire Inspection Ontario",
       "Smoke Alarm Replacement Near Me London Ontario",
-      "CO Alarm Law Ontario 2026"
+      "CO Alarm Law Ontario 2026",
+      "Strobe Smoke Alarm Ontario",
+      "3-in-1 Strobe Smoke CO Alarm",
+      "Visual Signal Smoke Alarm Ontario Building Code",
+      "Hearing Impaired Smoke Alarm Ontario",
+      "Interconnected Smoke Alarm Installation London Ontario",
+      "Hardwired Smoke Alarm London Ontario",
+      "CO Detector Installation London Ontario"
     ]
   }
   </script>
@@ -121,7 +128,7 @@
     "@context": "https://schema.org",
     "@type": "Service",
     "name": "Smoke Alarm & CO Detector Installation — London, Ontario",
-    "description": "Supply and installation of smoke alarms and carbon monoxide detectors for residential homes, rental properties, and multi-unit buildings in London, Ontario. Ontario Fire Code compliant. Combination smoke and CO units available.",
+    "description": "Supply and installation of smoke alarms, carbon monoxide detectors, and 3-in-1 LED strobe combination alarms for residential homes, rental properties, and multi-unit buildings in London, Ontario. Battery, hardwired, and interconnected units available. Ontario Fire Code and Ontario Building Code compliant. Licensed electrician for interconnected installations.",
     "serviceOutput": "Installed, compliant smoke and CO alarms with documentation",
     "provider": { "@id": "https://www.londonfireprotection.ca/#business" },
     "areaServed": { "@type": "City", "name": "London", "containedInPlace": "Ontario, Canada" },
@@ -151,6 +158,42 @@
           ],
           "seller": { "@id": "https://www.londonfireprotection.ca/#business" },
           "areaServed": { "@type": "City", "name": "London", "containedInPlace": "Ontario, Canada" }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": { "@type": "Service", "name": "Battery Smoke Alarm — Supply & Installation" },
+          "description": "10-year lithium battery smoke alarm. Suitable for bedrooms, hallways, and rental units.",
+          "priceSpecification": [
+            { "@type": "UnitPriceSpecification", "name": "Battery Smoke Alarm", "price": "51.50", "priceCurrency": "CAD", "unitText": "per unit" }
+          ],
+          "seller": { "@id": "https://www.londonfireprotection.ca/#business" }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": { "@type": "Service", "name": "Hardwired Smoke Alarm (120V) — Supply & Installation" },
+          "description": "120V hardwired smoke alarm for homes with existing hardwired setup. 10-year backup battery.",
+          "priceSpecification": [
+            { "@type": "UnitPriceSpecification", "name": "Hardwired Smoke Alarm", "price": "56", "priceCurrency": "CAD", "unitText": "per unit" }
+          ],
+          "seller": { "@id": "https://www.londonfireprotection.ca/#business" }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": { "@type": "Service", "name": "Sealed Battery CO Alarm — Supply & Installation" },
+          "description": "Carbon monoxide alarm with sealed battery. Required on every level with a fuel-burning appliance under Ontario's January 2026 CO alarm law.",
+          "priceSpecification": [
+            { "@type": "UnitPriceSpecification", "name": "Sealed Battery CO Alarm", "price": "50", "priceCurrency": "CAD", "unitText": "per unit" }
+          ],
+          "seller": { "@id": "https://www.londonfireprotection.ca/#business" }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": { "@type": "Service", "name": "3-in-1 LED Strobe Combination Smoke/CO Alarm (Interconnected) — Supply & Installation" },
+          "description": "Interconnected combination smoke and CO alarm with built-in LED strobe light for hearing-impaired compliance. Required in all new Ontario home builds since 2015 under the Ontario Building Code visual signal requirements.",
+          "priceSpecification": [
+            { "@type": "UnitPriceSpecification", "name": "3-in-1 LED Strobe Combo Alarm", "price": "160", "priceCurrency": "CAD", "unitText": "per unit" }
+          ],
+          "seller": { "@id": "https://www.londonfireprotection.ca/#business" }
         },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Rental Property Compliance Documentation" } }
       ]
@@ -221,6 +264,16 @@
         "@type": "Question",
         "name": "What is a combination smoke and CO alarm?",
         "acceptedAnswer": { "@type": "Answer", "text": "A combination unit detects both smoke and carbon monoxide in a single device. It meets both the smoke alarm requirement and the 2026 CO alarm requirement in one installation. London Fire Protection installs the Kidde 21033116 (interconnected) and 21031518 (battery) combination units — both ULC-listed and Ontario Fire Code compliant." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need a strobe smoke alarm in Ontario?",
+        "acceptedAnswer": { "@type": "Answer", "text": "If your home was built or substantially renovated after January 1, 2015, the Ontario Building Code requires smoke alarms with a visual signaling component (strobe light) for hearing-impaired safety. The strobe must conform to NFPA 72 and produce a minimum of 175 candelas in sleeping rooms. London Fire Protection supplies and installs 3-in-1 LED strobe combination smoke/CO alarms at $160 per unit — interconnected, with built-in strobe and full smoke and CO detection." }
+      },
+      {
+        "@type": "Question",
+        "name": "Where can I buy smoke alarms and CO detectors in London Ontario?",
+        "acceptedAnswer": { "@type": "Answer", "text": "London Fire Protection sells smoke alarms, CO detectors, and combination units directly — battery-operated from $50, interconnected from $56, combination smoke/CO from $80, and 3-in-1 LED strobe combo alarms at $160. We also offer professional installation with a licensed electrician for interconnected units. Supply-only and supply-and-install options available. Contact us or visit our pricing page for full unit pricing." }
       }
     ]
   }
@@ -430,7 +483,7 @@
     .pricing-sku { font-family: var(--font-heading); font-size: 12px; letter-spacing: 1px; color: var(--color-text-muted); }
     .pricing-price { font-family: var(--font-heading); font-size: 16px; letter-spacing: 1px; color: #D4A017; white-space: nowrap; }
     .pricing-note { margin-top: var(--space-lg); font-size: 13px; color: var(--color-text-muted); border-left: 2px solid var(--color-primary); padding-left: var(--space-md); }
-    .pricing-section-label { font-family: var(--font-heading); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; color: var(--color-accent); margin: var(--space-xl) 0 var(--space-sm); }
+    .pricing-section-label { font-family: var(--font-heading); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; color: var(--color-accent); margin: var(--space-xl) 0 var(--space-sm); }
 
     /* FAQ */
     .faq-header { max-width: 640px; margin-bottom: var(--space-2xl); }
@@ -590,6 +643,100 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
         Call Now — (226) 926-6367
       </a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="section" aria-labelledby="pricing-heading">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+
+    <div class="pricing-wrap fade-up">
+      <div class="pricing-section-label">Units &amp; Replacement Fees</div>
+      <div style="overflow-x:auto;">
+        <table class="pricing-table" aria-label="Smoke and CO alarm pricing">
+          <thead>
+            <tr>
+              <th>Unit</th>
+              <th>Best For</th>
+              <th style="text-align:right;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Battery Smoke Alarm (10yr Lithium)</td>
+              <td style="color:var(--color-text-light);font-size:13px;">Basic smoke detection — homes, rentals, bedrooms</td>
+              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$51.50/unit</td>
+            </tr>
+            <tr>
+              <td>Hardwired Smoke Alarm (120V)</td>
+              <td style="color:var(--color-text-light);font-size:13px;">Smoke only — homes with existing hardwired setup</td>
+              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$56/unit</td>
+            </tr>
+            <tr>
+              <td>Sealed Battery CO Alarm</td>
+              <td style="color:var(--color-text-light);font-size:13px;">CO detection — required on every level with a fuel-burning appliance (Jan 2026 law)</td>
+              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$50/unit</td>
+            </tr>
+            <tr>
+              <td>Battery Combination Smoke &amp; CO Alarm</td>
+              <td style="color:var(--color-text-light);font-size:13px;">Homes, rentals, any unit without interconnect requirement</td>
+              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$80/unit</td>
+            </tr>
+            <tr>
+              <td>Interconnected Combination Smoke &amp; CO Alarm</td>
+              <td style="color:var(--color-text-light);font-size:13px;">Homes built or renovated after Jan 1, 2014 — required by OBC</td>
+              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$88.50/unit</td>
+            </tr>
+            <tr>
+              <td>3-in-1 LED Strobe Combo Smoke/CO Alarm (Interconnected)</td>
+              <td style="color:var(--color-text-light);font-size:13px;">Required in all new builds since 2015 under OBC. Interconnected with built-in strobe light for hearing-impaired compliance</td>
+              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$160/unit</td>
+            </tr>
+            <tr>
+              <td colspan="1" style="color:var(--color-text-light);font-size:14px;">Replacement fee — Battery units</td>
+              <td style="color:var(--color-text-muted);font-size:13px;">Flat fee, no minimum order</td>
+              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$25/unit</td>
+            </tr>
+            <tr>
+              <td colspan="1" style="color:var(--color-text-light);font-size:14px;">Replacement fee — Interconnected units</td>
+              <td style="color:var(--color-text-muted);font-size:13px;">Includes licensed electrician</td>
+              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$150 base<br><span style="font-size:12px;font-weight:400;">up to 3 units, +$30/unit beyond 3</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:var(--space-md);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md);flex-wrap:wrap;background:rgba(229,90,43,0.08);border:0.5px solid rgba(229,90,43,0.3);border-left:2px solid var(--color-primary);border-radius:var(--radius-btn);padding:var(--space-md);">
+        <div>
+          <div style="font-family:var(--font-heading);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-text-light);">Service Fee</div>
+        </div>
+        <div style="font-family:var(--font-heading);font-size:18px;font-weight:700;color:#D4A017;">$65</div>
+      </div>
+
+      <div style="margin-top:var(--space-xl);display:grid;grid-template-columns:1fr;gap:var(--space-md);">
+        <div style="background:var(--color-surface);border:0.5px solid var(--color-border);border-radius:var(--radius-card);padding:var(--space-lg);">
+          <div style="font-family:var(--font-heading);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-accent);margin-bottom:var(--space-md);">Typical Home — 2 to 3 Units</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-md);">
+            <div style="padding:var(--space-md);background:rgba(255,255,255,0.04);border:0.5px solid var(--color-border);border-radius:var(--radius-btn);">
+              <div style="font-family:var(--font-heading);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:6px;">Retail Store</div>
+              <div style="font-family:var(--font-heading);font-size:20px;color:var(--color-text-muted);">$190 – $285</div>
+              <div style="font-size:12px;color:var(--color-text-muted);margin-top:4px;">Units only — no replacement service, no documentation</div>
+            </div>
+            <div style="padding:var(--space-md);background:rgba(229,90,43,0.08);border:0.5px solid rgba(229,90,43,0.3);border-radius:var(--radius-btn);">
+              <div style="font-family:var(--font-heading);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-primary);margin-bottom:6px;">London Fire Protection</div>
+              <div style="font-family:var(--font-heading);font-size:20px;color:#D4A017;">$220 – $330</div>
+              <div style="font-size:12px;color:var(--color-text-muted);margin-top:4px;">Units + professional replacement + compliance documentation</div>
+            </div>
+          </div>
+
+          <div style="font-size:13px;color:var(--color-text-light);border-left:2px solid var(--color-primary);padding-left:var(--space-md);">For roughly the same price as buying units at a hardware store, you get a professional replacement and the paperwork to prove compliance.</div>
+        </div>
+      </div>
+
+      <p class="pricing-note" style="margin-top:var(--space-lg);">Multi-unit rental properties and buildings are quoted based on unit count. <a href="#contact" style="color:var(--color-primary);">Contact us for a property quote.</a></p>
     </div>
   </div>
 </section>
@@ -760,86 +907,6 @@
   </div>
 </section>
 
-<!-- PRICING -->
-<section id="pricing" class="section" aria-labelledby="pricing-heading">
-  <div class="container">
-    <div class="section-label">Transparent Pricing</div>
-    <h2 class="section-heading" id="pricing-heading" style="color:var(--color-accent);">No Surprises</h2>
-    <p class="section-sub">Flat per-unit pricing. Most homes are done in one visit with no hidden fees.</p>
-
-    <div class="pricing-wrap fade-up">
-      <div class="pricing-section-label">Units &amp; Replacement</div>
-      <div style="overflow-x:auto;">
-        <table class="pricing-table" aria-label="Smoke and CO alarm pricing">
-          <thead>
-            <tr>
-              <th>Model</th>
-              <th>Unit</th>
-              <th>Best For</th>
-              <th style="text-align:right;">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="pricing-sku">21031518</td>
-              <td>Battery Combination Smoke &amp; CO Alarm</td>
-              <td style="color:var(--color-text-light);font-size:13px;">Homes, rentals, any unit without interconnect requirement</td>
-              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$80/unit</td>
-            </tr>
-            <tr>
-              <td class="pricing-sku">21033116</td>
-              <td>Interconnected Combination Smoke &amp; CO Alarm</td>
-              <td style="color:var(--color-text-light);font-size:13px;">Homes built or renovated after Jan 1, 2014 — required by OBC</td>
-              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$88.50/unit</td>
-            </tr>
-            <tr>
-              <td colspan="2" style="color:var(--color-text-light);font-size:14px;">Replacement fee — Battery units</td>
-              <td style="color:var(--color-text-muted);font-size:13px;">Flat fee, no minimum order</td>
-              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$25/unit</td>
-            </tr>
-            <tr>
-              <td colspan="2" style="color:var(--color-text-light);font-size:14px;">Replacement fee — Interconnected units</td>
-              <td style="color:var(--color-text-muted);font-size:13px;">Includes licensed electrician</td>
-              <td class="pricing-price" style="text-align:right;color:#D4A017 !important;">$150 base<br><span style="font-size:12px;font-weight:400;">up to 3 units, +$30/unit beyond 3</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="margin-top:var(--space-md);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md);flex-wrap:wrap;background:rgba(229,90,43,0.08);border:0.5px solid rgba(229,90,43,0.3);border-left:2px solid var(--color-primary);border-radius:var(--radius-btn);padding:var(--space-md);">
-        <div>
-          <div style="font-family:var(--font-heading);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-text-light);">Service Fee</div>
-          <div style="font-size:12px;color:var(--color-text-muted);margin-top:2px;">Applied to non-electrician replacements</div>
-        </div>
-        <div style="font-family:var(--font-heading);font-size:18px;font-weight:700;color:#D4A017;">$65</div>
-      </div>
-
-      <div style="margin-top:var(--space-xl);display:grid;grid-template-columns:1fr;gap:var(--space-md);">
-        <div style="background:var(--color-surface);border:0.5px solid var(--color-border);border-radius:var(--radius-card);padding:var(--space-lg);">
-          <div style="font-family:var(--font-heading);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-accent);margin-bottom:var(--space-md);">Typical Home — 2 to 3 Units</div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-md);">
-            <div style="padding:var(--space-md);background:rgba(255,255,255,0.04);border:0.5px solid var(--color-border);border-radius:var(--radius-btn);">
-              <div style="font-family:var(--font-heading);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:6px;">Retail Store</div>
-              <div style="font-family:var(--font-heading);font-size:20px;color:var(--color-text-muted);">$190 – $285</div>
-              <div style="font-size:12px;color:var(--color-text-muted);margin-top:4px;">Units only — no replacement service, no documentation</div>
-            </div>
-            <div style="padding:var(--space-md);background:rgba(229,90,43,0.08);border:0.5px solid rgba(229,90,43,0.3);border-radius:var(--radius-btn);">
-              <div style="font-family:var(--font-heading);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-primary);margin-bottom:6px;">London Fire Protection</div>
-              <div style="font-family:var(--font-heading);font-size:20px;color:#D4A017;">$220 – $330</div>
-              <div style="font-size:12px;color:var(--color-text-muted);margin-top:4px;">Units + professional replacement + compliance documentation</div>
-            </div>
-          </div>
-
-          <div style="font-size:13px;color:var(--color-text-light);border-left:2px solid var(--color-primary);padding-left:var(--space-md);">For roughly the same price as buying units at a hardware store, you get a certified replacement and the paperwork to prove compliance.</div>
-        </div>
-      </div>
-
-      <p class="pricing-note" style="margin-top:var(--space-lg);">Multi-unit rental properties and buildings are quoted based on unit count. <a href="#contact" style="color:var(--color-primary);">Contact us for a property quote.</a></p>
-    </div>
-  </div>
-</section>
-
 <!-- FAQ -->
 <section id="faq" class="section" aria-labelledby="faq-heading">
   <div class="container">
@@ -926,6 +993,17 @@
         </button>
         <div class="faq-answer" hidden>
           <p>A combination unit detects both smoke and carbon monoxide in a single device. It meets both the smoke alarm requirement and the 2026 CO alarm requirement in one visit. London Fire Protection supplies and replaces with the Kidde 21033116 (interconnected) and 21031518 (battery) combination units — both ULC-listed and Ontario Fire Code compliant. For most homes, combo units are the most cost-effective solution.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-question" aria-expanded="false">
+          Do I need a strobe smoke alarm in my home?
+          <span class="faq-icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq-answer" hidden>
+          <p>If your home was built or substantially renovated after January 1, 2015, the Ontario Building Code requires smoke alarms with a visual signaling component (strobe light) for hearing-impaired safety. The strobe must conform to NFPA 72 and produce a minimum of 175 candelas in sleeping rooms.</p>
+          <p style="margin-top:12px;">London Fire Protection supplies and installs 3-in-1 LED strobe combination smoke/CO alarms that meet this requirement — interconnected, with a built-in strobe and full smoke and CO detection in one unit. <a href="#contact" style="color:var(--color-primary);font-weight:500;">Contact us for a quote.</a></p>
         </div>
       </div>
 
