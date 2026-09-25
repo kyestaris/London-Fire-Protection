@@ -678,6 +678,28 @@
         <button class="stepper-btn" onclick="adjustProduct('co-alarm-c3010',1)">+</button>
       </div>
     </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-top:1px solid var(--border);margin-top:8px">
+      <div>
+        <div style="font-size:15px;font-weight:500">Emergency Running Man Combo — JRMECW</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Votatec Emergency Light + Exit Sign — $65/unit</div>
+      </div>
+      <div class="stepper" style="width:130px;flex-shrink:0">
+        <button class="stepper-btn" onclick="adjustProduct('el-jrmecw',-1)">−</button>
+        <div class="stepper-val" id="prod-el-jrmecw">0</div>
+        <button class="stepper-btn" onclick="adjustProduct('el-jrmecw',1)">+</button>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-top:1px solid var(--border);margin-top:8px">
+      <div>
+        <div style="font-size:15px;font-weight:500">Replacement Battery 6V 4.5AH — EL-BATT-6V</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Emergency Lighting Battery — $25/unit</div>
+      </div>
+      <div class="stepper" style="width:130px;flex-shrink:0">
+        <button class="stepper-btn" onclick="adjustProduct('el-batt-6v',-1)">−</button>
+        <div class="stepper-val" id="prod-el-batt-6v">0</div>
+        <button class="stepper-btn" onclick="adjustProduct('el-batt-6v',1)">+</button>
+      </div>
+    </div>
   </div>
 
   <div class="error-banner" id="err3"></div>
@@ -806,6 +828,12 @@
     'D-ABC20':    '20lb ABC ($250)',
     '5CO2':       '5lb CO2 ($350)',
   };
+  const EL_SKU_PRICES = { 'JRMECW': 65, 'EL-BATT-6V': 25 };
+  const EL_SKU_LABELS = {
+    'JRMECW':      'Emergency Running Man Combo ($65)',
+    'EL-BATT-6V':  'Replacement Battery 6V 4.5AH ($25)',
+  };
+
   const SMOKE_TYPES = {
     '21031518': { label: 'Battery (21031518)', price: 80 },
     '21033116': { label: 'Interconnected (21033116)', price: 88.5 },
@@ -822,7 +850,7 @@
     screen4:  { ofcToggles:{}, upsellToggles:{} },
     callFee:  65,
     quoteUrl: '',
-    productSales: { 'co-alarm-c3010': 0 },
+    productSales: { 'co-alarm-c3010': 0, 'el-jrmecw': 0, 'el-batt-6v': 0 },
     discount: { type: 'pct', value: 0 },
   };
 
@@ -1018,6 +1046,7 @@
       { id:'fe-install',   label:'Fire Extinguisher Supply & Install',                    type:'fe-install' },
       { id:'el-monthly',   label:'Emergency Lighting Inspection — Monthly',               type:'units' },
       { id:'el-annual',    label:'Emergency Lighting Inspection — Annual Duration Test',  type:'units' },
+      { id:'el-install',   label:'Emergency Lighting Supply & Install',                    type:'el-install' },
       { id:'co-alarm',     label:'Carbon Monoxide Alarm Replacement (C3010)',             type:'units-nobase' },
       { id:'smoke-co',     label:'Smoke & Carbon Monoxide Alarm Replacement',             type:'smoke-co' },
       { id:'fsp-new',      label:'Fire Safety Plan — New',                 type:'fsp' },
@@ -1081,6 +1110,29 @@
                 <button class="stepper-btn" onclick="adjustFEItem('${svc.id}','${sku}',1)">+</button>
               </div>
             </div>`).join('')}
+          <div class="onsite-row">
+            <input type="checkbox" id="onsite-${svc.id}" onchange="toggleOnSite('${svc.id}',this.checked)" ${s.confirmOnSite?'checked':''}>
+            <label class="onsite-label" for="onsite-${svc.id}" style="text-transform:none;font-size:13px;letter-spacing:0">Confirm on-site</label>
+          </div>
+        </div>`;
+    } else if (svc.type === 'el-install') {
+      bodyHTML = `
+        <div class="service-body-inner">
+          ${['JRMECW','EL-BATT-6V'].map(sku => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:14px">${EL_SKU_LABELS[sku]}</span>
+              <div class="stepper" style="width:130px">
+                <button class="stepper-btn" onclick="adjustELItem('${svc.id}','${sku}',-1)">−</button>
+                <div class="stepper-val" id="elitem-${svc.id}-${sku}" style="font-size:15px">${getELItemQty(svc.id,sku)}</div>
+                <button class="stepper-btn" onclick="adjustELItem('${svc.id}','${sku}',1)">+</button>
+              </div>
+            </div>`).join('')}
+          <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+            <label style="font-size:14px">Electrical Installation Fee</label>
+            <input type="number" min="0" step="0.01" placeholder="0.00" value="${s.elInstallFee||''}"
+              style="width:100px;margin-top:4px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:15px;color:var(--text)"
+              oninput="state.services['${svc.id}'].elInstallFee=parseFloat(this.value)||0;refreshPreview('${svc.id}')">
+          </div>
           <div class="onsite-row">
             <input type="checkbox" id="onsite-${svc.id}" onchange="toggleOnSite('${svc.id}',this.checked)" ${s.confirmOnSite?'checked':''}>
             <label class="onsite-label" for="onsite-${svc.id}" style="text-transform:none;font-size:13px;letter-spacing:0">Confirm on-site</label>
@@ -1271,6 +1323,21 @@
     return (state.services[id]?.items||[]).find(x=>x.sku===sku)?.qty || 0;
   }
 
+  function adjustELItem(id, sku, delta) {
+    const s = state.services[id];
+    if (!s.elItems) s.elItems = [];
+    let item = s.elItems.find(x => x.sku === sku);
+    if (!item) { item = { sku, qty:0 }; s.elItems.push(item); }
+    item.qty = Math.max(0, item.qty + delta);
+    const el = document.getElementById(`elitem-${id}-${sku}`);
+    if (el) el.textContent = item.qty;
+    refreshPreview(id);
+  }
+
+  function getELItemQty(id, sku) {
+    return (state.services[id]?.elItems||[]).find(x=>x.sku===sku)?.qty || 0;
+  }
+
   function calcInterconnectedFee(units) {
     if (units <= 0) return 0;
     return units <= 3 ? 150 : 150 + (units - 3) * 30;
@@ -1438,6 +1505,11 @@
         if (!s.units) return 0;
         return s.units * elAnnualTier(s.units);
       }
+      case 'el-install': {
+        const elItems = (s.elItems||[]).filter(x=>x.qty>0);
+        const productTotal = elItems.reduce((sum,x) => sum + (EL_SKU_PRICES[x.sku]||0)*x.qty, 0);
+        return productTotal + (parseFloat(s.elInstallFee)||0);
+      }
       case 'co-alarm':   return (s.units||0) * 55;
       case 'smoke-co': {
         const units = s.units || 0;
@@ -1595,8 +1667,8 @@
     });
 
     // Product sales
-    const PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010' };
-    const PROD_PRICES = { 'co-alarm-c3010': 50 };
+    const PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010', 'el-jrmecw': 'Emergency Running Man Combo — JRMECW', 'el-batt-6v': 'Replacement Battery 6V 4.5AH — EL-BATT-6V' };
+    const PROD_PRICES = { 'co-alarm-c3010': 50, 'el-jrmecw': 65, 'el-batt-6v': 25 };
     Object.entries(state.productSales).forEach(([id, qty]) => {
       if (!qty) return;
       const price = (PROD_PRICES[id]||0) * qty;
@@ -1699,7 +1771,7 @@
     if (state.services['fsp-new']?.fspBox) subtotal += 200;
 
     // Product sales
-    const _PROD_PRICES = { 'co-alarm-c3010': 50 };
+    const _PROD_PRICES = { 'co-alarm-c3010': 50, 'el-jrmecw': 65, 'el-batt-6v': 25 };
     Object.entries(state.productSales).forEach(([id, qty]) => { subtotal += (_PROD_PRICES[id]||0) * qty; });
 
     // Section B toggled on
@@ -1751,6 +1823,7 @@
       'fe-monthly':   `Fire Extinguisher Inspection — Monthly${s.units?' ('+s.units+' units)':''}`,
       'fe-annual':    `Fire Extinguisher Inspection — Annual${s.units?' ('+s.units+' units)':''}`,
       'fe-install':   'Fire Extinguisher Supply & Install',
+      'el-install':   'Emergency Lighting Supply & Install',
       'el-monthly':   `Emergency Lighting Inspection — Monthly${s.units?' ('+s.units+' units)':''}`,
       'el-annual':    `Emergency Lighting Inspection — Annual Duration Test${s.units?' ('+s.units+' units)':''}`,
       'co-alarm':     `Carbon Monoxide Alarm Replacement${s.units?' ('+s.units+' units)':''}`,
@@ -1785,6 +1858,14 @@
         lineItems.push({ name: serviceLabelById(id,s)+' — Priced on-site', amount: 0 });
         return;
       }
+      // EL install: split into product lines + electrical fee
+      if (id === 'el-install') {
+        (s.elItems||[]).filter(x=>x.qty>0).forEach(x => {
+          lineItems.push({ name: `${EL_SKU_LABELS[x.sku]?.replace(/ \(.*\)/,'')||x.sku} (${x.sku}) \u00d7 ${x.qty}`, amount: (EL_SKU_PRICES[x.sku]||0)*x.qty });
+        });
+        if (s.elInstallFee > 0) lineItems.push({ name: 'Electrical Installation Fee', amount: s.elInstallFee });
+        return;
+      }
       // Interconnected alarms: split into product line + service fee line
       if (id === 'smoke-co' && (s.smokeType === '21033116' || s.smokeType === '21031559' || s.smokeType === 'P4010ACLEDSCO-2')) {
         const units = s.units || 0;
@@ -1801,8 +1882,8 @@
     if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:200 });
 
     // Product sales
-    const _SQ_PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010' };
-    const _SQ_PROD_PRICES = { 'co-alarm-c3010': 50 };
+    const _SQ_PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010', 'el-jrmecw': 'Emergency Running Man Combo — JRMECW', 'el-batt-6v': 'Replacement Battery 6V 4.5AH — EL-BATT-6V' };
+    const _SQ_PROD_PRICES = { 'co-alarm-c3010': 50, 'el-jrmecw': 65, 'el-batt-6v': 25 };
     Object.entries(state.productSales).forEach(([id, qty]) => {
       if (!qty) return;
       lineItems.push({ name: `${_SQ_PROD_LABELS[id]||id} (\u00d7${qty})`, amount: (_SQ_PROD_PRICES[id]||0) * qty });
@@ -1959,14 +2040,16 @@
       services:     {},
       screen4:      { ofcToggles:{},upsellToggles:{} },
       quoteUrl:     '',
-      productSales: { 'co-alarm-c3010': 0 },
+      productSales: { 'co-alarm-c3010': 0, 'el-jrmecw': 0, 'el-batt-6v': 0 },
       discount:     { type: 'pct', value: 0 },
     });
     const discInput = document.getElementById('discountInput');
     if (discInput) discInput.value = '0';
     setDiscountType('pct');
-    const prodEl = document.getElementById('prod-co-alarm-c3010');
-    if (prodEl) prodEl.textContent = '0';
+    ['prod-co-alarm-c3010','prod-el-jrmecw','prod-el-batt-6v'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '0';
+    });
     document.getElementById('progressDots').style.display = 'flex';
     document.getElementById('crmSearch').value      = '';
     document.getElementById('clientName').value     = '';
