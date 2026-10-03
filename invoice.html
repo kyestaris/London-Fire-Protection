@@ -592,9 +592,14 @@
           <input type="text" id="propertyAddress" placeholder="123 Main St, London ON" autocomplete="off" required>
         </div>
 
-        <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:4px">
-          <input type="checkbox" id="electricianNeeded" style="width:auto">
-          <label for="electricianNeeded" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--text);cursor:pointer">Electrician needed (interconnected alarm install)</label>
+        <div class="form-group">
+          <label>Subcontractor</label>
+          <select id="subcontractorUsed">
+            <option value="">None</option>
+            <option value="studerus">Studerus Electric (electrician)</option>
+            <option value="londoner">The Londoner Group (kitchen suppression)</option>
+            <option value="other">Other</option>
+          </select>
         </div>
       </div>
 
@@ -1427,7 +1432,7 @@
     submitBtn.innerHTML = '<span class="spinner"></span>Creating invoice...';
 
     var annualFollowup = document.getElementById('annualFollowup').checked;
-    var electricianNeeded = document.getElementById('electricianNeeded').checked;
+    var subcontractor = document.getElementById('subcontractorUsed').value;
 
     var bodyPayload = {
       pin:             pin,
@@ -1441,7 +1446,8 @@
       paymentTerms:    paymentTerms,
       lineItems:       lineItems,
       annualFollowup:  annualFollowup,
-      electrician:     electricianNeeded,
+      electrician:     !!subcontractor,
+      subcontractor:   subcontractor || undefined,
     };
 
     if (jobType === 'multi-service') {
