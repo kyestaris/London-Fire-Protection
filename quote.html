@@ -669,35 +669,13 @@
     <div class="card-title">Product Sales</div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0">
       <div>
-        <div style="font-size:15px;font-weight:500">Carbon Monoxide Alarm — C3010</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Sealed Battery Carbon Monoxide Alarm — $50/unit</div>
+        <div style="font-size:15px;font-weight:500">Carbon Monoxide Alarm - Sealed Battery (C3010)</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">$50/unit</div>
       </div>
       <div class="stepper" style="width:130px;flex-shrink:0">
         <button class="stepper-btn" onclick="adjustProduct('co-alarm-c3010',-1)">−</button>
         <div class="stepper-val" id="prod-co-alarm-c3010">0</div>
         <button class="stepper-btn" onclick="adjustProduct('co-alarm-c3010',1)">+</button>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-top:1px solid var(--border);margin-top:8px">
-      <div>
-        <div style="font-size:15px;font-weight:500">Emergency Running Man Combo — JRMECW</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Votatec Emergency Light + Exit Sign — $65/unit</div>
-      </div>
-      <div class="stepper" style="width:130px;flex-shrink:0">
-        <button class="stepper-btn" onclick="adjustProduct('el-jrmecw',-1)">−</button>
-        <div class="stepper-val" id="prod-el-jrmecw">0</div>
-        <button class="stepper-btn" onclick="adjustProduct('el-jrmecw',1)">+</button>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-top:1px solid var(--border);margin-top:8px">
-      <div>
-        <div style="font-size:15px;font-weight:500">Replacement Battery 6V 4.5AH — EL-BATT-6V</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Emergency Lighting Battery — $25/unit</div>
-      </div>
-      <div class="stepper" style="width:130px;flex-shrink:0">
-        <button class="stepper-btn" onclick="adjustProduct('el-batt-6v',-1)">−</button>
-        <div class="stepper-val" id="prod-el-batt-6v">0</div>
-        <button class="stepper-btn" onclick="adjustProduct('el-batt-6v',1)">+</button>
       </div>
     </div>
   </div>
@@ -819,27 +797,42 @@
     document.getElementById('pinError').textContent = 'Session expired — enter PIN again';
   }
 
-  const FE_SKU_PRICES = { 'CT-ABC2': 60, 'D-ABC5W': 75, 'D-ABC5W-EX': 75, 'D-ABC10': 115, 'D-ABC20': 250, '5CO2': 350 };
+  const FE_SKU_PRICES = { 'CT-ABC2': 60, 'D-ABC5W': 75, 'D-ABC10': 115, 'HD-ABC10': 115, 'D-ABC20': 250, '5CO2': 350 };
   const FE_SKU_LABELS = {
-    'CT-ABC2':    '2lb ABC — Garrison ($60)',
-    'D-ABC5W':    '5lb ABC ($75)',
-    'D-ABC5W-EX': '5lb ABC ($75)',
-    'D-ABC10':    '10lb ABC ($115)',
-    'D-ABC20':    '20lb ABC ($250)',
-    '5CO2':       '5lb CO2 ($350)',
+    'CT-ABC2':    '2lb ABC Fire Extinguisher ($60)',
+    'D-ABC5W':    '5lb ABC Fire Extinguisher ($75)',
+    'D-ABC10':    '10lb ABC Fire Extinguisher ($115)',
+    'HD-ABC10':   '10lb ABC Fire Extinguisher - Home Depot ($115)',
+    'D-ABC20':    '20lb ABC Fire Extinguisher ($250)',
+    '5CO2':       '5lb CO2 Fire Extinguisher ($350)',
   };
-  const EL_SKU_PRICES = { 'JRMECW': 65, 'EL-BATT-6V': 25 };
+  const EL_SKU_PRICES = {
+    'GDP-JRMECW-COMBO': 65, 'EL-TANLUX-COMBO': 65, 'EL-BUGEYE': 36,
+    'EL-EXITLUX-COMBO': 72, 'HD-EXITLT-COMBO': 65,
+    'EL-BATT-6V': 25, 'EL-BATT-6V7AH': 35, 'EL-BATT-12V7AH': 60,
+    'EL-BATT-2V4': 30, 'EL-BATT-4V8': 37,
+  };
   const EL_SKU_LABELS = {
-    'JRMECW':      'Emergency Running Man Combo ($65)',
-    'EL-BATT-6V':  'Replacement Battery 6V 4.5AH ($25)',
+    'GDP-JRMECW-COMBO': 'Emergency Exit Light Combo Unit - Votatec ($65)',
+    'EL-TANLUX-COMBO':  'Emergency Exit Light Combo Unit - TANLUX ($65)',
+    'EL-BUGEYE':        'Emergency Battery Backup Light ($36)',
+    'EL-EXITLUX-COMBO': 'Dual Emergency Exit Light Combo Unit ($72)',
+    'HD-EXITLT-COMBO':  'Emergency Exit Light Combo Unit - Home Depot ($65)',
+    'EL-BATT-6V':       'Replacement Battery - 6 Volt ($25)',
+    'EL-BATT-6V7AH':    'Replacement Battery - 6 Volt Heavy Duty ($35)',
+    'EL-BATT-12V7AH':   'Replacement Battery - 12 Volt ($60)',
+    'EL-BATT-2V4':      'Replacement Battery Pack - 2.4 Volt ($30)',
+    'EL-BATT-4V8':      'Replacement Battery Pack - 4.8 Volt ($37)',
   };
 
   const SMOKE_TYPES = {
-    '21031518': { label: 'Battery (21031518)', price: 80 },
-    '21033116': { label: 'Interconnected (21033116)', price: 88.5 },
-    '21031471': { label: 'Smoke Only — Battery (21031471)', price: 51.5 },
-    '21031559': { label: 'Smoke Only — Hardwired (21031559)', price: 56 },
-    'P4010ACLEDSCO-2': { label: '3-in-1 LED Strobe Combo/CO (P4010ACLEDSCO-2)', price: 160 },
+    '21031518': { label: 'Smoke and CO Alarm - Battery (21031518)', price: 80 },
+    '21033116': { label: 'Smoke and CO Alarm - Interconnected (21033116)', price: 88.5 },
+    '21031471': { label: 'Smoke Alarm - Battery 10 Year (21031471)', price: 51.5 },
+    '21031559': { label: 'Smoke Alarm - Hardwired 120 Volt (21031559)', price: 56 },
+    'P4010ACLEDSCO-2': { label: '3-in-1 LED Strobe Combo/CO Alarm - Herbert Williams (P4010ACLEDSCO-2)', price: 160 },
+    'GDP-3IN1': { label: 'Smoke, Strobe, and CO Alarm - Hardwired GDP (GDP-3IN1)', price: 138 },
+    'GDP-2IN1': { label: 'Smoke and Strobe Alarm - Hardwired GDP (GDP-2IN1)', price: 130 },
   };
 
   // ── State ────────────────────────────────────────────────────────
@@ -850,7 +843,7 @@
     screen4:  { ofcToggles:{}, upsellToggles:{} },
     callFee:  65,
     quoteUrl: '',
-    productSales: { 'co-alarm-c3010': 0, 'el-jrmecw': 0, 'el-batt-6v': 0 },
+    productSales: { 'co-alarm-c3010': 0 },
     discount: { type: 'pct', value: 0 },
   };
 
@@ -1101,7 +1094,7 @@
     } else if (svc.type === 'fe-install') {
       bodyHTML = `
         <div class="service-body-inner">
-          ${['CT-ABC2','D-ABC5W','D-ABC5W-EX','D-ABC10','D-ABC20','5CO2'].map(sku => `
+          ${['CT-ABC2','D-ABC5W','D-ABC10','HD-ABC10','D-ABC20','5CO2'].map(sku => `
             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
               <span style="font-size:14px">${FE_SKU_LABELS[sku]}</span>
               <div class="stepper" style="width:130px">
@@ -1118,7 +1111,7 @@
     } else if (svc.type === 'el-install') {
       bodyHTML = `
         <div class="service-body-inner">
-          ${['JRMECW','EL-BATT-6V'].map(sku => `
+          ${Object.keys(EL_SKU_LABELS).map(sku => `
             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
               <span style="font-size:14px">${EL_SKU_LABELS[sku]}</span>
               <div class="stepper" style="width:130px">
@@ -1667,8 +1660,8 @@
     });
 
     // Product sales
-    const PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010', 'el-jrmecw': 'Emergency Running Man Combo — JRMECW', 'el-batt-6v': 'Replacement Battery 6V 4.5AH — EL-BATT-6V' };
-    const PROD_PRICES = { 'co-alarm-c3010': 50, 'el-jrmecw': 65, 'el-batt-6v': 25 };
+    const PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm - Sealed Battery (C3010)' };
+    const PROD_PRICES = { 'co-alarm-c3010': 50 };
     Object.entries(state.productSales).forEach(([id, qty]) => {
       if (!qty) return;
       const price = (PROD_PRICES[id]||0) * qty;
@@ -1771,7 +1764,7 @@
     if (state.services['fsp-new']?.fspBox) subtotal += 200;
 
     // Product sales
-    const _PROD_PRICES = { 'co-alarm-c3010': 50, 'el-jrmecw': 65, 'el-batt-6v': 25 };
+    const _PROD_PRICES = { 'co-alarm-c3010': 50 };
     Object.entries(state.productSales).forEach(([id, qty]) => { subtotal += (_PROD_PRICES[id]||0) * qty; });
 
     // Section B toggled on
@@ -1882,8 +1875,8 @@
     if (state.services['fsp-new']?.fspBox) lineItems.push({ name:'FSPB-1 Plan Box', amount:200 });
 
     // Product sales
-    const _SQ_PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm — C3010', 'el-jrmecw': 'Emergency Running Man Combo — JRMECW', 'el-batt-6v': 'Replacement Battery 6V 4.5AH — EL-BATT-6V' };
-    const _SQ_PROD_PRICES = { 'co-alarm-c3010': 50, 'el-jrmecw': 65, 'el-batt-6v': 25 };
+    const _SQ_PROD_LABELS = { 'co-alarm-c3010': 'Carbon Monoxide Alarm - Sealed Battery (C3010)' };
+    const _SQ_PROD_PRICES = { 'co-alarm-c3010': 50 };
     Object.entries(state.productSales).forEach(([id, qty]) => {
       if (!qty) return;
       lineItems.push({ name: `${_SQ_PROD_LABELS[id]||id} (\u00d7${qty})`, amount: (_SQ_PROD_PRICES[id]||0) * qty });
@@ -2040,13 +2033,13 @@
       services:     {},
       screen4:      { ofcToggles:{},upsellToggles:{} },
       quoteUrl:     '',
-      productSales: { 'co-alarm-c3010': 0, 'el-jrmecw': 0, 'el-batt-6v': 0 },
+      productSales: { 'co-alarm-c3010': 0 },
       discount:     { type: 'pct', value: 0 },
     });
     const discInput = document.getElementById('discountInput');
     if (discInput) discInput.value = '0';
     setDiscountType('pct');
-    ['prod-co-alarm-c3010','prod-el-jrmecw','prod-el-batt-6v'].forEach(id => {
+    ['prod-co-alarm-c3010'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = '0';
     });

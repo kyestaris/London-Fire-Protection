@@ -97,6 +97,23 @@
       appearance: none;
       transition: border-color 0.15s;
     }
+    .sku-select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 10px 15px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.15s;
+    }
+    .sku-select:focus { border-color: var(--orange); color: var(--text); }
+    .sku-select option { background: var(--surface); color: var(--text); }
+    .sku-select optgroup { color: var(--orange); font-weight: 600; }
+
     input[type="checkbox"],
     input[type="radio"] {
       all: revert;
@@ -736,7 +753,7 @@
         btn.type = 'button';
         btn.className = 'product-btn';
         btn.innerHTML = '<span class="p-name">' + p.name + '</span><span class="p-sku">' + p.sku + '</span><span class="p-price">$' + p.price.toFixed(2) + '</span>';
-        btn.addEventListener('click', function() { addProduct(p.name + ' (' + p.sku + ')', p.price); });
+        btn.addEventListener('click', function() { addProduct(p.name, p.price, p.sku); });
         grid.appendChild(btn);
       });
       catDiv.appendChild(grid);
@@ -747,7 +764,9 @@
         btn.className = 'service-item-btn';
         var priceDisplay = item.price != null ? '$' + item.price.toFixed(2) : 'Enter price';
         btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">' + priceDisplay + '</span></span>';
-        btn.addEventListener('click', function() { addProduct(item.name, item.price); });
+        btn.addEventListener('click', function() {
+          addProduct(item.name, item.price, item.sku || '', item.skus || null);
+        });
         catDiv.appendChild(btn);
       });
     }
@@ -887,6 +906,66 @@
   // Auto-fetch if already authenticated (PIN in localStorage)
   if (pin) fetchNextJobId();
 
+  // Master SKU list for dropdown (grouped by category)
+  var ALL_SKUS = {
+    'Extinguishers': [
+      { sku: 'CT-ABC2',   label: '2lb ABC Fire Extinguisher', price: 60.00 },
+      { sku: 'D-ABC5W',   label: '5lb ABC Fire Extinguisher', price: 75.00 },
+      { sku: 'D-ABC5W-TROY', label: '5lb ABC Fire Extinguisher (Troy)', price: 75.00 },
+      { sku: 'D-ABC10',   label: '10lb ABC Fire Extinguisher', price: 115.00 },
+      { sku: 'HD-ABC10',  label: '10lb ABC Fire Extinguisher (Home Depot)', price: 115.00 },
+      { sku: 'D-ABC20',   label: '20lb ABC Fire Extinguisher', price: 250.00 },
+      { sku: '5CO2',      label: '5lb CO2 Fire Extinguisher', price: 350.00 },
+    ],
+    'Emergency Lighting': [
+      { sku: 'GDP-JRMECW-COMBO', label: 'Emergency Exit Light Combo Unit (Votatec)', price: 65.00 },
+      { sku: 'EL-TANLUX-COMBO',  label: 'Emergency Exit Light Combo Unit (TANLUX)', price: 65.00 },
+      { sku: 'EL-BUGEYE',        label: 'Emergency Battery Backup Light', price: 36.00 },
+      { sku: 'EL-EXITLUX-COMBO', label: 'Dual Emergency Exit Light Combo Unit', price: 72.00 },
+      { sku: 'HD-EXITLT-COMBO',  label: 'Emergency Exit Light Combo Unit (Home Depot)', price: 65.00 },
+    ],
+    'Batteries': [
+      { sku: 'EL-BATT-6V',     label: 'Replacement Battery - 6 Volt', price: 25.00 },
+      { sku: 'EL-BATT-6V7AH',  label: 'Replacement Battery - 6 Volt Heavy Duty', price: 35.00 },
+      { sku: 'EL-BATT-12V7AH', label: 'Replacement Battery - 12 Volt', price: 60.00 },
+      { sku: 'EL-BATT-2V4',    label: 'Replacement Battery Pack - 2.4 Volt', price: 30.00 },
+      { sku: 'EL-BATT-4V8',    label: 'Replacement Battery Pack - 4.8 Volt', price: 37.00 },
+    ],
+    'Alarms': [
+      { sku: 'C3010',      label: 'Carbon Monoxide Alarm - Sealed Battery', price: 50.00 },
+      { sku: '21031471',   label: 'Smoke Alarm - Battery 10 Year', price: 51.50 },
+      { sku: '21031518',   label: 'Smoke and Carbon Monoxide Alarm - Battery', price: 80.00 },
+      { sku: '21031559',   label: 'Smoke Alarm - Hardwired 120 Volt', price: 56.00 },
+      { sku: '21033116',   label: 'Smoke and Carbon Monoxide Alarm - Interconnected', price: 88.50 },
+      { sku: 'P4010ACLEDSCO-2', label: '3-in-1 LED Strobe Combo/CO Alarm (Herbert Williams)', price: 160.00 },
+      { sku: 'GDP-3IN1',   label: 'Smoke, Strobe, and Carbon Monoxide Alarm - Hardwired (GDP)', price: 138.00 },
+      { sku: 'GDP-2IN1',   label: 'Smoke and Strobe Alarm - Hardwired (GDP)', price: 130.00 },
+    ],
+    'Accessories': [
+      { sku: 'FSPB-1', label: 'Fire Safety Plan Box', price: 200.00 },
+    ],
+  };
+
+  // Build flat SKU lookup for quick access
+  var SKU_LOOKUP = {};
+  Object.keys(ALL_SKUS).forEach(function(cat) {
+    ALL_SKUS[cat].forEach(function(item) { SKU_LOOKUP[item.sku] = item; });
+  });
+
+  // Build SKU select HTML (optgroups by category)
+  function buildSkuSelectHTML(selectedSku) {
+    var html = '<option value="">No SKU (service/labour)</option>';
+    Object.keys(ALL_SKUS).forEach(function(cat) {
+      html += '<optgroup label="' + cat + '">';
+      ALL_SKUS[cat].forEach(function(item) {
+        var sel = (item.sku === selectedSku) ? ' selected' : '';
+        html += '<option value="' + item.sku + '"' + sel + '>' + item.sku + ' — ' + item.label + '</option>';
+      });
+      html += '</optgroup>';
+    });
+    return html;
+  }
+
   // Catalogue quick-add items per job type
   var QUICK_ITEMS = {
     'fe-el-inspection-monthly': {
@@ -931,8 +1010,13 @@
         { name: 'Emergency Lighting Inspection — Per Unit (1–10 units)', price: 8.00, note: 'per unit' },
         { name: 'Emergency Lighting Inspection — Per Unit (10–50 units)', price: 6.00, note: 'per unit' },
         { name: 'Emergency Lighting Inspection — Per Unit (50+ units)', price: 5.00, note: 'per unit' },
-        { name: 'Emergency Running Man Combo — Replacement (JRMECW)', price: 65.00, note: 'each' },
-        { name: 'Replacement Battery 6V 4.5AH (EL-BATT-6V)', price: 25.00, note: 'each' },
+        { name: 'Emergency Exit Light Combo Unit', price: 65.00, note: 'each', skus: ['GDP-JRMECW-COMBO','EL-TANLUX-COMBO','EL-EXITLUX-COMBO','HD-EXITLT-COMBO'] },
+        { name: 'Emergency Battery Backup Light', price: 36.00, note: 'each', sku: 'EL-BUGEYE' },
+        { name: 'Replacement Battery - 6 Volt', price: 25.00, note: 'each', sku: 'EL-BATT-6V' },
+        { name: 'Replacement Battery - 6 Volt Heavy Duty', price: 35.00, note: 'each', sku: 'EL-BATT-6V7AH' },
+        { name: 'Replacement Battery - 12 Volt', price: 60.00, note: 'each', sku: 'EL-BATT-12V7AH' },
+        { name: 'Replacement Battery Pack - 2.4 Volt', price: 30.00, note: 'each', sku: 'EL-BATT-2V4' },
+        { name: 'Replacement Battery Pack - 4.8 Volt', price: 37.00, note: 'each', sku: 'EL-BATT-4V8' },
         { name: 'Electrical Installation Fee', price: null, note: 'enter amount' },
       ]
     },
@@ -943,8 +1027,13 @@
         { name: 'Service Base Fee — Tier 2 (6+ units)', price: 90.00, note: 'per visit' },
         { name: 'EL Annual 30-min Battery Test — Per Unit (1–5 units)', price: 25.00, note: 'per unit' },
         { name: 'EL Annual 30-min Battery Test — Per Unit (6+ units)', price: 20.00, note: 'per unit' },
-        { name: 'Emergency Running Man Combo — Replacement (JRMECW)', price: 65.00, note: 'each' },
-        { name: 'Replacement Battery 6V 4.5AH (EL-BATT-6V)', price: 25.00, note: 'each' },
+        { name: 'Emergency Exit Light Combo Unit', price: 65.00, note: 'each', skus: ['GDP-JRMECW-COMBO','EL-TANLUX-COMBO','EL-EXITLUX-COMBO','HD-EXITLT-COMBO'] },
+        { name: 'Emergency Battery Backup Light', price: 36.00, note: 'each', sku: 'EL-BUGEYE' },
+        { name: 'Replacement Battery - 6 Volt', price: 25.00, note: 'each', sku: 'EL-BATT-6V' },
+        { name: 'Replacement Battery - 6 Volt Heavy Duty', price: 35.00, note: 'each', sku: 'EL-BATT-6V7AH' },
+        { name: 'Replacement Battery - 12 Volt', price: 60.00, note: 'each', sku: 'EL-BATT-12V7AH' },
+        { name: 'Replacement Battery Pack - 2.4 Volt', price: 30.00, note: 'each', sku: 'EL-BATT-2V4' },
+        { name: 'Replacement Battery Pack - 4.8 Volt', price: 37.00, note: 'each', sku: 'EL-BATT-4V8' },
         { name: 'Electrical Installation Fee', price: null, note: 'enter amount' },
       ]
     },
@@ -952,8 +1041,13 @@
       title: 'Emergency Lighting Supply & Install',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
-        { name: 'Emergency Running Man Combo (JRMECW)', price: 65.00, note: 'each' },
-        { name: 'Replacement Battery 6V 4.5AH (EL-BATT-6V)', price: 25.00, note: 'each' },
+        { name: 'Emergency Exit Light Combo Unit', price: 65.00, note: 'each', skus: ['GDP-JRMECW-COMBO','EL-TANLUX-COMBO','EL-EXITLUX-COMBO','HD-EXITLT-COMBO'] },
+        { name: 'Emergency Battery Backup Light', price: 36.00, note: 'each', sku: 'EL-BUGEYE' },
+        { name: 'Replacement Battery - 6 Volt', price: 25.00, note: 'each', sku: 'EL-BATT-6V' },
+        { name: 'Replacement Battery - 6 Volt Heavy Duty', price: 35.00, note: 'each', sku: 'EL-BATT-6V7AH' },
+        { name: 'Replacement Battery - 12 Volt', price: 60.00, note: 'each', sku: 'EL-BATT-12V7AH' },
+        { name: 'Replacement Battery Pack - 2.4 Volt', price: 30.00, note: 'each', sku: 'EL-BATT-2V4' },
+        { name: 'Replacement Battery Pack - 4.8 Volt', price: 37.00, note: 'each', sku: 'EL-BATT-4V8' },
         { name: 'Electrical Installation Fee', price: null, note: 'enter amount' },
       ]
     },
@@ -967,27 +1061,30 @@
       title: 'Fire Extinguisher Supply & Install',
       items: [
         { name: 'Service Base Fee', price: 65.00, note: 'per visit' },
-        { name: '2lb ABC Extinguisher (CT-ABC2)', price: 60.00, note: 'each' },
-        { name: '5lb ABC Extinguisher (D-ABC5W)', price: 75.00, note: 'each' },
-        { name: '10lb ABC Extinguisher (D-ABC10)', price: 115.00, note: 'each' },
-        { name: '20lb ABC Extinguisher (D-ABC20)', price: 250.00, note: 'each' },
-        { name: '5lb CO2 Extinguisher (5CO2)', price: 350.00, note: 'each' },
+        { name: '2lb ABC Fire Extinguisher', price: 60.00, note: 'each', sku: 'CT-ABC2' },
+        { name: '5lb ABC Fire Extinguisher', price: 75.00, note: 'each', sku: 'D-ABC5W' },
+        { name: '10lb ABC Fire Extinguisher', price: 115.00, note: 'each', sku: 'D-ABC10' },
+        { name: '10lb ABC Fire Extinguisher (Home Depot)', price: 115.00, note: 'each', sku: 'HD-ABC10' },
+        { name: '20lb ABC Fire Extinguisher', price: 250.00, note: 'each', sku: 'D-ABC20' },
+        { name: '5lb CO2 Fire Extinguisher', price: 350.00, note: 'each', sku: '5CO2' },
       ]
     },
     'co-alarm-install': {
       title: 'Carbon Monoxide Alarm Replacement',
       items: [
-        { name: 'Carbon Monoxide Alarm — Supply + Replacement (C3010)', price: 55.00, note: 'per unit' },
+        { name: 'Carbon Monoxide Alarm - Supply and Replacement', price: 55.00, note: 'per unit', sku: 'C3010' },
       ]
     },
     'smoke-co-install': {
       title: 'Smoke & Carbon Monoxide Alarm Replacement',
       items: [
-        { name: 'Smoke & Carbon Monoxide Alarm — Battery (21031518)', price: 80.00, note: 'per unit' },
-        { name: 'Smoke & Carbon Monoxide Alarm — Interconnected (21033116)', price: 88.50, note: 'per unit' },
-        { name: '3-in-1 LED Strobe Combo/CO Alarm — Interconnected (P4010ACLEDSCO-2)', price: 160.00, note: 'per unit' },
-        { name: 'Smoke Alarm — Battery 10yr (21031471)', price: 51.50, note: 'per unit' },
-        { name: 'Smoke Alarm — Hardwired 120V (21031559)', price: 56.00, note: 'per unit' },
+        { name: 'Smoke and Carbon Monoxide Alarm - Battery (21031518)', price: 80.00, note: 'per unit', sku: '21031518' },
+        { name: 'Smoke and Carbon Monoxide Alarm - Interconnected (21033116)', price: 88.50, note: 'per unit', sku: '21033116' },
+        { name: '3-in-1 LED Strobe Combo/CO Alarm - Herbert Williams (P4010ACLEDSCO-2)', price: 160.00, note: 'per unit', sku: 'P4010ACLEDSCO-2' },
+        { name: 'Smoke, Strobe, and Carbon Monoxide Alarm - Hardwired GDP (GDP-3IN1)', price: 138.00, note: 'per unit', sku: 'GDP-3IN1' },
+        { name: 'Smoke and Strobe Alarm - Hardwired GDP (GDP-2IN1)', price: 130.00, note: 'per unit', sku: 'GDP-2IN1' },
+        { name: 'Smoke Alarm - Battery 10 Year (21031471)', price: 51.50, note: 'per unit', sku: '21031471' },
+        { name: 'Smoke Alarm - Hardwired 120 Volt (21031559)', price: 56.00, note: 'per unit', sku: '21031559' },
         { name: 'Replacement Fee (Battery — per unit)', price: null, note: 'enter amount' },
         { name: 'Interconnected Service Fee (up to 3 units)', price: 150.00, note: 'includes electrician' },
         { name: 'Interconnected Service Fee — Additional Unit', price: 30.00, note: 'per unit beyond 3' },
@@ -1020,20 +1117,31 @@
     'product-sale': {
       title: 'Products',
       grid: [
-        { name: '2lb ABC Extinguisher', sku: 'CT-ABC2', price: 60.00 },
-        { name: '5lb ABC Extinguisher', sku: 'D-ABC5W', price: 75.00 },
-        { name: '10lb ABC Extinguisher', sku: 'D-ABC10', price: 115.00 },
-        { name: '20lb ABC Extinguisher', sku: 'D-ABC20', price: 250.00 },
-        { name: '5lb CO2 Extinguisher', sku: '5CO2', price: 350.00 },
-        { name: 'Carbon Monoxide Alarm', sku: 'C3010', price: 50.00 },
-        { name: 'Smoke & Carbon Monoxide Alarm — Battery', sku: '21031518', price: 85.00 },
-        { name: 'Smoke & Carbon Monoxide Alarm — Hardwired', sku: '21033116', price: 95.00 },
-        { name: 'Smoke Alarm — Battery 10yr', sku: '21031471', price: 51.50 },
-        { name: 'Smoke Alarm — Hardwired 120V', sku: '21031559', price: 56.00 },
-        { name: '3-in-1 LED Strobe Combo/CO Alarm', sku: 'P4010ACLEDSCO-2', price: 160.00 },
-        { name: 'Emergency Running Man Combo', sku: 'JRMECW', price: 65.00 },
-        { name: 'Replacement Battery 6V 4.5AH', sku: 'EL-BATT-6V', price: 25.00 },
-        { name: 'FSP Box', sku: 'FSPB-1', price: 200.00 },
+        { name: '2lb ABC Fire Extinguisher', sku: 'CT-ABC2', price: 60.00 },
+        { name: '5lb ABC Fire Extinguisher', sku: 'D-ABC5W', price: 75.00 },
+        { name: '10lb ABC Fire Extinguisher', sku: 'D-ABC10', price: 115.00 },
+        { name: '10lb ABC Fire Extinguisher (Home Depot)', sku: 'HD-ABC10', price: 115.00 },
+        { name: '20lb ABC Fire Extinguisher', sku: 'D-ABC20', price: 250.00 },
+        { name: '5lb CO2 Fire Extinguisher', sku: '5CO2', price: 350.00 },
+        { name: 'Carbon Monoxide Alarm - Sealed Battery', sku: 'C3010', price: 50.00 },
+        { name: 'Smoke and Carbon Monoxide Alarm - Battery', sku: '21031518', price: 80.00 },
+        { name: 'Smoke and Carbon Monoxide Alarm - Interconnected', sku: '21033116', price: 88.50 },
+        { name: 'Smoke Alarm - Battery 10 Year', sku: '21031471', price: 51.50 },
+        { name: 'Smoke Alarm - Hardwired 120 Volt', sku: '21031559', price: 56.00 },
+        { name: '3-in-1 LED Strobe Combo/CO Alarm (Herbert Williams)', sku: 'P4010ACLEDSCO-2', price: 160.00 },
+        { name: 'Smoke, Strobe, and CO Alarm - Hardwired (GDP)', sku: 'GDP-3IN1', price: 138.00 },
+        { name: 'Smoke and Strobe Alarm - Hardwired (GDP)', sku: 'GDP-2IN1', price: 130.00 },
+        { name: 'Emergency Exit Light Combo Unit (Votatec)', sku: 'GDP-JRMECW-COMBO', price: 65.00 },
+        { name: 'Emergency Exit Light Combo Unit (TANLUX)', sku: 'EL-TANLUX-COMBO', price: 65.00 },
+        { name: 'Emergency Battery Backup Light', sku: 'EL-BUGEYE', price: 36.00 },
+        { name: 'Dual Emergency Exit Light Combo Unit', sku: 'EL-EXITLUX-COMBO', price: 72.00 },
+        { name: 'Emergency Exit Light Combo Unit (Home Depot)', sku: 'HD-EXITLT-COMBO', price: 65.00 },
+        { name: 'Replacement Battery - 6 Volt', sku: 'EL-BATT-6V', price: 25.00 },
+        { name: 'Replacement Battery - 6 Volt Heavy Duty', sku: 'EL-BATT-6V7AH', price: 35.00 },
+        { name: 'Replacement Battery - 12 Volt', sku: 'EL-BATT-12V7AH', price: 60.00 },
+        { name: 'Replacement Battery Pack - 2.4 Volt', sku: 'EL-BATT-2V4', price: 30.00 },
+        { name: 'Replacement Battery Pack - 4.8 Volt', sku: 'EL-BATT-4V8', price: 37.00 },
+        { name: 'Fire Safety Plan Box', sku: 'FSPB-1', price: 200.00 },
       ]
     },
   };
@@ -1068,7 +1176,7 @@
         btn.type = 'button';
         btn.className = 'product-btn';
         btn.innerHTML = '<span class="p-name">' + p.name + '</span><span class="p-sku">' + p.sku + '</span><span class="p-price">$' + p.price.toFixed(2) + '</span>';
-        btn.addEventListener('click', function() { addProduct(p.name + ' (' + p.sku + ')', p.price); });
+        btn.addEventListener('click', function() { addProduct(p.name, p.price, p.sku); });
         grid.appendChild(btn);
       });
       content.appendChild(grid);
@@ -1079,7 +1187,9 @@
         btn.className = 'service-item-btn';
         var priceDisplay = item.price != null ? '$' + item.price.toFixed(2) : 'Enter price';
         btn.innerHTML = '<span class="si-name">' + item.name + '</span><span class="si-right"><span class="si-note">' + item.note + '</span><span class="si-price">' + priceDisplay + '</span></span>';
-        btn.addEventListener('click', function() { addProduct(item.name, item.price); });
+        btn.addEventListener('click', function() {
+          addProduct(item.name, item.price, item.sku || '', item.skus || null);
+        });
         content.appendChild(btn);
       });
     }
@@ -1109,7 +1219,7 @@
     quickAdd.classList.add('visible');
   });
 
-  function addLineItem(description, qty, price) {
+  function addLineItem(description, qty, price, sku, skuOptions) {
     var id  = 'item-' + (itemCount++);
     var div = document.createElement('div');
     div.className = 'line-item';
@@ -1127,6 +1237,44 @@
     descLabel.textContent = 'Description';
     descGroup.appendChild(descLabel);
     descGroup.appendChild(descInput);
+
+    // SKU dropdown
+    var skuSelect = document.createElement('select');
+    skuSelect.className = 'sku-select';
+    if (skuOptions && skuOptions.length > 0) {
+      // Filtered list (pre-made job type)
+      var skuHtml = '<option value="">No SKU (service/labour)</option>';
+      skuOptions.forEach(function(s) {
+        var info = SKU_LOOKUP[s];
+        var label = info ? s + ' — ' + info.label : s;
+        var sel = (s === sku) ? ' selected' : '';
+        skuHtml += '<option value="' + s + '"' + sel + '>' + label + '</option>';
+      });
+      skuSelect.innerHTML = skuHtml;
+    } else {
+      // Full list (manual/custom line item)
+      skuSelect.innerHTML = buildSkuSelectHTML(sku || '');
+    }
+    skuSelect.addEventListener('change', function() {
+      var selectedSku = skuSelect.value;
+      if (selectedSku && SKU_LOOKUP[selectedSku]) {
+        var item = SKU_LOOKUP[selectedSku];
+        if (!descInput.value || descInput.value === description) {
+          descInput.value = item.label;
+        }
+        if (!priceInput.value || priceInput.value === '0') {
+          priceInput.value = item.price;
+        }
+        updateSummary();
+      }
+    });
+
+    var skuGroup = document.createElement('div');
+    skuGroup.className = 'form-group';
+    var skuLabel = document.createElement('label');
+    skuLabel.textContent = 'SKU (for cost tracking)';
+    skuGroup.appendChild(skuLabel);
+    skuGroup.appendChild(skuSelect);
 
     var qtyInput  = document.createElement('input');
     qtyInput.type = 'number';
@@ -1173,25 +1321,30 @@
     itemRow.appendChild(removeBtn);
 
     div.appendChild(descGroup);
+    div.appendChild(skuGroup);
     div.appendChild(itemRow);
 
     document.getElementById('lineItems').appendChild(div);
     updateSummary();
   }
 
-  function addProduct(name, price) {
-    addLineItem(name, 1, price);
+  function addProduct(name, price, sku, skuOptions) {
+    addLineItem(name, 1, price, sku, skuOptions);
   }
 
   function getLineItems() {
     var items = [];
     document.querySelectorAll('.line-item').forEach(function(item) {
       var inputs = item.querySelectorAll('input');
+      var skuSel = item.querySelector('.sku-select');
       var desc   = inputs[0].value.trim();
       var qty    = parseFloat(inputs[1].value) || 0;
       var price  = parseFloat(inputs[2].value) || 0;
       if (desc && qty > 0 && price > 0) {
-        items.push({ description: desc, quantity: qty, unitPrice: price });
+        var sku = skuSel ? skuSel.value : '';
+        var lineItem = { description: desc, quantity: qty, unitPrice: price };
+        if (sku) lineItem.sku = sku;
+        items.push(lineItem);
       }
     });
     return items;
