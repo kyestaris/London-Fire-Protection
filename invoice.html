@@ -615,6 +615,14 @@
           <input type="email" id="customerEmail" placeholder="client@email.com" inputmode="email" autocomplete="email" required>
         </div>
         <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:4px">
+          <input type="checkbox" id="billingSameAsProperty" style="width:auto" checked>
+          <label for="billingSameAsProperty" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--text);cursor:pointer">Billing address same as property address</label>
+        </div>
+        <div class="form-group" id="billingAddressGroup" style="display:none">
+          <label>Billing Address</label>
+          <input type="text" id="billingAddress" placeholder="123 Main St, London ON" autocomplete="off">
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:4px">
           <input type="checkbox" id="annualFollowup" style="width:auto">
           <label for="annualFollowup" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--text);cursor:pointer">Add to annual follow-up (CRM reminder in 12 months)</label>
         </div>
@@ -907,6 +915,11 @@
       document.getElementById('pinError').textContent = 'Connection error: ' + err.message;
     });
   }
+
+  // Billing address toggle
+  document.getElementById('billingSameAsProperty').addEventListener('change', function() {
+    document.getElementById('billingAddressGroup').style.display = this.checked ? 'none' : 'block';
+  });
 
   // Auto-fetch if already authenticated (PIN in localStorage)
   if (pin) fetchNextJobId();
@@ -1436,6 +1449,10 @@
 
     var annualFollowup = document.getElementById('annualFollowup').checked;
     var subcontractor = document.getElementById('subcontractorUsed').value;
+    var billingSame = document.getElementById('billingSameAsProperty').checked;
+    var billingAddress = billingSame ? propertyAddress : document.getElementById('billingAddress').value.trim();
+
+    if (!billingSame && !billingAddress) { showError('Please enter the billing address.'); return; }
 
     var bodyPayload = {
       pin:             pin,
@@ -1445,6 +1462,7 @@
       customerName:    customerName,
       customerEmail:   customerEmail,
       propertyAddress: propertyAddress,
+      billingAddress:  billingAddress,
       paymentMethod:   paymentMethod,
       paymentTerms:    paymentTerms,
       lineItems:       lineItems,
@@ -1483,6 +1501,7 @@
           '<div class="detail-row"><span class="detail-label">Job ID</span><span class="detail-value">' + esc(jobId) + '</span></div>' +
           '<div class="detail-row"><span class="detail-label">Customer</span><span class="detail-value">' + esc(customerName) + '</span></div>' +
           '<div class="detail-row"><span class="detail-label">Property</span><span class="detail-value">' + esc(propertyAddress) + '</span></div>' +
+          (billingAddress !== propertyAddress ? '<div class="detail-row"><span class="detail-label">Billing</span><span class="detail-value">' + esc(billingAddress) + '</span></div>' : '') +
           '<div class="detail-row"><span class="detail-label">Subtotal</span><span class="detail-value">$' + subtotal.toFixed(2) + '</span></div>' +
           '<div class="detail-row"><span class="detail-label">HST (13%)</span><span class="detail-value">$' + hst.toFixed(2) + '</span></div>';
         document.getElementById('successScreen').querySelector('h2').textContent = data.chargeOnFile ? 'Card Charged!' : 'Invoice Sent!';
@@ -1515,6 +1534,8 @@
     if (discInput) discInput.value = '0';
     setDiscountType('pct');
     document.getElementById('invoiceForm').reset();
+    document.getElementById('billingSameAsProperty').checked = true;
+    document.getElementById('billingAddressGroup').style.display = 'none';
     document.getElementById('lineItems').innerHTML    = '';
     document.getElementById('quickAdd').classList.remove('visible');
     document.getElementById('errorBanner').style.display   = 'none';
